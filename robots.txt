@@ -1,0 +1,3 @@
+# new.hinoida.com — staging: do not index
+User-agent: *
+Disallow: /

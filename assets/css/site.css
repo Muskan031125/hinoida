@@ -1,0 +1,2165 @@
+/* =====================================================================
+   HiNoida — shared page design (loaded on every page, after theme.css
+   and contrast.css). Gives every inner page the same structure:
+   image-led dark hero  →  card toolbar  →  content cards.
+   Page-specific files (listing.css, category.css) build on this.
+   ===================================================================== */
+
+/* ---------- 1. PAGE HERO (every inner page uses .det-hero) ---------- */
+.det-hero{position:relative;overflow:hidden;padding:56px 0 46px!important;text-align:left!important;
+  background:#0b1428!important;border-bottom:0!important;color:#fff}
+.det-hero::before{content:"";position:absolute;inset:0;background-image:var(--dethero,url(../img/noida.jpg));background-size:cover;
+  background-position:center;opacity:.5!important;filter:none!important;transform:scale(1.03)}
+.det-hero::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(ellipse 60% 90% at 100% 0%,rgba(61,110,224,.35),transparent 70%),
+  linear-gradient(90deg,rgba(8,18,44,.96) 0%,rgba(10,30,80,.86) 50%,rgba(12,40,110,.6) 100%)!important}
+.det-hero>.wrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start!important;text-align:left}
+
+.det-crumb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px!important;color:rgba(255,255,255,.62)!important;margin:0 0 14px!important}
+.det-crumb a{color:rgba(255,255,255,.75)!important;text-decoration:none}
+.det-crumb a:hover{color:#fff!important}
+.det-crumb span{color:#fff!important;font-weight:600}
+
+.det-name{color:#fff!important;font-size:42px!important;font-weight:800!important;letter-spacing:-.03em!important;line-height:1.1!important;
+  margin:0!important;max-width:24ch!important;text-align:left!important}
+.det-name i{color:#a9c3ff;font-size:.8em;margin-right:6px}
+.det-tagline,.det-hero .wrap>p{color:rgba(255,255,255,.8)!important;font-size:15.5px!important;margin:10px 0 0!important;max-width:62ch;text-align:left;opacity:1!important}
+.det-hero .wrap>p a{color:#a9c3ff!important;font-weight:600}
+
+.det-meta{justify-content:flex-start!important;gap:8px!important;margin-top:16px!important}
+.det-meta .dm,.det-meta .dm-loc{display:inline-flex;align-items:center;gap:6px;padding:7px 13px!important;border-radius:999px!important;font-size:12.5px!important}
+.det-meta .dm-loc{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#fff!important;font-weight:600!important}
+.det-meta .dm-loc i{color:#9fb8ee!important}
+
+/* the first content block sits close to the hero */
+.det-hero+.sec,.det-hero+section{padding-top:34px!important}
+
+/* ---------- 2. SECTION HEADINGS (inner pages: left, bold, tidy) ---------- */
+body:not(.is-home) .sec-head{text-align:left!important;margin-bottom:20px!important}
+body:not(.is-home) .sec-head h2{font-size:24px!important;font-weight:800!important;letter-spacing:-.02em!important;color:var(--ink);
+  display:flex;align-items:center;gap:12px;margin:0!important}
+body:not(.is-home) .sec-head h2::before{content:"";width:5px;height:24px;border-radius:4px;flex:none;
+  background:linear-gradient(180deg,#3d6ee0,var(--blue))}
+body:not(.is-home) .sec-head h2::after{display:none!important}
+body:not(.is-home) .sec-head p{margin:6px 0 0 17px!important}
+body:not(.is-home) .sec-head[data-eyebrow]::before{display:none}
+
+/* ---------- 3. SEARCH BAR ---------- */
+.pagesearch{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:6px 6px 6px 16px;
+  box-shadow:0 10px 28px -18px rgba(16,26,44,.35);margin:0 0 16px!important}
+.pagesearch input{flex:1;min-width:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;
+  font-size:15px;font-family:inherit;color:var(--ink);padding:11px 4px!important}
+.pagesearch button{border:0;border-radius:12px!important;padding:12px 24px!important;font-weight:700;font-size:14px;cursor:pointer;
+  color:#fff;background:linear-gradient(135deg,#2a63e6,var(--blue))!important;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.pagesearch button:hover{filter:brightness(1.1)}
+
+/* ---------- 4. FILTER TOOLBAR (search, area, place, property…) ---------- */
+.filterbar{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px!important;align-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:18px;
+  box-shadow:0 1px 2px rgba(16,26,44,.04),0 12px 30px -20px rgba(16,26,44,.3)}
+.filterbar select,.filterbar .fb-check,.filterbar input[type=text],.filterbar input[type=number],.filterbar input[type=search]{
+  width:100%;height:44px;border:1px solid var(--line)!important;border-radius:12px!important;background-color:#f7f9fc!important;
+  font-size:13.5px!important;font-weight:600;color:var(--ink);font-family:inherit;padding:0 14px!important;min-height:0!important;
+  transition:border-color .2s,background-color .2s,box-shadow .2s}
+.filterbar select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:34px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237c8aa3' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;background-position:right 13px center!important}
+.filterbar select:hover,.filterbar .fb-check:hover{border-color:#c6d5f0!important;background-color:#fff!important}
+.filterbar select:focus,.filterbar input:focus{outline:0;border-color:var(--blue)!important;background-color:#fff!important;box-shadow:0 0 0 3px rgba(23,65,166,.12)}
+.filterbar .fb-check{display:inline-flex!important;align-items:center;gap:9px;cursor:pointer}
+.filterbar .fb-check input{width:17px;height:17px;accent-color:var(--blue);margin:0}
+.filterbar button[type=submit]{height:44px;border:0;border-radius:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a63e6,var(--blue));cursor:pointer;font-family:inherit}
+.fb-clear{justify-self:start;display:inline-flex;align-items:center;height:44px;padding:0 6px;font-weight:700!important}
+
+/* results bar + grid/list switch */
+.resbar{display:flex;justify-content:flex-end;align-items:center;margin:0 0 14px}
+.viewtoggle{display:inline-flex!important;background:#eef1f6;border-radius:12px;padding:4px;gap:2px;border:0!important}
+.viewtoggle button{border:0!important;background:transparent!important;border-radius:9px!important;padding:8px 14px!important;font-weight:700;font-size:13px;
+  font-family:inherit;color:var(--muted)!important;cursor:pointer;display:inline-flex;align-items:center;gap:7px;box-shadow:none!important}
+.viewtoggle button.on{background:#fff!important;color:var(--blue)!important;box-shadow:0 2px 6px rgba(16,26,44,.1)!important}
+
+/* ---------- 5. CONTENT CARDS ---------- */
+/* FAQ accordions everywhere */
+.sec details{border:1px solid var(--line)!important;border-radius:14px!important;background:#fff!important;margin-bottom:10px;
+  transition:box-shadow .2s,border-color .2s}
+.sec details[open]{border-color:#d6e1f5!important;box-shadow:0 10px 26px -16px rgba(16,26,44,.35)}
+.sec details summary{position:relative;padding-right:30px!important;list-style:none!important;cursor:pointer}
+.sec details summary::-webkit-details-marker{display:none}
+.sec details summary::after{content:"+";position:absolute;right:2px;top:50%;transform:translateY(-50%);font-size:20px;font-weight:500;color:var(--blue);transition:transform .2s}
+.sec details[open] summary::after{content:"–"}
+
+/* form fields on simple pages (contact, list business, claim…) */
+.sec form input[type=text],.sec form input[type=email],.sec form input[type=tel],.sec form input[type=password],
+.sec form input[type=number],.sec form select,.sec form textarea{border-radius:12px!important;border:1px solid var(--line)!important;
+  background:#f9fafc;transition:border-color .2s,box-shadow .2s,background .2s}
+.sec form input:focus,.sec form select:focus,.sec form textarea:focus{outline:0;border-color:var(--blue)!important;background:#fff;box-shadow:0 0 0 3px rgba(23,65,166,.12)}
+
+/* ---------- 6. MOBILE ---------- */
+@media(max-width:720px){
+  .det-hero{padding:34px 0 28px!important}
+  .det-name{font-size:28px!important;max-width:100%!important}
+  .det-tagline,.det-hero .wrap>p{font-size:14px!important}
+  .det-hero+.sec,.det-hero+section{padding-top:22px!important}
+  body:not(.is-home) .sec-head h2{font-size:20px!important}
+  .pagesearch{padding:5px 5px 5px 12px;border-radius:14px}
+  .pagesearch button{padding:11px 14px!important}
+  .filterbar{grid-template-columns:1fr 1fr;gap:8px!important;padding:12px;border-radius:16px}
+  .filterbar select,.filterbar .fb-check{height:42px;font-size:13px!important;padding-left:12px!important}
+}
+
+/* =====================================================================
+   7. TWO-COLUMN BANNER (frontend/_pagehero.php) — same look as listings
+   ===================================================================== */
+.ph-hero{padding:40px 0 42px!important}
+.ph-hero::before{opacity:.42!important;filter:blur(3px) saturate(1.1)!important;transform:scale(1.08)}
+.ph-hero::after{background:
+  radial-gradient(ellipse 55% 80% at 85% 20%,rgba(61,110,224,.32),transparent 70%),
+  linear-gradient(90deg,rgba(8,16,36,.96) 0%,rgba(9,22,52,.88) 55%,rgba(10,28,70,.72) 100%)!important}
+.ph-hero>.wrap{display:block!important;width:100%}
+.lp-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:44px;align-items:stretch}
+.lp-hero-main{min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+.ph-hero .det-name{font-size:42px!important;max-width:none!important}
+.ph-hero .det-name span{font-weight:500;color:#a9c3ff}
+.ph-hero .det-tagline{margin-top:10px!important;font-size:15px!important;line-height:1.55;color:rgba(255,255,255,.76)!important;max-width:58ch}
+.ph-hero .det-meta{margin-top:14px!important;gap:8px!important}
+.ph-chip.ph-ok{background:#0b8a3d!important;border-color:#0b8a3d!important}
+.ph-chip.ph-hot{background:#e0446b!important;border-color:#e0446b!important}
+.ph-chip.ph-blue{background:var(--blue)!important;border-color:var(--blue)!important}
+.ph-chip.ph-ok i,.ph-chip.ph-hot i,.ph-chip.ph-blue i{color:#fff!important}
+
+/* quick facts strip */
+.lp-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:20px;width:100%;max-width:640px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden}
+.lp-facts.s1{grid-template-columns:1fr}.lp-facts.s2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.lp-fact{display:flex;align-items:center;gap:11px;padding:12px 14px;background:rgba(9,20,48,.72);min-width:0}
+.lp-fact>i{width:34px;height:34px;flex:none;border-radius:10px;background:rgba(120,160,255,.16);color:#a9c3ff;display:flex;align-items:center;justify-content:center;font-size:13px}
+.lp-fact>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.lp-fact small{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.lp-fact b{font-size:13.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-fact-wide{grid-column:1/-1}
+
+/* buttons + links */
+.lp-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.lp-act{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;font-weight:700;font-size:14px;
+  text-decoration:none;cursor:pointer;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:#fff;
+  font-family:inherit;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,background .2s}
+.lp-act:hover{transform:translateY(-2px);background:rgba(255,255,255,.2);color:#fff}
+.lp-act.primary{background:#fff;color:#0d1830;border-color:#fff}
+.lp-act.primary:hover{background:#eef3fc;color:#0d1830}
+.lp-act.wa{background:#1faa59;border-color:#1faa59}
+.lp-act i{font-size:14px}
+.lp-links{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);width:100%;max-width:640px}
+.lp-links a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:rgba(255,255,255,.72);text-decoration:none}
+.lp-links a i{font-size:12.5px;color:#8fb0f5}
+.lp-links a:hover{color:#fff}
+
+/* search box / chips placed inside the banner */
+.ph-hero .ph-search{display:flex;align-items:center;gap:6px;margin-top:20px;width:100%;max-width:640px;background:#fff;border-radius:14px;
+  padding:5px 5px 5px 16px;box-shadow:0 18px 40px -16px rgba(0,0,0,.55)}
+.ph-hero .ph-search>i{color:var(--muted);font-size:14px}
+.ph-hero .ph-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:15px;font-family:inherit;color:var(--ink);padding:11px 6px}
+.ph-hero .ph-search button{border:0;border-radius:10px;padding:11px 22px;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,#2a63e6,var(--blue))}
+.ph-types{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;width:100%;max-width:640px}
+.ph-types a{display:inline-flex;align-items:center;gap:8px;padding:7px 8px 7px 14px;border-radius:999px;font-size:13px;font-weight:600;color:#fff;
+  text-decoration:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);transition:background .2s,color .2s}
+.ph-types a em{font-style:normal;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.18)}
+.ph-types a:hover{background:#fff;color:#0d1830}
+
+/* photo slider */
+.lp-slider{position:relative;min-height:330px;border-radius:22px;overflow:hidden;background:#1a2440;
+  box-shadow:0 30px 60px -24px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.14)}
+.lp-slider .lp-slides{display:flex;flex-wrap:nowrap;height:100%;width:100%;transition:transform .8s cubic-bezier(.65,0,.35,1);will-change:transform}
+.ph-slider .lp-slides{position:absolute;inset:0}
+.lp-slider .ph-slide{flex:0 0 100%;height:100%;display:block;position:relative;overflow:hidden;text-decoration:none}
+.lp-slider .ph-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.lp-slider::after{content:"";position:absolute;inset:auto 0 0 0;height:110px;pointer-events:none;z-index:1;background:linear-gradient(0deg,rgba(6,12,28,.8),transparent)}
+.ph-cap{position:absolute;left:16px;bottom:44px;z-index:2;color:#fff;font-size:15px;font-weight:800;letter-spacing:-.01em;
+  text-shadow:0 2px 10px rgba(0,0,0,.5);display:inline-flex;align-items:center;gap:8px;max-width:calc(100% - 32px)}
+.ph-cap i{font-size:12px;opacity:.8}
+.lp-sl-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;
+  background:rgba(255,255,255,.9);color:#0d1830;font-size:13px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(0,0,0,.3);opacity:0;transition:opacity .25s}
+.lp-sl-prev{left:12px}.lp-sl-next{right:12px}
+.lp-slider:hover .lp-sl-btn{opacity:1}
+.lp-sl-foot{position:absolute;left:16px;right:16px;bottom:14px;z-index:3;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.lp-dots{display:flex;gap:6px;pointer-events:auto}
+.lp-dots button{width:8px;height:8px;border-radius:999px;border:0;padding:0;cursor:pointer;background:rgba(255,255,255,.5);transition:width .3s,background .3s}
+.lp-dots button.on{width:24px;background:#fff}
+.lp-sl-count{font-size:12px;font-weight:700;color:#fff;background:rgba(10,20,42,.6);padding:5px 10px;border-radius:999px;display:inline-flex;gap:6px;align-items:center}
+.lp-sl-bar{position:absolute;left:0;right:0;top:0;height:3px;z-index:3;background:rgba(255,255,255,.15)}
+.lp-sl-bar i{display:block;height:100%;width:0;background:#fff}
+
+@media(max-width:1020px){
+  .lp-hero-grid{grid-template-columns:minmax(0,1fr) 340px;gap:26px}
+  .lp-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lp-facts.s3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lp-facts.s3 .lp-fact:nth-child(3):not(.lp-fact-wide){grid-column:1/-1}
+}
+@media(max-width:900px){
+  .lp-hero-grid{grid-template-columns:1fr;gap:18px}
+  .lp-slider{min-height:220px}
+  .lp-sl-btn{opacity:1;width:32px;height:32px}
+}
+@media(max-width:720px){
+  .ph-hero{padding:22px 0 22px!important}
+  .ph-hero .det-name{font-size:26px!important}
+  .ph-hero .det-tagline{font-size:13.5px!important}
+  .lp-facts{margin-top:14px}
+  .lp-fact{padding:10px 11px;gap:9px}
+  .lp-fact>i{width:28px;height:28px;font-size:12px}
+  .lp-act{padding:9px 12px;font-size:12.5px;flex:1 1 auto;justify-content:center}
+  .lp-links{gap:6px 16px;margin-top:12px;padding-top:12px}
+  .ph-types{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .ph-types a{flex:none;white-space:nowrap}
+}
+
+/* =====================================================================
+   8. LISTING CARDS — clean photo + white body (grid and list views)
+   Replaces the old "text over a dark photo" style, which made text blurry
+   and put a heavy black band over list-view cards.
+   ===================================================================== */
+.lgrid .lcard.rich{height:auto!important;display:flex!important;flex-direction:column;background:#fff!important;
+  border:1px solid #e6e9f0!important;border-radius:18px!important;overflow:hidden;
+  box-shadow:0 1px 2px rgba(16,26,44,.04),0 10px 26px -18px rgba(16,26,44,.3)!important;transition:transform .25s,box-shadow .25s,border-color .25s}
+.lgrid .lcard.rich:hover{transform:translateY(-3px)!important;border-color:#d3ddef!important;
+  box-shadow:0 2px 4px rgba(16,26,44,.05),0 22px 40px -22px rgba(23,65,166,.45)!important}
+.lgrid .lcard.rich .ph{position:relative!important;inset:auto!important;height:190px!important;flex:none;overflow:hidden;display:block}
+.lgrid .lcard.rich .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.lgrid .lcard.rich:hover .ph img{transform:scale(1.05)}
+.lgrid .lcard.rich .ph::after{background:linear-gradient(to top,rgba(6,14,30,.38) 0%,rgba(6,14,30,0) 42%)!important}
+.lgrid .lcard.rich .bd{position:static!important;background:#fff!important;padding:14px 16px 16px!important;
+  display:flex!important;flex-direction:column;gap:8px;flex:1;min-width:0}
+.lgrid .lcard.rich .bd::before,.lgrid .lcard.rich .bd::after{display:none!important}
+.lgrid .lcard.rich .bd h3,.lgrid .lcard.rich .bd b{color:var(--ink)!important;text-shadow:none!important;font-size:16.5px!important;
+  font-weight:800!important;letter-spacing:-.01em;line-height:1.3!important;margin:0!important;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lgrid .lcard.rich .bd .loc{color:var(--muted)!important;text-shadow:none!important;font-size:13px!important;line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.lgrid .lcard.rich .bd .loc i{color:#9fb0cc!important;margin-right:5px}
+.lgrid .lcard.rich .lc-meta{display:flex;flex-wrap:wrap;gap:6px!important;color:var(--body)!important;text-shadow:none!important}
+.lgrid .lcard.rich .lc-meta>span{display:inline-flex;align-items:center;gap:6px;background:#f2f5fa;border-radius:999px;padding:4px 10px;
+  font-size:12px;font-weight:600;color:var(--body)}
+.lgrid .lcard.rich .lc-meta i{color:var(--blue)!important;margin:0!important}
+.lgrid .lcard.rich .lc-actions{margin-top:auto;padding-top:4px}
+.lgrid .lcard.rich .lc-btn{background:#eef3fc!important;color:var(--blue)!important;border:0!important;backdrop-filter:none!important;
+  border-radius:11px!important;padding:10px 12px!important;font-size:13px!important;font-weight:700!important;text-shadow:none!important;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:background .2s,color .2s}
+.lgrid .lcard.rich:hover .lc-btn{background:var(--blue)!important;color:#fff!important}
+
+/* badges on the photo: featured top-left, heart top-right, open bottom-left, rating bottom-right */
+.lgrid .lcard.rich .lc-feat{top:12px!important;left:12px!important;bottom:auto!important;right:auto!important}
+.lgrid .lcard.rich .lc-open{top:auto!important;bottom:12px!important;left:12px!important;right:auto!important;font-size:11.5px!important;
+  padding:4px 10px!important;box-shadow:0 4px 12px rgba(0,0,0,.25)!important}
+.lgrid .lcard.rich .rate{top:auto!important;bottom:12px!important;right:12px!important;left:auto!important;background:#fff!important;
+  color:var(--ink)!important;font-size:12px!important;padding:4px 9px!important;border-radius:999px!important;box-shadow:0 4px 12px rgba(0,0,0,.2)!important}
+.lgrid .lcard.rich .rate i{color:#f5a623!important}
+.lgrid .lcard.rich .cardheart{top:12px;right:12px;width:32px;height:32px;font-size:14px}
+
+/* ---- LIST VIEW: photo left, details right ---- */
+.lgrid.aslist{display:flex!important;flex-direction:column;gap:14px!important}
+.lgrid.aslist .lcard.rich{flex-direction:row!important;border:1px solid #e6e9f0!important;border-radius:18px!important;min-height:176px}
+.lgrid.aslist .lcard.rich .ph{flex:0 0 250px!important;width:250px;height:auto!important;min-height:176px}
+.lgrid.aslist .lcard.rich .bd{padding:18px 22px!important;justify-content:center;gap:9px}
+.lgrid.aslist .lcard.rich .bd h3,.lgrid.aslist .lcard.rich .bd b{font-size:18.5px!important;-webkit-line-clamp:1}
+.lgrid.aslist .lcard.rich .bd .loc{font-size:13.5px!important;-webkit-line-clamp:2}
+.lgrid.aslist .lcard.rich .lc-actions{margin-top:4px;display:flex}
+.lgrid.aslist .lcard.rich .lc-btn{flex:none!important;padding:9px 18px!important}
+.lgrid.aslist .lcard.rich .lc-feat{display:inline-flex!important}
+
+@media(max-width:640px){
+  .lgrid .lcard.rich .ph{height:170px!important}
+  .lgrid.aslist .lcard.rich{min-height:0}
+  .lgrid.aslist .lcard.rich .ph{flex-basis:120px!important;width:120px;min-height:130px}
+  .lgrid.aslist .lcard.rich .bd{padding:12px 13px!important;gap:6px}
+  .lgrid.aslist .lcard.rich .bd h3,.lgrid.aslist .lcard.rich .bd b{font-size:15.5px!important}
+  .lgrid.aslist .lcard.rich .lc-meta>span{font-size:11px;padding:3px 8px}
+  .lgrid.aslist .lcard.rich .lc-btn{padding:7px 12px!important;font-size:12px!important}
+  .lgrid.aslist .lcard.rich .rate{bottom:8px!important;right:8px!important}
+  .lgrid.aslist .lcard.rich .lc-open{display:none!important}
+}
+.lgrid .lcard.rich .lc-btn{box-shadow:none!important}
+@media(min-width:900px){
+  .lgrid.aslist .lcard.rich{position:relative}
+  .lgrid.aslist .lcard.rich .bd{padding-right:200px!important}
+  .lgrid.aslist .lcard.rich .lc-actions{position:absolute;right:22px;top:50%;transform:translateY(-50%);margin:0;padding:0}
+  .lgrid.aslist .lcard.rich .lc-btn{padding:11px 20px!important}
+}
+/* === CARD ANIMATION === */
+@keyframes cardUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lgrid .lcard.rich{
+  animation: cardUp .6s ease both;
+}
+
+.lgrid .lcard.rich:nth-child(2){ animation-delay: .08s; }
+.lgrid .lcard.rich:nth-child(3){ animation-delay: .16s; }
+.lgrid .lcard.rich:nth-child(4){ animation-delay: .24s; }
+.lgrid .lcard.rich:nth-child(5){ animation-delay: .32s; }
+.lgrid .lcard.rich:nth-child(6){ animation-delay: .40s; }
+/* === CONTACT BOX: sticky + scrolls inside === */
+.lpage > aside{
+  position: sticky;
+  top: 120px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* thin, soft scrollbar */
+.lpage > aside::-webkit-scrollbar{ width: 6px; }
+.lpage > aside::-webkit-scrollbar-thumb{
+  background: #d3dbe8;
+  border-radius: 10px;
+}
+/* === SLIDER: drag with the mouse (banner + business page) === */
+.ph-slider,#lpSlider{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.ph-slider.dragging,#lpSlider.dragging{cursor:grabbing}
+.ph-slider img,#lpSlider img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+.ph-slider a,#lpSlider a{-webkit-user-drag:none;user-drag:none}
+
+/* === content starts close to the banner (the banner's slider script sits between them) === */
+.ph-hero+script+.sec,.ph-hero+script+section,.ph-hero+script+div,.ph-hero+script+article{padding-top:24px!important}
+@media(max-width:720px){.ph-hero+script+.sec,.ph-hero+script+section,.ph-hero+script+div,.ph-hero+script+article{padding-top:16px!important}}
+
+/* === SLIDER: no arrow buttons (drag, swipe, dots and auto-slide remain) === */
+.lp-sl-btn{display:none!important}
+
+/* === LIST VIEW: every card the same height (photo cropped to fit) === */
+.lgrid.aslist .lcard.rich{height:180px!important;min-height:0!important}
+.lgrid.aslist .lcard.rich .ph{flex:0 0 260px!important;width:260px!important;height:100%!important;min-height:0!important;position:relative!important}
+.lgrid.aslist .lcard.rich .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lgrid.aslist .lcard.rich .bd{overflow:hidden}
+/* grid view: photo box always the same size too */
+.lgrid:not(.aslist) .lcard.rich .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+@media(max-width:640px){
+  .lgrid.aslist .lcard.rich{height:140px!important}
+  .lgrid.aslist .lcard.rich .ph{flex-basis:120px!important;width:120px!important}
+}
+
+/* =====================================================================
+   9. HOME — "Explore categories" tiles: bigger, cleaner, with motion
+   ===================================================================== */
+.hcatgrid{gap:20px!important}
+.hcat{height:240px!important;padding:20px!important;border-radius:20px!important;background:#0d1830!important;isolation:isolate;
+  box-shadow:0 1px 2px rgba(16,26,44,.05),0 14px 30px -16px rgba(16,26,44,.5)!important;
+  transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s!important}
+.hcat-ph{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;
+  transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.hcat::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(8,16,36,.10) 0%,rgba(8,16,36,.18) 40%,rgba(8,16,36,.86) 100%)}
+.hcat::after{display:none!important}
+.hcat:hover{transform:translateY(-6px)!important;box-shadow:0 2px 4px rgba(16,26,44,.06),0 28px 44px -22px rgba(23,65,166,.6)!important}
+.hcat:hover .hcat-ph{transform:scale(1.08)}
+.hcat-ic{top:18px!important;left:18px!important;width:46px!important;height:46px!important;border-radius:14px!important;font-size:18px!important;
+  background:rgba(255,255,255,.96)!important;color:var(--blue)!important;border:0!important;
+  box-shadow:0 8px 20px -8px rgba(0,0,0,.45)}
+.hcat:hover .hcat-ic{background:var(--blue)!important;color:#fff!important}
+.hcat-go{position:absolute;right:18px;bottom:20px;z-index:2;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:14px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transform:translateX(-6px);opacity:.85;transition:all .35s cubic-bezier(.2,.7,.3,1)}
+.hcat:hover .hcat-go{background:#fff;color:var(--blue);transform:none;opacity:1}
+.hcat-bd{padding-right:54px;gap:0!important}
+.hcat-bd b{font-size:20px!important;font-weight:800!important;letter-spacing:-.02em!important;text-shadow:0 2px 12px rgba(0,0,0,.45)!important}
+.hcat-bd .hcat-n{display:inline-flex;align-self:flex-start;margin-top:8px;padding:4px 11px;border-radius:999px;font-size:12px!important;font-weight:700!important;
+  color:#fff!important;text-shadow:none!important;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+@media(max-width:1000px){ .hcat{height:210px!important} }
+@media(max-width:760px){
+  .hcatgrid{gap:12px!important}
+  .hcat{height:170px!important;padding:14px!important;border-radius:16px!important}
+  .hcat-ic{top:12px!important;left:12px!important;width:36px!important;height:36px!important;font-size:14px!important;border-radius:11px!important}
+  .hcat-go{display:none}
+  .hcat-bd{padding-right:0}
+  .hcat-bd b{font-size:16px!important}
+  .hcat-bd .hcat-n{font-size:11px!important;padding:3px 9px;margin-top:6px}
+}
+
+/* =====================================================================
+   10. EVERY OTHER CARD — same polish as the category tiles:
+   rounder corners, soft shadow, lift + blue glow on hover, photo zoom,
+   clean readable text, arrow that slides in.
+   ===================================================================== */
+:root{--card-r:18px;--card-sh:0 1px 2px rgba(16,26,44,.05),0 12px 28px -16px rgba(16,26,44,.32);
+  --card-sh-h:0 2px 4px rgba(16,26,44,.06),0 26px 44px -22px rgba(23,65,166,.55);
+  --card-ease:cubic-bezier(.2,.7,.3,1)}
+
+/* ---- A. business cards in sideways rows (Similar / Also nearby / Recently viewed) ---- */
+.lscroll .lcard.rich{height:auto!important;display:flex!important;flex-direction:column;background:#fff!important;
+  border:1px solid #e6e9f0!important;border-radius:var(--card-r)!important;overflow:hidden;box-shadow:var(--card-sh)!important;
+  transition:transform .35s var(--card-ease),box-shadow .35s!important}
+.lscroll .lcard.rich:hover{transform:translateY(-5px)!important;box-shadow:var(--card-sh-h)!important}
+.lscroll .lcard.rich .ph{position:relative!important;inset:auto!important;height:170px!important;flex:none;overflow:hidden;display:block}
+.lscroll .lcard.rich .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s var(--card-ease)}
+.lscroll .lcard.rich:hover .ph img{transform:scale(1.07)}
+.lscroll .lcard.rich .ph::after{background:linear-gradient(to top,rgba(6,14,30,.38),rgba(6,14,30,0) 42%)!important}
+.lscroll .lcard.rich .bd{position:static!important;background:#fff!important;padding:13px 15px 15px!important;display:flex!important;flex-direction:column;gap:7px;flex:1}
+.lscroll .lcard.rich .bd::before,.lscroll .lcard.rich .bd::after{display:none!important}
+.lscroll .lcard.rich .bd h3,.lscroll .lcard.rich .bd b{color:var(--ink)!important;text-shadow:none!important;font-size:15.5px!important;font-weight:800!important;
+  line-height:1.3!important;margin:0!important;min-height:2.6em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lscroll .lcard.rich .bd .loc{color:var(--muted)!important;text-shadow:none!important;font-size:12.5px!important;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.lscroll .lcard.rich .bd .loc i{color:#9fb0cc!important}
+.lscroll .lcard.rich .lc-meta{color:var(--body)!important;text-shadow:none!important;gap:6px!important;min-height:24px}
+.lscroll .lcard.rich .lc-meta>span{background:#f2f5fa;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:600}
+.lscroll .lcard.rich .lc-meta i{color:var(--blue)!important}
+.lscroll .lcard.rich .lc-actions{margin-top:auto}
+.lscroll .lcard.rich .lc-btn{background:#eef3fc!important;color:var(--blue)!important;border:0!important;backdrop-filter:none!important;border-radius:10px!important;
+  padding:9px!important;font-size:12.5px!important;font-weight:700!important;text-shadow:none!important;box-shadow:none!important}
+.lscroll .lcard.rich:hover .lc-btn{background:var(--blue)!important;color:#fff!important}
+.lscroll .lcard.rich .lc-open{top:auto!important;bottom:10px!important;left:10px!important;right:auto!important}
+.lscroll .lcard.rich .rate{top:auto!important;bottom:10px!important;right:10px!important;left:auto!important;background:#fff!important;color:var(--ink)!important;border-radius:999px!important}
+.lscroll .lcard.rich .rate i{color:#f5a623!important}
+
+/* ---- B. news / event / offer cards (plain .lcard) ---- */
+.lcard:not(.rich){height:auto!important;display:flex!important;flex-direction:column;background:#fff!important;
+  border:1px solid #e6e9f0!important;border-radius:var(--card-r)!important;overflow:hidden;box-shadow:var(--card-sh)!important;
+  transition:transform .35s var(--card-ease),box-shadow .35s!important}
+.lcard:not(.rich):hover{transform:translateY(-5px)!important;box-shadow:var(--card-sh-h)!important}
+.lcard:not(.rich) .ph{position:relative!important;inset:auto!important;display:block;height:190px!important;flex:none;overflow:hidden}
+.lcard:not(.rich) .ph::after{display:none!important}
+.lcard:not(.rich) .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s var(--card-ease)}
+.lcard:not(.rich):hover .ph img{transform:scale(1.07)}
+.lcard:not(.rich) .rate{top:12px!important;left:12px!important;bottom:auto!important;right:auto!important;border-radius:999px!important;
+  padding:5px 11px!important;font-size:12px!important;box-shadow:0 4px 12px rgba(0,0,0,.25)!important}
+.lcard:not(.rich) .bd{position:relative!important;inset:auto!important;background:#fff!important;padding:14px 56px 16px 16px!important;flex:1;display:flex!important;flex-direction:column;gap:6px}
+.lcard:not(.rich) .bd b,.lcard:not(.rich) .bd h3{color:var(--ink)!important;text-shadow:none!important;font-size:16px!important;font-weight:800!important;line-height:1.32!important;
+  margin:0!important;min-height:2.64em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lcard:not(.rich) .bd .loc{color:var(--muted)!important;text-shadow:none!important;font-size:13px!important;line-height:1.5!important;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lcard:not(.rich) .bd .loc i{color:#9fb0cc!important}
+.lcard:not(.rich) .bd::after{content:"\f061";font-family:"Font Awesome 6 Free";font-weight:900;position:absolute;right:16px;bottom:16px;
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;
+  background:#eef3fc;color:var(--blue);transform:translateX(-4px);transition:all .35s var(--card-ease)}
+.lcard:not(.rich):hover .bd::after{background:var(--blue);color:#fff;transform:none}
+.lcard[onclick] .bd::after{display:none}
+
+/* ---- C. area / group tiles (.grpcard) ---- */
+.grpcard:not(.grpimg){background:#fff!important;border:1px solid #e6e9f0!important;border-radius:var(--card-r)!important;
+  box-shadow:var(--card-sh)!important;backdrop-filter:none!important;padding:66px 18px 18px!important;min-height:140px!important;
+  transition:transform .35s var(--card-ease),box-shadow .35s,border-color .35s!important}
+.grpcard:hover{transform:translateY(-5px)!important;box-shadow:var(--card-sh-h)!important;border-color:#d3ddef!important}
+.grpcard .ic{background:linear-gradient(135deg,#1741a6,#3d6ee0)!important;border-radius:13px!important;width:42px!important;height:42px!important;
+  box-shadow:0 8px 18px -8px rgba(23,65,166,.6)}
+.grpcard b{font-size:16.5px!important;letter-spacing:-.01em}
+.grpcard .go{opacity:1!important;transform:translateX(-4px)!important;background:#eef3fc!important;color:var(--blue)!important;border:0!important;
+  width:32px!important;height:32px!important;transition:all .35s var(--card-ease)!important}
+.grpcard:hover .go{background:var(--blue)!important;color:#fff!important;transform:none!important}
+.grpcard.grpimg{border-radius:var(--card-r)!important;box-shadow:var(--card-sh)!important}
+.grpcard.grpimg .go{background:rgba(255,255,255,.18)!important;color:#fff!important}
+.grpcard.grpimg:hover .go{background:#fff!important;color:var(--blue)!important}
+
+/* ---- D. category blocks on /categories ---- */
+.catblock{border-radius:var(--card-r)!important;border:1px solid #e6e9f0!important;box-shadow:var(--card-sh)!important;
+  transition:transform .35s var(--card-ease),box-shadow .35s!important}
+.catblock:hover{transform:translateY(-4px)!important;box-shadow:var(--card-sh-h)!important}
+.catblock-head{padding:16px 18px!important;font-size:16px!important}
+.catblock-head span i{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.2);display:inline-flex;align-items:center;justify-content:center;margin-right:6px}
+.catblock-list a{transition:background .2s,color .2s,padding-left .25s var(--card-ease)}
+.catblock-list a:hover{padding-left:24px}
+.catblock-list a:hover .catblock-go{transform:translateX(3px)}
+.catblock-go{transition:transform .25s var(--card-ease),color .2s}
+
+/* ---- E. blog cards ---- */
+.bcard{border-radius:var(--card-r)!important;border:1px solid #e6e9f0!important;box-shadow:var(--card-sh)!important;overflow:hidden;
+  transition:transform .35s var(--card-ease),box-shadow .35s!important}
+.bcard:hover{transform:translateY(-5px)!important;box-shadow:var(--card-sh-h)!important}
+.bcard-ph img{transition:transform .7s var(--card-ease)!important}
+.bcard:hover .bcard-ph img{transform:scale(1.07)!important}
+.bcard-bd h3{font-weight:800!important;letter-spacing:-.01em}
+.bcard:hover .bcard-bd h3{color:var(--blue)}
+
+/* ---- F. small screens ---- */
+@media(max-width:640px){
+  .lcard:not(.rich) .ph{height:160px!important}
+  .lscroll .lcard.rich .ph{height:150px!important}
+  .grpcard:not(.grpimg){padding:60px 14px 14px!important;min-height:124px!important}
+}
+
+/* =====================================================================
+   11. LIVELIER LISTING CARDS (grid + sideways rows)
+   ===================================================================== */
+/* 1. "View details" becomes a quiet link under a thin line, not a big box */
+:is(.lgrid,.lscroll) .lcard.rich .lc-actions{border-top:1px solid #eef1f6;padding-top:12px!important}
+:is(.lgrid,.lscroll) .lcard.rich .lc-btn,
+:is(.lgrid,.lscroll) .lcard.rich:hover .lc-btn{background:none!important;color:var(--blue)!important;padding:0!important;
+  justify-content:flex-start!important;font-size:13.5px!important}
+:is(.lgrid,.lscroll) .lcard.rich .lc-btn i{transition:transform .3s}
+:is(.lgrid,.lscroll) .lcard.rich:hover .lc-btn i{transform:translateX(5px)}
+:is(.lgrid,.lscroll) .lcard.rich:hover .bd h3{color:var(--blue)!important}
+
+/* 2. blue accent line that grows across the top on hover */
+:is(.lgrid,.lscroll) .lcard.rich::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;z-index:5;
+  background:linear-gradient(90deg,#1741a6,#3d6ee0);transform:scaleX(0);transform-origin:left;transition:transform .45s ease}
+:is(.lgrid,.lscroll) .lcard.rich:hover::before{transform:scaleX(1)}
+
+/* 3. pulsing green "live" dot on Open now */
+.lc-open.is-open::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#7CFFB2;
+  margin-right:6px;vertical-align:1px;animation:livePulse 1.6s infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(124,255,178,.8)}100%{box-shadow:0 0 0 8px rgba(124,255,178,0)}}
+
+/* 4. a bigger photo — the photo sells the place */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph{height:210px!important}
+@media(max-width:640px){ :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph{height:180px!important} }
+
+/* =====================================================================
+   12. CATEGORIES PAGE — photo blocks, top 5 + "more", search, jump bar
+   ===================================================================== */
+.ct-tools{display:grid;grid-template-columns:1fr 280px;gap:10px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;
+  box-shadow:0 1px 2px rgba(16,26,44,.04),0 12px 30px -20px rgba(16,26,44,.3);margin-bottom:14px}
+.ct-find,.ct-loc{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#f7f9fc;margin:0}
+.ct-find:focus-within,.ct-loc:focus-within{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(23,65,166,.12)}
+.ct-find i,.ct-loc>i{color:var(--muted);font-size:14px}
+.ct-find input{flex:1;min-width:0;border:0!important;outline:0;background:transparent!important;font-size:15px;font-family:inherit;color:var(--ink);box-shadow:none!important;padding:0!important}
+.ct-loc select{flex:1;min-width:0;border:0!important;background:transparent!important;font-size:14px;font-weight:600;font-family:inherit;color:var(--ink);cursor:pointer;outline:0;padding:0!important;box-shadow:none!important}
+.ct-loc .fb-clear{height:auto;font-size:12.5px}
+
+.ct-jump{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 0 14px;margin-bottom:6px}
+.ct-jump::-webkit-scrollbar{display:none}
+.ct-jump a{flex:none;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);
+  font-size:13px;font-weight:600;color:var(--body);text-decoration:none;white-space:nowrap;transition:all .2s}
+.ct-jump a i{color:var(--blue);font-size:12px}
+.ct-jump a:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.ct-jump a:hover i{color:#fff}
+.ct-none{text-align:center;padding:30px 16px;background:#fff;border:1px dashed var(--line);border-radius:16px;color:var(--body)}
+
+.ctgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
+.ctb{background:#fff;border:1px solid #e6e9f0;border-radius:18px;overflow:hidden;scroll-margin-top:90px;
+  box-shadow:0 1px 2px rgba(16,26,44,.05),0 12px 28px -16px rgba(16,26,44,.32);transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s}
+.ctb:hover{transform:translateY(-4px);box-shadow:0 2px 4px rgba(16,26,44,.06),0 26px 44px -22px rgba(23,65,166,.5)}
+.ctb[hidden]{display:none}
+
+/* photo header */
+.ctb-head{position:relative;display:flex;align-items:flex-end;gap:12px;height:150px;padding:16px 18px;color:#fff;text-decoration:none;overflow:hidden;isolation:isolate}
+.ctb-ph{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.ctb-head::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,16,36,.05) 0%,rgba(8,16,36,.25) 40%,rgba(8,16,36,.88) 100%)}
+.ctb:hover .ctb-ph{transform:scale(1.07)}
+.ctb-ic{position:absolute;top:14px;left:16px;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.96);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 8px 20px -8px rgba(0,0,0,.45);transition:all .3s}
+.ctb:hover .ctb-ic{background:var(--blue);color:#fff}
+.ctb-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ctb-t b{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.45)}
+.ctb-t em{font-style:normal;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.85)}
+.ctb-go{width:36px;height:36px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);backdrop-filter:blur(6px);transition:all .35s}
+.ctb:hover .ctb-go{background:#fff;color:var(--blue)}
+
+/* sub-category rows */
+.ctb-list{padding:6px 8px}
+.ctb-row{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:10px;color:var(--ink);text-decoration:none;font-size:14px;font-weight:600;
+  transition:background .2s,color .2s,padding-left .25s}
+.ctb-row span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctb-row em{font-style:normal;font-size:12px;font-weight:700;color:var(--muted);background:#f2f5fa;padding:2px 9px;border-radius:999px}
+.ctb-row i{font-size:11px;color:#c7d2e4;transition:transform .25s,color .2s}
+.ctb-row:hover{background:#eef3fc;color:var(--blue);padding-left:14px}
+.ctb-row:hover em{background:#fff;color:var(--blue)}
+.ctb-row:hover i{color:var(--blue);transform:translateX(3px)}
+.ctb-row+.ctb-row{margin-top:1px}
+.ctb-row.is-more{display:none}
+.ctb.open .ctb-row.is-more,.ctb.searching .ctb-row.is-more{display:flex}
+.ctb-row[hidden]{display:none!important}
+.ctb-more{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 16px);margin:0 8px 10px;padding:9px;border:1px dashed #cfdcf3;
+  border-radius:10px;background:#f7f9fd;color:var(--blue);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;transition:background .2s}
+.ctb-more:hover{background:#eef3fc}
+.ctb-more i{font-size:11px;transition:transform .3s}
+.ctb.open .ctb-more i{transform:rotate(180deg)}
+.ctb.searching .ctb-more{display:none}
+
+@media(max-width:1000px){ .ctgrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:640px){
+  .ct-tools{grid-template-columns:1fr}
+  .ctgrid{grid-template-columns:1fr;gap:14px}
+  .ctb-head{height:120px}
+}
+
+/* =====================================================================
+   13. EVENT PAGE — cards, "what to expect" chips, ticket sidebar
+   ===================================================================== */
+.ev-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;padding-top:24px;padding-bottom:40px;align-items:start}
+.ev-main{min-width:0;display:flex;flex-direction:column;gap:16px}
+.ev-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 22px 22px;
+  box-shadow:0 1px 2px rgba(16,26,44,.04),0 10px 30px -14px rgba(16,26,44,.16)}
+.ev-h{display:flex!important;align-items:center;gap:10px;font-size:18px!important;font-weight:800!important;margin:0 0 14px!important;
+  padding:0 0 12px!important;border-bottom:1px solid var(--line);color:var(--ink)}
+.ev-h::before,.ev-h::after{display:none!important}
+.ev-ic{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;
+  background:linear-gradient(135deg,#1741a6,#3d6ee0);box-shadow:0 6px 14px -6px rgba(23,65,166,.6)}
+.ev-text p{margin:0 0 10px;font-size:15px;line-height:1.7;color:var(--body)}
+.ev-text p:first-child{font-size:16px;font-weight:700;color:var(--ink)}
+.ev-pts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.ev-pts-l{width:100%;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ev-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:#fff7e8;border:1px solid #f6e2b8;
+  color:#8a5a00;font-size:13.5px;font-weight:600}
+.ev-chip i{font-size:11px;color:#f5a623}
+.ev-det{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ev-di{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:#f3f6fc}
+.ev-di.wide{grid-column:1/-1}
+.ev-di>i{width:36px;height:36px;flex:none;border-radius:11px;background:#fff;color:var(--blue);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(16,26,44,.08)}
+.ev-di small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.ev-di b{display:block;font-size:14.5px;color:var(--ink);font-weight:700}
+
+/* ticket card */
+.ev-side{position:sticky;top:90px}
+.ev-ticket{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(16,26,44,.05),0 18px 40px -22px rgba(16,26,44,.4)}
+.ev-date{display:flex;align-items:baseline;justify-content:center;gap:10px;padding:16px;color:#fff;
+  background:linear-gradient(135deg,#1741a6,#3d6ee0);border-bottom:2px dashed rgba(255,255,255,.5)}
+.ev-date .m{font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.ev-date .d{font-size:42px;font-weight:800;line-height:1}
+.ev-date .y{font-size:15px;font-weight:600;opacity:.85}
+.ev-tk-bd{padding:16px 18px 6px}
+.ev-tk-bd h3{margin:0 0 10px;font-size:17px;font-weight:800;color:var(--ink)}
+.ev-tk-bd p{display:flex;gap:10px;align-items:flex-start;margin:0 0 9px;font-size:13.5px;color:var(--body);line-height:1.45}
+.ev-tk-bd p i{width:16px;color:var(--blue);margin-top:3px;text-align:center}
+.ev-ended{color:#8a5a00!important;background:#fff7e8;border-radius:10px;padding:8px 10px}
+.ev-btns{display:flex;flex-direction:column;gap:8px;padding:8px 18px 18px}
+.ev-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;font-weight:700;font-size:14px;font-family:inherit;
+  text-decoration:none;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);transition:background .2s,transform .2s,border-color .2s}
+.ev-btn:hover{background:#f3f6fc;border-color:#cfdcf3;transform:translateY(-1px)}
+.ev-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.ev-btn.primary:hover{filter:brightness(1.1);background:var(--blue)}
+
+@media(max-width:900px){
+  .ev-grid{grid-template-columns:1fr}
+  .ev-side{position:static;order:-1}
+}
+@media(max-width:560px){ .ev-det{grid-template-columns:1fr} .ev-card{padding:16px} }
+
+/* =====================================================================
+   14. OFFER, NEWS & INFO PAGES — reuse the event cards (section 13)
+   ===================================================================== */
+/* offer: big discount strip, coupon box, steps */
+.of-disc{background:linear-gradient(135deg,#e0446b,#f07a3c)!important}
+.of-disc .d{font-size:30px!important;text-align:center;line-height:1.15}
+.of-code{display:flex;align-items:center;gap:10px;justify-content:space-between;border:2px dashed #9db7ea;background:#f2f6fd;
+  border-radius:14px;padding:10px 10px 10px 14px;margin:0 0 12px}
+.of-code small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.of-code b{font-size:20px;letter-spacing:1.5px;color:var(--blue);font-weight:800;word-break:break-all}
+.of-code button{flex:none;border:0;border-radius:10px;padding:9px 13px;background:var(--blue);color:#fff;font-weight:700;font-size:13px;
+  font-family:inherit;cursor:pointer;transition:filter .2s,background .2s}
+.of-code button:hover{filter:brightness(1.12)}
+.of-code button.ok{background:#1a9a50}
+.of-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;counter-reset:st}
+.of-steps li{counter-increment:st;position:relative;padding:14px 14px 14px 52px;border-radius:14px;background:#f3f6fc}
+.of-steps li::before{content:counter(st);position:absolute;left:14px;top:14px;width:28px;height:28px;border-radius:9px;background:var(--blue);
+  color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.of-steps b{display:block;font-size:14px;color:var(--ink)}
+.of-steps span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+/* news / info: readable article inside a card */
+.bl-art{padding:22px 28px 20px}
+.bl-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.bl-meta span{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:#f3f6fc;
+  font-size:12.5px;font-weight:600;color:var(--body)}
+.bl-meta i{color:var(--blue);font-size:11.5px}
+.bl-prose{font-size:16px;line-height:1.8;color:var(--body);max-width:72ch}
+.bl-prose>*:first-child{margin-top:0}
+.bl-prose p{margin:0 0 14px}
+.bl-prose h2,.bl-prose h3{color:var(--ink);font-weight:800;letter-spacing:-.01em;margin:26px 0 10px;scroll-margin-top:90px}
+.bl-prose h2{font-size:21px}.bl-prose h3{font-size:18px}
+.bl-prose h2::before,.bl-prose h2::after{display:none!important}
+.bl-prose img{max-width:100%;height:auto;border-radius:14px;margin:8px 0}
+.bl-prose ul,.bl-prose ol{padding-left:22px;margin:0 0 14px}
+.bl-prose li{margin-bottom:6px}
+.bl-prose a{color:var(--blue);font-weight:600}
+.bl-prose blockquote{margin:16px 0;padding:12px 18px;border-left:4px solid var(--blue);background:#f3f6fc;border-radius:0 12px 12px 0}
+.bl-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.bl-foot a{font-weight:700}
+.bl-share{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-weight:700;font-size:13px;font-family:inherit;
+  color:var(--ink);cursor:pointer}
+.bl-share:hover{background:#f3f6fc}
+.bl-badge{flex-direction:column;align-items:center!important;gap:6px!important}
+.bl-badge i{font-size:26px}
+.bl-note{border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px}
+.bl-note.ok{background:#e6f6ec;color:#1a7a3d;border:1px solid #c4e8d1}
+.bl-note.err{background:#fdecec;color:#b3262f;border:1px solid #f5c6c6}
+.bl-rev{margin-bottom:10px;padding:14px;border-radius:14px;background:#f7f9fc;border:1px solid var(--line)}
+.bl-rev .rev-top span{color:var(--muted);font-size:12.5px}
+.bl-empty{display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;background:#f7f9fc;color:var(--muted);margin:0 0 14px}
+.bl-form{border-top:1px solid var(--line);padding-top:16px;margin-top:6px}
+.bl-form>b{display:block;color:var(--ink);margin-bottom:10px}
+.bl-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bl-send{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:12px}
+.bl-send .authbtn{margin:0!important;width:auto!important;padding-inline:26px}
+.bl-send small{color:var(--muted);font-size:12.5px}
+.sp-toc{display:flex;flex-direction:column;gap:2px;margin:0 0 6px}
+.sp-toc a{padding:8px 10px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--body);text-decoration:none;border-left:3px solid transparent}
+.sp-toc a:hover{background:#f3f6fc;color:var(--blue);border-left-color:var(--blue)}
+@media(max-width:560px){ .bl-art{padding:16px} .bl-two{grid-template-columns:1fr} .bl-prose{font-size:15.5px} }
+.of-nocode{border-style:solid;border-color:#c4e8d1;background:#effaf3}
+.of-nocode b{color:#1a7a3d;font-size:17px;letter-spacing:0}
+.of-nocode>i{font-size:22px;color:#1a9a50;margin-right:6px}
+.of-hint{font-size:12.5px!important;color:var(--muted)!important}
+.of-ticks{list-style:none;margin:4px 0 10px;padding:12px 14px;border-radius:12px;background:#f7f9fc}
+.of-ticks li{display:flex;gap:8px;font-size:13.5px;color:var(--body);padding:3px 0}
+.of-ticks i{color:#1a9a50;font-size:12px;margin-top:4px}
+
+/* =====================================================================
+   15. AREAS PAGE — calm: search, popular areas, folding sector ranges
+   ===================================================================== */
+.ar-sec{padding-top:26px!important}
+.ar-box{max-width:1040px;margin:0 auto}
+.ar-find{display:flex;align-items:center;gap:12px;height:54px;padding:0 18px;background:#fff;border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 10px 28px -22px rgba(16,26,44,.4)}
+.ar-find:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(23,65,166,.1)}
+.ar-find i{color:var(--muted)}
+.ar-find input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:15.5px;color:var(--ink)}
+.ar-lbl{display:block;margin:28px 0 12px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ar-pop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ar-pc{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;
+  text-decoration:none;color:var(--ink);transition:border-color .2s,transform .2s,box-shadow .2s}
+.ar-pc:hover{border-color:#bfd0f1;transform:translateY(-2px);box-shadow:0 12px 24px -18px rgba(23,65,166,.55)}
+.ar-pc>i{width:38px;height:38px;flex:none;border-radius:11px;background:#eef3fd;color:var(--blue);display:flex;align-items:center;justify-content:center}
+.ar-pc b{display:block;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ar-pc small{display:block;font-size:12.5px;color:var(--muted)}
+.ar-pc>span{min-width:0}
+.ar-list{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ar-row+.ar-row{border-top:1px solid var(--line)}
+.ar-row>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;transition:background .2s}
+.ar-row>summary::-webkit-details-marker{display:none}
+.ar-row>summary:hover{background:#f8fafd}
+.ar-row>summary b{font-size:15.5px;font-weight:700;color:var(--ink)}
+.ar-row>summary small{font-size:13px;color:var(--muted)}
+.ar-row>summary .ar-chev{margin-left:auto;color:var(--muted);font-size:12px;transition:transform .25s}
+.ar-row[open]>summary .ar-chev{transform:rotate(180deg)}
+.ar-row[open]>summary{background:#f8fafd}
+.ar-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 18px;padding:6px 20px 18px}
+.ar-links a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;margin:0 -10px;border-radius:8px;font-size:14px;color:var(--body);text-decoration:none}
+.ar-links a:hover{background:#eef3fd;color:var(--blue)}
+.ar-links a span{font-size:12.5px;color:var(--muted)}
+.ar-links a.zero{color:#a3aec2}
+.ar-links a.hide{display:none}
+.ar-row.hide{display:none}
+.ar-none{text-align:center;padding:26px;color:var(--muted)}
+@media(max-width:900px){ .ar-pop{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:520px){ .ar-links{grid-template-columns:1fr 1fr;padding:4px 16px 14px} .ar-row>summary{padding:14px 16px} .ar-pc{padding:12px} }
+
+/* =====================================================================
+   16. PHONES — compact banner on every page
+   ===================================================================== */
+@media(max-width:720px){
+  .ph-hero{padding:18px 0 20px!important}
+  .ph-hero .det-crumb{font-size:12px;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ph-hero .det-name{font-size:25px!important;line-height:1.15!important;margin-bottom:6px!important}
+  .ph-hero .det-tagline{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:0!important}
+  .ph-hero .det-meta{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:10px!important}
+  .ph-hero .det-meta::-webkit-scrollbar{display:none}
+  .ph-hero .det-meta>*{flex:none;white-space:nowrap}
+  /* quick facts: one tidy row of small boxes */
+  .ph-hero .lp-facts,.ph-hero .lp-facts.s1,.ph-hero .lp-facts.s2,.ph-hero .lp-facts.s3{grid-template-columns:repeat(3,minmax(0,1fr))!important;margin-top:12px}
+  .ph-hero .lp-facts.s1{grid-template-columns:1fr!important}
+  .ph-hero .lp-facts.s2{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .ph-hero .lp-facts .lp-fact:not(.lp-fact-wide){grid-column:auto!important}
+  .ph-hero .lp-fact-wide{grid-column:1/-1!important}
+  .ph-hero .lp-fact{padding:9px 10px;gap:0;flex-direction:column;align-items:flex-start}
+  .ph-hero .lp-fact>i{display:none}
+  .ph-hero .lp-fact small{font-size:9.5px!important}
+  .ph-hero .lp-fact b{font-size:13px!important}
+  /* buttons two per row, links on one swipeable line */
+  .ph-hero .lp-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;width:100%}
+  .ph-hero .lp-act{width:100%;padding:10px 8px!important;font-size:13px!important}
+  .ph-hero .lp-actions .lp-act:last-child:nth-child(odd){grid-column:1/-1}
+  .ph-hero .lp-links{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;white-space:nowrap;margin-top:12px;padding-top:10px}
+  .ph-hero .lp-links::-webkit-scrollbar{display:none}
+  .ph-hero .lp-links a{flex:none;font-size:13px}
+  /* photo: smaller, and stock city pictures are skipped on phones */
+  .ph-slider{min-height:0!important;height:190px!important}
+  .ph-slider.ph-stock{display:none!important}
+}
+@media(max-width:380px){
+  .ph-hero .det-name{font-size:22px!important}
+  .ph-hero .lp-facts:not(.s1):not(.s2){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+.ct-tools .ct-loc select,.ct-tools .ct-loc select:focus{border:0!important;background:transparent!important;box-shadow:none!important;height:auto!important;padding:0!important}
+
+/* =====================================================================
+   17. PHONES — shorter footer, readable small labels
+   ===================================================================== */
+@media(max-width:600px){
+  .ftr .wrap.ftr-top{gap:20px!important;padding-top:28px!important;padding-bottom:18px!important}
+  .ftr-brand p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:10px 0 12px!important}
+  /* link groups fold: tap a heading to open its links */
+  .ftr-cols{grid-template-columns:1fr!important;gap:0!important}
+  .ftr-cols>div{padding:0;border-top:1px solid rgba(255,255,255,.08)}
+  .ftr-cols>div>b{display:flex!important;align-items:center;justify-content:space-between;margin:0!important;padding:14px 0;cursor:pointer;font-size:12.5px!important}
+  .ftr-cols>div:not(.ftr-contact)>b::after{content:"+";font-size:18px;font-weight:400;color:#9fadc6;line-height:1}
+  .ftr-cols>div.open>b::after{content:"\2212"}
+  .ftr-cols>div:not(.ftr-contact):not(.open)>a{display:none!important}
+  .ftr-cols>div:not(.ftr-contact)>a{padding:7px 0!important;font-size:14px}
+  .ftr-cols>div.open{padding-bottom:10px}
+  .ftr-cols .ftr-contact{padding-bottom:6px}
+  .ftr-cols .ftr-contact>b{cursor:default}
+  .ftr-bottom{padding-bottom:76px!important}           /* clear the phone tab bar */
+  .ftr-bottom .wrap{flex-direction:column;align-items:flex-start;gap:8px}
+}
+@media(max-width:720px){
+  .ph-hero .lp-fact small{font-size:10.5px!important}
+  .tabbar-m a{font-size:11px!important}
+}
+
+/* =====================================================================
+   18. HOME CATEGORY TILES — smaller, 6 in a row on wide screens
+   ===================================================================== */
+@media(min-width:1101px){
+  .hcatgrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:14px!important}
+  .hcat{height:178px!important;padding:14px!important;border-radius:16px!important}
+  .hcat-ic{top:12px!important;left:12px!important;width:38px!important;height:38px!important;font-size:15px!important;border-radius:11px!important}
+  .hcat-go{right:12px;bottom:14px;width:30px;height:30px;font-size:12px}
+  .hcat-bd{padding-right:36px}
+  .hcat-bd b{font-size:16px!important;line-height:1.2}
+  .hcat-bd .hcat-n{font-size:11px!important;padding:3px 9px;margin-top:6px}
+}
+@media(min-width:761px) and (max-width:1100px){
+  .hcatgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}
+  .hcat{height:170px!important;padding:14px!important}
+  .hcat-bd b{font-size:16px!important}
+}
+
+/* =====================================================================
+   19. POLISHED LISTING CARDS (grid view) — equal heights, calm footer
+   ===================================================================== */
+.lc-foot,.lc-cat{display:none}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich{border:1px solid #e6eaf2!important;border-radius:18px!important;overflow:hidden;
+  box-shadow:0 1px 2px rgba(16,26,44,.05),0 8px 24px -18px rgba(16,26,44,.35)!important;transition:transform .25s ease,box-shadow .25s ease,border-color .25s!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich:hover{transform:translateY(-4px)!important;border-color:#cfdbf2!important;
+  box-shadow:0 2px 4px rgba(16,26,44,.05),0 22px 40px -24px rgba(23,65,166,.5)!important}
+/* photo */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph{height:184px!important;margin:8px 8px 0;border-radius:13px;overflow:hidden}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph::after{background:linear-gradient(to top,rgba(6,14,30,.28),rgba(6,14,30,0) 40%)!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-open{display:none!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-feat{top:10px!important;left:10px!important;font-size:11px!important;padding:4px 9px!important;
+  border-radius:999px!important;background:rgba(255,255,255,.92)!important;color:#8a5a00!important;backdrop-filter:blur(6px);box-shadow:0 4px 10px -6px rgba(0,0,0,.4)}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-feat i{color:#f5a623!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .cardheart{top:10px!important;right:10px!important;width:32px!important;height:32px!important;
+  background:rgba(255,255,255,.92)!important;backdrop-filter:blur(6px)}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .rate{bottom:10px!important;right:10px!important;font-size:12px!important;border-radius:999px!important}
+/* text */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd{padding:12px 16px 14px!important;gap:6px!important;flex:1}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-cat{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--blue)}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd h3{font-size:16px!important;font-weight:800!important;line-height:1.3!important;margin:0!important;
+  display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich:hover .bd h3{color:var(--blue)!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd .loc{font-size:13px!important;display:-webkit-box!important;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-meta,:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-actions{display:none!important}
+/* footer row */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;
+  padding-top:12px;border-top:1px solid #eef1f6}
+.lc-st{display:flex;align-items:center;gap:7px;min-width:0;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.lc-st i{width:8px;height:8px;border-radius:50%;flex:none;background:#c3ccdb}
+.lc-st.is-open i{background:#1fae5b;box-shadow:0 0 0 3px rgba(31,174,91,.16)}
+.lc-st.is-soon i{background:#f0962e;box-shadow:0 0 0 3px rgba(240,150,46,.16)}
+.lc-st.is-shut i{background:#e0505a;box-shadow:0 0 0 3px rgba(224,80,90,.14)}
+.lc-st b{font-weight:700;color:var(--ink)}
+.lc-st.is-open b{color:#178a48}.lc-st.is-shut b{color:#c23b45}.lc-st.is-soon b{color:#b86a10}
+.lc-st em{font-style:normal;overflow:hidden;text-overflow:ellipsis}
+.lc-st em::before{content:"·";margin-right:6px;color:#c3ccdb}
+.lc-go{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#eef3fc;color:var(--blue);
+  font-size:13px;transition:background .25s,color .25s,transform .25s}
+.lcard.rich:hover .lc-go{background:var(--blue);color:#fff;transform:translateX(3px)}
+@media(max-width:640px){
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph{height:168px!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd{padding:11px 14px 13px!important}
+}
+:is(.lgrid,.lscroll) .lcard.rich .bd .lc-st b{display:inline!important;font-size:12.5px!important;font-weight:700!important;line-height:1.3!important;
+  -webkit-line-clamp:unset!important;min-height:0!important;margin:0!important;overflow:visible!important;white-space:nowrap}
+:is(.lgrid,.lscroll) .lcard.rich .bd .lc-st:not(.is-open):not(.is-shut):not(.is-soon) b{color:var(--blue)!important}
+
+/* home category tiles — more breathing room between them */
+@media(min-width:1101px){ .hcatgrid{gap:26px 24px!important} }
+@media(min-width:761px) and (max-width:1100px){ .hcatgrid{gap:20px!important} }
+@media(max-width:760px){ .hcatgrid{gap:14px!important} }
+
+/* =====================================================================
+   20. NAVBAR — matches the live hinoida.com
+   ===================================================================== */
+.hdr.hdr-live{background:#fff!important;box-shadow:0 1px 0 #eceff4,0 6px 18px -14px rgba(16,26,44,.25)!important;border:0!important;backdrop-filter:none!important}
+.hdr-live .topstrip{background:#014dda;color:#fff;text-align:center;font-size:13px;line-height:37px;height:37px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px}
+.hdr-live .hdr-in{height:auto!important;min-height:71px;display:flex;align-items:center;gap:24px}
+.hdr-live .logo{flex:none;display:flex;align-items:center}
+.hdr-live .logo img{max-height:42px;width:auto}
+.hdr-live .nav .nav-login{background:#014dda!important;color:#fff!important;font-size:14px!important;font-weight:500!important;text-transform:none!important;
+  letter-spacing:0!important;border-radius:6px!important;box-shadow:none!important}
+.hdr-live .nav .nav-login:hover{background:#003fb5!important}
+/* desktop: one row, links on the right */
+@media(min-width:981px){
+  .hdr-live .nav{display:flex!important;align-items:center;gap:30px!important;margin-left:auto}
+  .hdr-live .nav>a:not(.btn){font-size:14px!important;font-weight:500!important;color:#000!important;padding:6px 0!important;background:none!important;
+    border:0!important;position:relative;text-transform:none!important;letter-spacing:0!important}
+  .hdr-live .nav>a:not(.btn)::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:#014dda;transform:scaleX(0);transition:transform .2s}
+  .hdr-live .nav>a:not(.btn):hover,.hdr-live .nav>a.on{color:#014dda!important}
+  .hdr-live .nav>a:not(.btn):hover::after,.hdr-live .nav>a.on::after{transform:scaleX(1)}
+  .hdr-live .nav .nav-login{padding:10px 20px!important;margin-left:6px}
+}
+/* phones & tablets: ☰ opens a clean drop-down under the header */
+@media(max-width:980px){
+  .hdr-live .topstrip{font-size:12px;height:30px;line-height:30px}
+  .hdr-live .hdr-in{min-height:60px}
+  .hdr-live .logo img{max-height:36px}
+  .hdr-live .navtoggle{margin-left:auto;background:#fff!important;border:1px solid #e3e8f0!important;color:#0d1830!important}
+  .hdr-live .nav{top:90px!important;max-height:calc(100vh - 90px)!important;padding:6px 18px 18px!important;background:#fff!important;
+    backdrop-filter:none!important;border-top:1px solid #eceff4!important}
+  .hdr-live .nav>a:not(.btn){text-align:left;font-size:15.5px!important;font-weight:500!important;color:#111!important;padding:14px 4px!important;
+    border-bottom:1px solid #eef1f6!important}
+  .hdr-live .nav>a.on{color:#014dda!important}
+  .hdr-live .nav .nav-login{display:block;text-align:center;margin-top:14px;padding:13px 20px!important}
+}
+/* the header is taller now (strip + bar) — sticky parts sit below it */
+@media(min-width:901px){
+  .ev-side{top:126px!important}
+  .lp-nav{top:108px!important}
+  .lp-side,.lp-aside,.contact-box,aside.lp-contact{top:170px!important}
+}
+@media(max-width:980px){ .lp-nav{top:90px!important} }
+@media(min-width:901px){ .lpage > aside{top:172px!important;max-height:calc(100vh - 190px)!important} }
+
+/* =====================================================================
+   21. PHONES — short footer: links in one wrapped block, no folding rows
+   ===================================================================== */
+@media(max-width:600px){
+  .ftr .wrap.ftr-top{gap:16px!important;padding-top:24px!important;padding-bottom:16px!important}
+  .ftr-brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .ftr-brand p{display:none!important}
+  .ftr-brand .ftr-social{margin:0!important}
+  .ftr-cols{display:flex!important;flex-wrap:wrap;gap:0 18px!important;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}
+  .ftr-cols>div:not(.ftr-contact){display:contents!important;border:0!important;padding:0!important}
+  .ftr-cols>div:not(.ftr-contact)>b{display:none!important}
+  footer.ftr .ftr-cols>div:not(.ftr-contact)>a{display:inline-block!important;padding:6px 0!important;font-size:13.5px!important}
+  .ftr-cols>div:nth-child(4){display:none!important}                 /* legal: already in the bottom row */
+  .ftr-cols .ftr-contact{width:100%;margin-top:10px;padding:12px 0 0!important;border-top:1px solid rgba(255,255,255,.08)}
+  .ftr-cols .ftr-contact>b{display:none!important}
+  .ftr-cols .ftr-contact>*{font-size:13px!important;padding:3px 0!important}
+  .ftr-bottom{padding-bottom:0!important}
+  .ftr-bottom .wrap{padding-top:12px!important;padding-bottom:14px!important;gap:6px!important}
+}
+
+/* =====================================================================
+   22. PHONES — listings / search page: slim search, swipeable filters
+   ===================================================================== */
+@media(max-width:720px){
+  /* list pages: their banner photo slider (photos of listings) is skipped on phones */
+  .ph-slider:has(a.ph-slide){display:none!important}
+  /* search box: icon button, more room to type */
+  #searchForm .searchbar{height:50px;border-radius:14px!important;overflow:hidden}
+  #searchForm .searchbar input{min-width:0;flex:1;font-size:15px!important;padding:0 14px!important}
+  #searchForm .searchbar button{flex:none;width:52px!important;min-width:0!important;padding:0!important;font-size:0!important;display:flex;align-items:center;justify-content:center}
+  #searchForm .searchbar button i{font-size:17px!important;margin:0!important}
+  /* filters: one swipeable row of compact chips */
+  #searchForm .filterbar{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;gap:8px!important;padding:2px 0 6px!important;margin-top:10px!important;
+    background:none!important;border:0!important;box-shadow:none!important;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  #searchForm .filterbar::-webkit-scrollbar{display:none}
+  #searchForm .filterbar>*{flex:none!important;width:auto!important;max-width:none!important;height:38px!important;border-radius:999px!important;font-size:13px!important}
+  #searchForm .filterbar select{padding:0 30px 0 14px!important}
+  #searchForm .filterbar .fb-check{padding:0 14px!important;white-space:nowrap}
+  /* trending searches: small rounded chips in one swipeable row */
+  .pills{flex-wrap:nowrap!important;overflow-x:auto;gap:8px!important;scrollbar-width:none;padding-bottom:4px;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .pills::-webkit-scrollbar{display:none}
+  .pills>a{flex:none;height:34px!important;padding:0 14px!important;border-radius:999px!important;font-size:13px!important;text-transform:none!important;
+    letter-spacing:0!important;font-weight:600!important;white-space:nowrap}
+}
+
+/* =====================================================================
+   23. PHONES — business page banner (its own banner, not .ph-hero)
+   ===================================================================== */
+@media(max-width:720px){
+  .det-hero:not(.ph-hero){padding:14px 0 16px!important}
+  .det-hero .det-crumb{font-size:11.5px!important;margin-bottom:6px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block!important}
+  .det-hero .det-crumb a,.det-hero .det-crumb span{display:inline!important}
+  .det-hero .det-name{font-size:23px!important;line-height:1.18!important;margin:0 0 6px!important}
+  .det-hero .det-tagline{font-size:13.5px!important;line-height:1.5!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0!important}
+  /* chips: one swipeable row */
+  .det-hero .det-meta{flex-wrap:nowrap!important;overflow-x:auto;gap:6px!important;margin-top:10px!important;scrollbar-width:none;padding-bottom:2px}
+  .det-hero .det-meta::-webkit-scrollbar{display:none}
+  .det-hero .det-meta>*{flex:none!important;white-space:nowrap}
+  /* quick facts: compact, no icons */
+  .det-hero .lp-facts{margin-top:12px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .det-hero .lp-facts .lp-fact:not(.lp-fact-wide){grid-column:auto!important}
+  .det-hero .lp-fact-wide{grid-column:1/-1!important}
+  .det-hero .lp-fact{padding:8px 11px!important;gap:0!important}
+  .det-hero .lp-fact>i{display:none!important}
+  .det-hero .lp-fact small{font-size:10px!important}
+  .det-hero .lp-fact b{font-size:13px!important}
+  /* buttons: one tidy row (3 per row), links on one swipeable line */
+  .det-hero .lp-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px!important;margin-top:12px!important;width:100%}
+  .det-hero .lp-act{width:100%;justify-content:center;padding:9px 6px!important;font-size:12.5px!important;gap:6px!important;white-space:nowrap}
+  .det-hero .lp-links{flex-wrap:nowrap!important;overflow-x:auto;white-space:nowrap;scrollbar-width:none;margin-top:10px!important;padding-top:10px!important;gap:16px!important}
+  .det-hero .lp-links::-webkit-scrollbar{display:none}
+  .det-hero .lp-links a{flex:none;font-size:12.5px!important}
+  /* photo a bit smaller */
+  .det-hero .lp-hero-grid{gap:14px!important}
+  #lpSlider{height:180px!important;min-height:0!important}
+  /* bottom "Enquire" bar: slimmer, sits right above the tab bar */
+  .det-stickybar{padding:8px 12px!important;min-height:0!important}
+  .det-stickybar a,.det-stickybar button{padding:10px 14px!important;font-size:14px!important;min-height:0!important}
+}
+
+/* =====================================================================
+   24. LAPTOPS (721–1440px) — shorter banners so content shows sooner
+   ===================================================================== */
+@media(min-width:721px) and (max-width:1440px){
+  .det-hero{padding-top:26px!important;padding-bottom:26px!important}
+  .det-hero .det-crumb{margin-bottom:8px!important}
+  .det-hero .det-name{font-size:34px!important;line-height:1.12!important;margin-bottom:6px!important}
+  .det-hero .det-tagline{font-size:14.5px!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .det-hero .lp-facts{margin-top:14px!important}
+  .det-hero .lp-fact{padding:9px 12px!important}
+  .det-hero .lp-actions{margin-top:14px!important}
+  .det-hero .lp-links{margin-top:12px!important;padding-top:12px!important}
+  .ph-slider{min-height:0!important;height:300px!important}
+  #lpSlider{min-height:0!important;height:320px!important}
+}
+/* short laptop screens (768px tall or less): a little tighter still */
+@media(min-width:721px) and (max-height:800px){
+  .det-hero .det-name{font-size:31px!important}
+  .ph-slider{height:270px!important}
+  #lpSlider{height:290px!important}
+}
+/* phones: trim photo + secondary links a bit more */
+@media(max-width:720px){
+  .ph-slider{height:160px!important}
+  #lpSlider{height:160px!important}
+  .det-hero:not(.ph-hero) .lp-links{display:none!important}
+}
+/* business page: its own stylesheet loads later, so these need to be stronger */
+@media(min-width:721px) and (max-width:1440px){
+  section.det-hero.det-hero{padding-top:26px!important;padding-bottom:26px!important}
+  .det-hero .lp-hero-grid #lpSlider{height:320px!important}
+}
+@media(min-width:721px) and (max-height:800px){ .det-hero .lp-hero-grid #lpSlider{height:290px!important} }
+@media(max-width:720px){
+  .det-hero .lp-hero-grid #lpSlider{height:170px!important}
+  /* the 5 buttons become one row of small icon-over-label buttons */
+  .det-hero:not(.ph-hero) .lp-actions{grid-template-columns:repeat(auto-fit,minmax(56px,1fr))!important;gap:6px!important}
+  .det-hero:not(.ph-hero) .lp-act{flex-direction:column!important;gap:4px!important;padding:8px 2px!important;font-size:11px!important;border-radius:12px!important;line-height:1.1}
+  .det-hero:not(.ph-hero) .lp-act i{font-size:15px!important;margin:0!important}
+}
+/* laptops: business quick facts in one row (address shortens with "…", full text on hover) */
+@media(min-width:981px) and (max-width:1440px){
+  .det-hero:not(.ph-hero) .lp-facts{grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;grid-auto-flow:column}
+  .det-hero:not(.ph-hero) .lp-facts .lp-fact,.det-hero:not(.ph-hero) .lp-facts .lp-fact-wide{grid-column:auto!important}
+}
+@media(min-width:721px) and (max-width:1440px){ .det-hero .lp-hero-grid .lp-hero-main{min-height:0!important;justify-content:center} }
+@media(max-width:720px){ .det-hero .lp-hero-grid .lp-hero-main{min-height:0!important} }
+
+/* navbar links centred between the logo and the Login button (desktop) */
+@media(min-width:981px){
+  .hdr-live .nav{flex:1;margin-left:0!important}
+  .hdr-live .nav>a:not(.btn):first-child{margin-left:auto}
+  .hdr-live .nav>.nav-login,.hdr-live .nav>.profmenu{margin-left:auto!important}
+  .hdr-live .nav>a[href$="/admin"]{margin-left:auto}
+  .hdr-live .nav>a[href$="/admin"]~.profmenu{margin-left:20px!important}
+}
+
+/* =====================================================================
+   25. HOME HERO — popular searches under the search box
+   ===================================================================== */
+.hero-pop{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;max-width:820px;margin:18px auto 0;position:relative;z-index:2}
+.hero-pop-l{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:rgba(255,255,255,.85);margin-right:2px}
+.hero-pop-l i{color:#ff9a3c}
+.hero-pop a{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;color:#fff;
+  text-decoration:none;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:background .2s,color .2s,transform .2s,border-color .2s}
+.hero-pop a i{font-size:12px;opacity:.9}
+.hero-pop a:hover{background:#fff;color:#014dda;border-color:#fff;transform:translateY(-2px)}
+@media(max-width:720px){
+  .hero-pop{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;margin:14px -18px 0;padding:0 18px 4px;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .hero-pop::-webkit-scrollbar{display:none}
+  .hero-pop>*{flex:none;white-space:nowrap}
+  .hero-pop a{padding:6px 12px;font-size:12.5px}
+}
+@media(min-width:721px){ .hero-pop{max-width:1040px;gap:8px 7px} .hero-pop a{padding:7px 12px} }
+
+/* =====================================================================
+   26. LISTING CARDS — seamless, sharp, polished
+   ===================================================================== */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich{border-radius:10px!important;border:1px solid #e4e8ef!important;background:#fff!important;
+  box-shadow:0 1px 2px rgba(16,26,44,.06)!important;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich::before{display:none!important}           /* no growing blue line on top */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich:hover{transform:translateY(-3px)!important;border-color:#d5dcea!important;
+  box-shadow:0 14px 30px -18px rgba(16,26,44,.45),0 2px 6px -2px rgba(16,26,44,.08)!important}
+/* photo edge to edge, no inner frame */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph{margin:0!important;border-radius:0!important;height:190px!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph img{transition:transform .5s ease!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich:hover .ph img{transform:scale(1.04)!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph::after{background:linear-gradient(to top,rgba(6,14,30,.22),rgba(6,14,30,0) 35%)!important}
+/* crisp badges */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-feat{border-radius:4px!important;top:12px!important;left:12px!important;padding:4px 8px!important;
+  font-size:10.5px!important;letter-spacing:.04em;text-transform:uppercase;font-weight:800!important;background:#fff!important;box-shadow:0 2px 6px rgba(0,0,0,.18)!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .cardheart{border-radius:6px!important;top:12px!important;right:12px!important;width:30px!important;height:30px!important;
+  background:#fff!important;box-shadow:0 2px 6px rgba(0,0,0,.18)!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .rate{border-radius:4px!important}
+/* text block: even rhythm */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd{padding:14px 16px 0!important;gap:6px!important}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd h3{font-size:15.5px!important;line-height:1.32!important;min-height:2.64em;letter-spacing:-.01em}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd .loc{font-size:12.5px!important;color:#6b7891!important}
+/* footer: full-width strip, flush with the card edges */
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-foot{margin:6px -16px 0;padding:11px 16px;border-top:1px solid #eef1f5;background:#fafbfd}
+:is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-go{width:30px;height:30px;border-radius:6px;font-size:12px}
+.lcard.rich:hover .lc-go{transform:none}
+
+/* =====================================================================
+   27. ALL CARDS — one sharp, seamless look across the site
+   ===================================================================== */
+:root{--cd-r:10px;--cd-line:#e4e8ef;--cd-sh:0 1px 2px rgba(16,26,44,.06);--cd-sh-h:0 14px 30px -18px rgba(16,26,44,.45),0 2px 6px -2px rgba(16,26,44,.08)}
+
+/* -- clickable picture cards: news, events, offers, blog, groups, home tiles -- */
+.lcard:not(.rich),.bcard,.grpcard,.igcard{border-radius:var(--cd-r)!important;border:1px solid var(--cd-line)!important;box-shadow:var(--cd-sh)!important;
+  overflow:hidden;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important}
+.lcard:not(.rich)::before,.bcard::before,.grpcard::before{display:none!important}
+.lcard:not(.rich):hover,.bcard:hover,.grpcard:hover,.igcard:hover{transform:translateY(-3px)!important;border-color:#d5dcea!important;box-shadow:var(--cd-sh-h)!important}
+.lcard:not(.rich) .ph,.bcard .bcard-ph{margin:0!important;border-radius:0!important}
+.lcard:not(.rich) .ph img,.bcard .bcard-ph img{transition:transform .5s ease!important}
+.lcard:not(.rich):hover .ph img,.bcard:hover .bcard-ph img{transform:scale(1.04)!important}
+.lcard:not(.rich) .rate,.lcard:not(.rich) .lc-feat,.bcard .bcard-date{border-radius:4px!important}
+.hcat{border-radius:var(--cd-r)!important}
+.hcat-ic,.hcat-go{border-radius:8px!important}
+.hcat-n{border-radius:4px!important}
+
+/* -- content cards and panels -- */
+.ev-card,.ev-ticket,.lp-card,.sidecard,.ct-card,.ctb,.ar-grp,.ar-list,.ar-pc,.howbox,.loginbox,.au-box,.pnone,
+.cp-toolbar,.pp-toolbar,.ct-tools,.ar-find,.rev,.bl-rev,.faq details,.cp-faq details{border-radius:var(--cd-r)!important}
+.ev-card,.ev-ticket,.lp-card,.sidecard,.ct-card,.ctb,.ar-list,.ar-pc,.howbox{border-color:var(--cd-line)!important;box-shadow:var(--cd-sh)!important}
+.ctb,.ar-pc,.ct-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.ctb:hover,.ar-pc:hover,a.ct-card:hover{transform:translateY(-3px);border-color:#d5dcea!important;box-shadow:var(--cd-sh-h)!important}
+.ctb-head,.ctb-ph{border-radius:0!important}
+.ev-date{border-radius:0!important}
+
+/* -- small pieces inside cards: sharper too -- */
+.ev-di,.ev-di>i,.glance-i,.gtk-i,.of-code,.of-steps li,.of-steps li::before,.lp-ic,.ev-ic,.ar-gic,.ctb-ic,.ar-pc>i,
+.ev-btn,.of-code button,.bl-note,.bl-empty,.ctb-more,.ar-more,.lp-act,.ar-chip,.ar-links a{border-radius:7px!important}
+.ev-chip,.lp-chip,.bl-meta span,.ar-jump a{border-radius:6px!important}
+/* the business page stylesheet loads later — stronger selectors there */
+.lpage .lp-card,.lpage .sidecard,main .lp-card{border-radius:var(--cd-r)!important;border-color:var(--cd-line)!important;box-shadow:var(--cd-sh)!important}
+.det-hero .lp-act,main .lp-ic{border-radius:7px!important}
+/* last word: page stylesheets (category, business) and list view load or match later */
+body .lcard.rich,body .lgrid.aslist .lcard.rich{border-radius:var(--cd-r)!important}
+body .lgrid.aslist .lcard.rich{border:1px solid var(--cd-line)!important;box-shadow:var(--cd-sh)!important}
+body .lgrid.aslist .lcard.rich::before{display:none!important}
+body .lgrid.aslist .lcard.rich .ph{border-radius:0!important;margin:0!important}
+body main .lp-card,body main .sidecard,body .lpage>aside .sidecard{border-radius:var(--cd-r)!important;border-color:var(--cd-line)!important;box-shadow:var(--cd-sh)!important}
+body .ct-form,body .searchbar,body .filterbar{border-radius:var(--cd-r)!important}
+body .lp-slider,body .ph-slider,body #lpSlider{border-radius:12px!important}
+body main .gtk-i,body main .glance-i,body main .lp-card div[style*="minmax(170px"]>span{border-radius:8px!important}
+body .lp-facts{border-radius:var(--cd-r)!important}
+body .catfilter{border-radius:var(--cd-r)!important}
+
+/* =====================================================================
+   28. HOME CATEGORY TILES — square, 6 per row, a little bigger and airier
+   ===================================================================== */
+@media(min-width:1101px){
+  .hcatgrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:30px 28px!important;
+    width:min(1480px,calc(100vw - 72px));position:relative;left:50%;transform:translateX(-50%)}
+  .hcat{height:auto!important;aspect-ratio:1/1;padding:16px!important}
+  .hcat-ic{top:14px!important;left:14px!important;width:42px!important;height:42px!important;font-size:16px!important}
+  .hcat-bd b{font-size:17px!important}
+  .hcat-go{right:14px;bottom:16px;width:32px;height:32px}
+}
+@media(min-width:761px) and (max-width:1100px){
+  .hcatgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:22px!important}
+  .hcat{height:auto!important;aspect-ratio:1/1}
+}
+@media(max-width:760px){
+  .hcat{height:auto!important;aspect-ratio:1/1}
+}
+
+/* =====================================================================
+   29. LISTING CARDS — compact; details slide up on hover (desktop)
+   ===================================================================== */
+@media(hover:hover) and (min-width:761px){
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich{position:relative!important;height:264px!important;display:block!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph{position:absolute!important;inset:0!important;height:100%!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .ph::after{background:linear-gradient(to top,rgba(6,14,30,.35),rgba(6,14,30,0) 45%)!important}
+  /* the white strip: only the name shows until hover */
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd{position:absolute!important;left:0;right:0;bottom:0;z-index:3;background:#fff!important;
+    padding:14px 16px 0!important;transform:translateY(calc(100% - 52px));transition:transform .32s cubic-bezier(.2,.7,.2,1)!important;
+    box-shadow:0 -10px 24px -18px rgba(6,14,30,.5)}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich:is(:hover,:focus-visible) .bd{transform:translateY(0)}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd h3{min-height:0!important;-webkit-line-clamp:1!important;font-size:15.5px!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-cat{display:none!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .bd .loc,
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-foot{opacity:0;transition:opacity .25s ease .05s}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich:is(:hover,:focus-visible) .bd .loc,
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich:is(:hover,:focus-visible) .lc-foot{opacity:1}
+  /* badges that sat at the bottom of the photo move up so the strip doesn't cover them */
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .rate{top:12px!important;bottom:auto!important;right:52px!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich .lc-badge{top:46px!important;bottom:auto!important;left:12px!important}
+  :is(.lgrid:not(.aslist),.lscroll) .lcard.rich:hover .ph img{transform:scale(1.06)!important}
+}
+
+/* =====================================================================
+   30. CARD TITLES — stay dark on hover (no "highlighted" blue text)
+   ===================================================================== */
+body .lcard .bd h3,body .lcard .bd b,body .lcard:hover .bd h3,body .lcard:hover .bd b,
+body .bcard:hover .bcard-bd b,body .bcard:hover h3,body .grpcard:hover b,body .ar-pc:hover b,body .ctb:hover .ctb-t{color:#0f1a2e!important}
+/* a calm cue instead: the arrow fills, the name gets a soft underline */
+body .lcard.rich:hover .bd h3{text-decoration:underline;text-decoration-color:rgba(15,26,46,.22);text-decoration-thickness:1.5px;text-underline-offset:4px}
+
+/* =====================================================================
+   31. BANNER — richer: soft photo, blue/violet glow, dot texture
+   ===================================================================== */
+section.det-hero.det-hero{background:#081127!important;isolation:isolate}
+/* the page's own photo, softly blurred, so every banner has its own colour */
+section.det-hero.det-hero::before{opacity:.6!important;filter:blur(16px) saturate(1.35)!important;transform:scale(1.15)!important;z-index:-2}
+/* readable on the left, photo glows through on the right, plus two colour glows */
+section.det-hero.det-hero::after{z-index:-1;background:
+  radial-gradient(520px 320px at 8% 0%,rgba(42,99,230,.45),transparent 70%),
+  radial-gradient(460px 300px at 100% 100%,rgba(124,58,237,.28),transparent 70%),
+  linear-gradient(90deg,rgba(6,13,32,.95) 0%,rgba(7,16,40,.86) 42%,rgba(8,20,52,.55) 100%)!important}
+/* faint dot texture + a light line along the bottom edge */
+section.det-hero.det-hero>.wrap::before{content:"";position:absolute;inset:-60px -50vw;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.2px);background-size:22px 22px;
+  -webkit-mask-image:radial-gradient(ellipse 60% 80% at 20% 30%,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse 60% 80% at 20% 30%,#000 30%,transparent 75%)}
+section.det-hero.det-hero>.wrap{position:relative}
+section.det-hero.det-hero{box-shadow:inset 0 -1px 0 rgba(255,255,255,.08)}
+/* glassier info strip and secondary buttons to match */
+section.det-hero .lp-facts{background:rgba(255,255,255,.07)!important;border-color:rgba(255,255,255,.14)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+section.det-hero .lp-act:not(.primary):not(.wa){background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.18)!important;backdrop-filter:blur(8px)}
+section.det-hero .lp-act:not(.primary):not(.wa):hover{background:rgba(255,255,255,.16)!important}
+/* the photo card gets a soft glow so it lifts off the background */
+section.det-hero .lp-slider,section.det-hero #lpSlider{box-shadow:0 24px 50px -22px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1)!important}
+/* small eyebrow accent above the title */
+section.det-hero .det-name{position:relative}
+@media(max-width:720px){
+  section.det-hero.det-hero::after{background:
+    radial-gradient(300px 220px at 0% 0%,rgba(42,99,230,.45),transparent 70%),
+    radial-gradient(260px 200px at 100% 100%,rgba(124,58,237,.25),transparent 70%),
+    linear-gradient(180deg,rgba(6,13,32,.9),rgba(7,16,40,.86))!important}
+}
+section.det-hero.det-hero::before{opacity:.72!important}
+section.det-hero.det-hero::after{background:
+  radial-gradient(560px 340px at 6% 0%,rgba(42,99,230,.6),transparent 70%),
+  radial-gradient(500px 320px at 100% 100%,rgba(124,58,237,.36),transparent 70%),
+  linear-gradient(90deg,rgba(6,13,32,.94) 0%,rgba(7,16,40,.82) 42%,rgba(8,20,52,.5) 100%)!important}
+/* thin colour line along the bottom edge of every banner */
+section.det-hero.det-hero{border-bottom:3px solid transparent!important;border-image:linear-gradient(90deg,#014dda,#2a63e6 35%,#7c3aed 70%,#e0446b) 1!important}
+
+/* =====================================================================
+   32. SAME BANNER STYLE ACROSS THE SITE — home hero, login, footer
+   ===================================================================== */
+/* home hero: blue + violet glow over the photo, dot texture, colour line */
+section.hero{position:relative;overflow:hidden;isolation:isolate;border-bottom:3px solid transparent;
+  border-image:linear-gradient(90deg,#014dda,#2a63e6 35%,#7c3aed 70%,#e0446b) 1}
+section.hero::after{background:
+  radial-gradient(620px 380px at 4% 0%,rgba(42,99,230,.55),transparent 70%),
+  radial-gradient(560px 360px at 100% 100%,rgba(124,58,237,.38),transparent 70%),
+  radial-gradient(ellipse at 50% 118%,rgba(6,12,28,.5),transparent 62%)!important;z-index:0}
+section.hero>.wrap{position:relative;z-index:2}
+section.hero>.wrap::before{content:"";position:absolute;inset:-80px -50vw;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1.2px);background-size:22px 22px;
+  -webkit-mask-image:radial-gradient(ellipse 55% 70% at 50% 45%,#000 25%,transparent 75%);mask-image:radial-gradient(ellipse 55% 70% at 50% 45%,#000 25%,transparent 75%)}
+
+/* login / signup: the dark side panel gets the same glow, dots and line */
+body .au-side{background:
+  radial-gradient(420px 300px at 0% 0%,rgba(42,99,230,.55),transparent 70%),
+  radial-gradient(380px 280px at 100% 100%,rgba(124,58,237,.38),transparent 70%),
+  #081127!important;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#014dda,#7c3aed 60%,#e0446b) 1}
+body .au-side::before{opacity:.28!important;filter:blur(10px) saturate(1.3);transform:scale(1.1)}
+body .au-side::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.2px);background-size:22px 22px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 70% at 30% 30%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 70% 70% at 30% 30%,#000 30%,transparent 80%)}
+
+/* footer: colour line on top + a soft blue glow */
+footer.ftr{position:relative;border-top:3px solid transparent!important;border-image:linear-gradient(90deg,#014dda,#2a63e6 35%,#7c3aed 70%,#e0446b) 1!important;
+  background-image:radial-gradient(560px 300px at 0% 0%,rgba(42,99,230,.22),transparent 70%),radial-gradient(480px 280px at 100% 100%,rgba(124,58,237,.16),transparent 70%)!important}
+
+/* the blue strip above the navbar picks up the same gradient */
+.hdr-live .topstrip{background:linear-gradient(90deg,#013fb8,#014dda 40%,#3b4fe0 75%,#5b3fd6)!important}
+
+/* =====================================================================
+   33. NEWS CARDS — editorial look: top story + clean story cards
+   ===================================================================== */
+.bgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:24px!important}
+body .bgrid .bcard{display:flex!important;flex-direction:column;background:#fff!important}
+body .bgrid .bcard-ph{position:relative;aspect-ratio:16/9!important;margin:0!important}
+body .bgrid .bcard-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(6,14,30,.35),transparent 45%);pointer-events:none}
+.bcard-tag{position:absolute;left:12px;top:12px;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:4px;
+  background:#fff;color:#014dda;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bcard.is-top .bcard-tag{background:linear-gradient(90deg,#014dda,#7c3aed);color:#fff}
+body .bgrid .bcard-bd{padding:16px 18px 0!important;gap:8px!important}
+body .bgrid .bcard-bd h3{font-size:16.5px!important;line-height:1.35!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
+body .bgrid .bcard-ex{font-size:13.5px!important;line-height:1.6!important;color:#5f6b82!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body .bgrid .bcard-date{margin:auto -18px 0!important;padding:11px 18px!important;border-top:1px solid #eef1f5!important;background:#fafbfd;font-size:12.5px!important;color:#6b7891!important}
+body .bgrid .bcard-date em{font-size:12.5px;color:#014dda!important}
+body .bgrid .bcard:hover .bcard-bd h3{color:#0f1a2e!important;text-decoration:underline;text-decoration-color:rgba(15,26,46,.22);text-decoration-thickness:1.5px;text-underline-offset:4px}
+/* top story: the first post is a wide feature card */
+@media(min-width:900px){
+  body .bgrid .bcard.is-top{grid-column:1/-1;flex-direction:row!important;min-height:320px}
+  body .bgrid .bcard.is-top .bcard-ph{flex:0 0 58%;aspect-ratio:auto!important}
+  body .bgrid .bcard.is-top .bcard-bd{padding:30px 32px 0!important;justify-content:center;gap:12px!important}
+  body .bgrid .bcard.is-top .bcard-bd h3{font-size:26px!important;line-height:1.22!important;-webkit-line-clamp:3;min-height:0;letter-spacing:-.02em}
+  body .bgrid .bcard.is-top .bcard-ex{font-size:15px!important;-webkit-line-clamp:4}
+  body .bgrid .bcard.is-top .bcard-date{margin:auto -32px 0!important;padding:14px 32px!important}
+}
+@media(min-width:721px) and (max-width:1100px){ .bgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important} }
+@media(max-width:720px){ .bgrid{grid-template-columns:1fr!important;gap:16px!important} body .bgrid .bcard-bd h3{min-height:0} }
+
+/* =====================================================================
+   34. HOME — popular listings: category tabs
+   ===================================================================== */
+.ptabs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:-4px auto 24px;max-width:980px}
+.ptab{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 16px;border-radius:999px;border:1px solid #e1e6ef;background:#fff;
+  font:inherit;font-size:13.5px;font-weight:600;color:#3a4660;cursor:pointer;transition:background .2s,color .2s,border-color .2s,box-shadow .2s}
+.ptab i{font-size:12px;color:#f07a3c}
+.ptab:hover{border-color:#bfd0f1;color:#014dda}
+.ptab.on{background:linear-gradient(90deg,#014dda,#3b4fe0);border-color:transparent;color:#fff;box-shadow:0 8px 18px -10px rgba(1,77,218,.7)}
+.ptab.on i{color:#ffd28a}
+.ptpanel[hidden],.ptmore[hidden]{display:none!important}
+.ptpanel{animation:ptIn .35s ease}
+@keyframes ptIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ptmore{text-align:center;margin:18px 0 0}
+.ptmore a{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;background:#fff;border:1px solid #dbe4f3;
+  font-weight:700;font-size:14px;color:#014dda;text-decoration:none}
+.ptmore a:hover{background:#eef3fd}
+@media(max-width:720px){
+  .ptabs{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;margin:0 -18px 16px;padding:0 18px 4px;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .ptabs::-webkit-scrollbar{display:none}
+  .ptab{flex:none;height:34px;padding:0 13px;font-size:13px}
+}
+
+/* =====================================================================
+   35. FILTER DROP-DOWNS — clean panel instead of the plain browser list
+   ===================================================================== */
+.dd{position:relative;min-width:0}
+.dd-native{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;overflow:hidden}
+.dd-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;height:44px;padding:0 14px;border:1px solid #e1e6ef;border-radius:10px;
+  background:#f7f9fc;font:inherit;font-size:13.5px;font-weight:600;color:#0f1a2e;cursor:pointer;text-align:left;transition:border-color .2s,background .2s,box-shadow .2s}
+.dd-btn span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.dd-btn i{font-size:11px;color:#7c8aa3;transition:transform .2s}
+.dd-btn:hover{border-color:#c6d5f0;background:#fff}
+.dd.dd-set .dd-btn{border-color:#014dda;background:#eef3fd;color:#014dda}
+.dd.dd-open .dd-btn{border-color:#014dda;background:#fff;box-shadow:0 0 0 3px rgba(1,77,218,.12)}
+.dd.dd-open .dd-btn i{transform:rotate(180deg)}
+.dd-pan{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:60;width:max(100%,260px);max-width:340px;background:#fff;border:1px solid #e1e6ef;
+  border-radius:12px;box-shadow:0 22px 44px -18px rgba(16,26,44,.45);padding:6px;animation:ddIn .16s ease}
+.dd.dd-open .dd-pan{display:block}
+@keyframes ddIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dd-q{display:flex;align-items:center;gap:8px;height:38px;padding:0 10px;margin:2px 2px 6px;border:1px solid #e1e6ef;border-radius:8px;background:#f7f9fc}
+.dd-q i{font-size:12px;color:#7c8aa3}
+.dd-q input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:13.5px}
+.dd-list{max-height:300px;overflow-y:auto;scrollbar-width:thin}
+.dd-it{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:0;border-radius:8px;background:none;font:inherit;font-size:13.5px;
+  color:#24304a;cursor:pointer;text-align:left}
+.dd-it:hover{background:#f1f5fd}
+.dd-it .dd-t{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.dd-it em{font-style:normal;font-size:11.5px;font-weight:700;color:#5f6b82;background:#f1f4f9;padding:2px 8px;border-radius:999px;flex:none}
+.dd-tick{width:14px;font-size:11px;color:#014dda;visibility:hidden}
+.dd-it.on{color:#014dda;font-weight:700}
+.dd-it.on .dd-tick{visibility:visible}
+.dd-it.on em{background:#e3ebfc;color:#014dda}
+.dd-it.dis{opacity:.45;cursor:default}
+.dd-it[hidden]{display:none}
+/* phones: the list slides up from the bottom */
+@media(max-width:720px){
+  .dd-btn{height:38px;border-radius:999px;font-size:13px;padding:0 13px}
+  .dd-pan{position:fixed;left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;border-radius:16px 16px 0 0;padding:12px 12px 20px;
+    box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:ddUp .22s ease}
+  .dd-pan::before{content:"";display:block;width:40px;height:4px;border-radius:4px;background:#d5dbe6;margin:0 auto 10px}
+  .dd-list{max-height:55vh}
+  .dd-it{padding:12px 10px;font-size:14.5px}
+  body.dd-lock{overflow:hidden}
+  .dd-pan{box-shadow:0 0 0 100vmax rgba(6,14,30,.45),0 -10px 40px rgba(0,0,0,.25)!important;z-index:200}
+  #searchForm .filterbar .dd,.filterbar .dd{flex:none}
+  #searchForm .filterbar .dd-btn{width:auto}
+}
+@keyframes ddUp{from{transform:translateY(100%)}to{transform:none}}
+/* the swipeable filter row's fade would hide the panel on phones */
+@media(max-width:720px){ #searchForm .filterbar{-webkit-mask-image:none!important} }
+.dd-q input,.dd-q input:focus{border:0!important;box-shadow:none!important;outline:0!important;padding:0!important;height:auto!important;background:transparent!important;margin:0!important;width:auto!important}
+.dd-q:focus-within{border-color:#014dda;background:#fff}
+
+/* =====================================================================
+   36. LIGHT PAGE HEADER — list pages (calm, compact, content first)
+   ===================================================================== */
+.ph-lite{position:relative;background:linear-gradient(180deg,#fff 0%,#f7f8fc 100%);border-bottom:1px solid #e9ecf3;padding:22px 0 22px}
+.ph-lite::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#014dda,#2a63e6 35%,#7c3aed 70%,#e0446b);opacity:.85}
+.phl-crumb{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12.5px;color:#7c8aa3;margin-bottom:10px}
+.phl-crumb a{color:#5f6b82;text-decoration:none}
+.phl-crumb a:hover{color:#014dda}
+.phl-crumb i{font-size:8px;opacity:.6}
+.phl-crumb span{color:#0f1a2e;font-weight:600}
+.phl-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.phl-txt{min-width:0}
+.phl-title{margin:0!important;font-size:32px!important;font-weight:800!important;letter-spacing:-.025em;line-height:1.15!important;color:#0f1a2e!important;text-shadow:none!important}
+.phl-title span{color:#014dda!important;font-weight:800}
+.phl-title::before,.phl-title::after{display:none!important}
+.phl-sub{margin:6px 0 0!important;font-size:15px;color:#5f6b82;max-width:680px}
+.phl-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.phl-pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid #e3e8f0;
+  font-size:12.5px;font-weight:500;color:#5f6b82;white-space:nowrap}
+.phl-pill i{font-size:11px;color:#014dda}
+.phl-pill b{color:#0f1a2e;font-weight:700}
+.phl-pill.is-ok{background:#ecf8f1;border-color:#cdebd9;color:#178a48}.phl-pill.is-ok i{color:#1fae5b}
+.phl-pill.is-hot{background:#fdeef2;border-color:#f6d0da;color:#c23b5c}.phl-pill.is-hot i{color:#e0446b}
+.phl-pill.is-blue{background:#eef3fd;border-color:#d6e2f8;color:#014dda}
+.phl-act{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex:none}
+.phl-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;border:1px solid #e1e6ef;background:#fff;
+  font-size:13.5px;font-weight:600;color:#24304a;text-decoration:none;transition:background .2s,border-color .2s,color .2s}
+.phl-btn i{font-size:12.5px;color:#014dda}
+.phl-btn:hover{border-color:#bfd0f1;color:#014dda;background:#f7f9fe}
+.phl-btn.is-primary{background:#014dda;border-color:#014dda;color:#fff}
+.phl-btn.is-primary i{color:#fff}
+.phl-btn.is-primary:hover{background:#003fb5;color:#fff}
+.phl-btn.is-ghost{border-color:transparent;background:transparent;padding:0 10px}
+.phl-btn.is-ghost:hover{background:#eef3fd}
+/* the category page puts its search + type chips here */
+.phl-extra{margin-top:16px}
+.ph-lite .ph-search{display:flex;align-items:center;gap:6px;max-width:720px;background:#fff;border:1px solid #e1e6ef;border-radius:12px;padding:5px 5px 5px 14px;box-shadow:0 6px 18px -14px rgba(16,26,44,.4)}
+.ph-lite .ph-search:focus-within{border-color:#014dda;box-shadow:0 0 0 3px rgba(1,77,218,.12)}
+.ph-lite .ph-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:14.5px;padding:9px 4px}
+.ph-lite .ph-search button{border:0;border-radius:9px;padding:10px 20px;font:inherit;font-weight:700;font-size:13.5px;color:#fff;background:#014dda;cursor:pointer}
+.ph-lite .ph-types{margin-top:12px;max-width:none}
+.ph-lite .ph-types a{color:#24304a!important;background:#fff!important;border:1px solid #e3e8f0!important;backdrop-filter:none!important}
+.ph-lite .ph-types a em{background:#f1f4f9!important;color:#5f6b82!important}
+.ph-lite .ph-types a:hover{border-color:#bfd0f1!important;color:#014dda!important}
+.ph-lite .ph-types span,.ph-lite .ph-types b,.ph-lite .ph-types-l{color:#7c8aa3!important}
+.ph-lite+.sec,.ph-lite+section,.ph-lite+div{padding-top:22px!important}
+@media(max-width:900px){
+  .phl-row{flex-direction:column;align-items:stretch;gap:14px}
+  .phl-act{justify-content:flex-start}
+}
+@media(max-width:720px){
+  .ph-lite{padding:16px 0 16px}
+  .phl-title{font-size:24px!important}
+  .phl-sub{font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .phl-pills,.phl-act,.ph-lite .ph-types{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-18px;margin-right:-18px;padding:0 18px 2px}
+  .phl-pills::-webkit-scrollbar,.phl-act::-webkit-scrollbar,.ph-lite .ph-types::-webkit-scrollbar{display:none}
+  .phl-pill,.phl-btn{flex:none}
+  .phl-btn{height:36px;padding:0 13px;font-size:13px}
+}
+
+/* =====================================================================
+   37. LIGHT BLUE — page header + highlighted home sections
+   ===================================================================== */
+:root{--tint:#eef4ff;--tint-2:#f6f9ff;--tint-line:#dde7fb}
+.ph-lite{background:radial-gradient(700px 220px at 0% 0%,rgba(1,77,218,.08),transparent 70%),
+  radial-gradient(600px 220px at 100% 100%,rgba(124,58,237,.06),transparent 70%),linear-gradient(180deg,var(--tint) 0%,var(--tint-2) 100%)!important;
+  border-bottom-color:var(--tint-line)!important}
+.ph-lite .phl-pill,.ph-lite .phl-btn:not(.is-primary):not(.is-ghost){border-color:var(--tint-line)}
+.sec-tint{background:linear-gradient(180deg,var(--tint) 0%,var(--tint-2) 100%)!important;border-top:1px solid var(--tint-line);border-bottom:1px solid var(--tint-line)}
+.sec-tint .sec-head h2{color:#0f1a2e}
+
+/* =====================================================================
+   38. NOIDA TODAY + MY NOIDA — news for people in a hurry
+   ===================================================================== */
+.nb{margin:0 0 26px}
+.nb-sec{padding:28px 0 6px!important}
+.nb-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px}
+.nb-today,.nb-mine{background:#fff;border:1px solid var(--cd-line,#e4e8ef);border-radius:var(--cd-r,10px);box-shadow:var(--cd-sh);padding:16px 18px}
+.nb-mine{background:linear-gradient(180deg,#f6f9ff,#fff 60%)}
+.nb-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;margin-bottom:4px;border-bottom:1px solid #eef1f5}
+.nb-live{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#0f1a2e;letter-spacing:-.01em}
+.nb-live>i:not(.fa-solid){width:9px;height:9px;border-radius:50%;background:#e0446b;box-shadow:0 0 0 0 rgba(224,68,107,.5);animation:nbPulse 1.8s infinite}
+.nb-live.is-mine i{color:#e0446b;font-size:13px}
+@keyframes nbPulse{0%{box-shadow:0 0 0 0 rgba(224,68,107,.5)}70%{box-shadow:0 0 0 8px rgba(224,68,107,0)}100%{box-shadow:0 0 0 0 rgba(224,68,107,0)}}
+.nb-meta{font-size:12px;color:#7c8aa3;font-weight:600}
+.nb-list{list-style:none;margin:0;padding:0}
+.nb-list li+li{border-top:1px dashed #e8ecf3}
+.nb-list a{display:flex;align-items:flex-start;gap:12px;padding:11px 4px;text-decoration:none;color:inherit;border-radius:8px;transition:background .15s}
+.nb-list a:hover{background:#f6f9ff}
+.nb-n{flex:none;width:24px;height:24px;border-radius:6px;background:#eef3fd;color:#014dda;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.nb-list li:first-child .nb-n{background:linear-gradient(135deg,#014dda,#7c3aed);color:#fff}
+.nb-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.nb-b b{font-size:14.5px;font-weight:700;color:#0f1a2e;line-height:1.35;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.nb-x{font-size:13px;color:#5f6b82;line-height:1.45;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.nb-tags{display:flex;align-items:center;gap:8px;margin-top:2px}
+.nb-tags em,.mn-list em{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#014dda;background:#eef3fd;padding:2px 7px;border-radius:4px}
+.nb-tags small,.mn-list small{font-size:11.5px;color:#8a96ad}
+.nb-go{flex:none;font-size:12px;color:#c3ccdb;margin-top:6px;transition:color .15s,transform .15s}
+.nb-list a:hover .nb-go{color:#014dda;transform:translateX(2px)}
+.nb-list a:hover b{text-decoration:underline;text-decoration-color:rgba(15,26,46,.25);text-underline-offset:3px}
+/* My Noida */
+.nb-edit{border:1px solid #dbe4f3;background:#fff;border-radius:8px;padding:5px 10px;font:inherit;font-size:12px;font-weight:700;color:#014dda;cursor:pointer}
+.nb-edit i{font-size:11px;margin-right:3px}
+.mn-q{font-size:13.5px;color:#3a4660;margin:10px 0 10px}
+.mn-chips{display:flex;flex-wrap:wrap;gap:6px}
+.mn-chip{border:1px solid #dbe4f3;background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;color:#3a4660;cursor:pointer;transition:all .15s}
+.mn-chip:hover{border-color:#014dda;color:#014dda}
+.mn-chip.on{background:#014dda;border-color:#014dda;color:#fff}
+.mn-chip.on::before{content:"✓ ";font-weight:800}
+.mn-sec{display:flex;align-items:center;gap:8px;height:40px;margin-top:12px;padding:0 12px;border:1px solid #dbe4f3;border-radius:8px;background:#fff}
+.mn-sec i{font-size:12px;color:#014dda}
+.mn-sec input{flex:1;min-width:0;border:0!important;outline:0;background:transparent!important;font:inherit;font-size:13.5px;padding:0!important;box-shadow:none!important;height:auto!important}
+.mn-save{display:block;width:100%;margin-top:10px;height:42px;border:0;border-radius:8px;background:linear-gradient(90deg,#014dda,#3b4fe0);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.mn-save:hover{filter:brightness(1.08)}
+.mn-note{display:block;text-align:center;margin-top:8px;font-size:11.5px;color:#8a96ad}
+.mn-for{font-size:12.5px;color:#5f6b82;margin:10px 0 6px}
+.mn-for b{color:#0f1a2e}
+.mn-list{list-style:none;margin:0;padding:0}
+.mn-list li+li{border-top:1px dashed #e8ecf3}
+.mn-list a{display:flex;flex-direction:column;gap:4px;padding:9px 2px;text-decoration:none;color:inherit}
+.mn-list a b{font-size:13.5px;font-weight:700;color:#0f1a2e;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mn-list a:hover b{color:#014dda}
+.mn-list span{display:flex;align-items:center;gap:8px}
+.mn-empty{font-size:13px;color:#7c8aa3;padding:14px 0}
+.mn-shake{animation:mnShake .35s}
+@keyframes mnShake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@media(max-width:900px){ .nb-grid{grid-template-columns:1fr} }
+@media(max-width:720px){
+  .nb-today,.nb-mine{padding:14px}
+  .nb-x{display:none}
+  .nb-b b{-webkit-line-clamp:2}
+}
+@media(max-width:720px){ .mn-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -14px;padding:0 14px 4px} .mn-chips::-webkit-scrollbar{display:none} .mn-chip{flex:none} .mn-q{margin:8px 0} }
+
+/* =====================================================================
+   39. LIST-PAGE BANNER — original layout, light-blue background
+   ===================================================================== */
+section.det-hero.det-hero.ph-tint{background:linear-gradient(180deg,#eef4ff 0%,#f6f9ff 100%)!important;color:#0f1a2e}
+section.det-hero.det-hero.ph-tint::before{opacity:0!important}
+section.det-hero.det-hero.ph-tint::after{background:
+  radial-gradient(620px 320px at 0% 0%,rgba(1,77,218,.10),transparent 70%),
+  radial-gradient(560px 300px at 100% 100%,rgba(124,58,237,.08),transparent 70%)!important}
+section.det-hero.det-hero.ph-tint>.wrap::before{background-image:radial-gradient(rgba(1,77,218,.12) 1px,transparent 1.2px)!important}
+/* text */
+.ph-tint .det-crumb,.ph-tint .det-crumb a{color:#5f6b82!important}
+.ph-tint .det-crumb a:hover{color:#014dda!important}
+.ph-tint .det-crumb span{color:#0f1a2e!important}
+.ph-tint .det-name{color:#0f1a2e!important;text-shadow:none!important}
+.ph-tint .det-name span{color:#014dda!important}
+.ph-tint .det-tagline{color:#5f6b82!important;text-shadow:none!important}
+/* chips */
+.ph-tint .ph-chip{background:#fff!important;border:1px solid #dde7fb!important;color:#3a4660!important}
+.ph-tint .ph-chip i{color:#014dda!important}
+.ph-tint .ph-chip.ph-ok{background:#ecf8f1!important;border-color:#cdebd9!important;color:#178a48!important}
+.ph-tint .ph-chip.ph-hot{background:#fdeef2!important;border-color:#f6d0da!important;color:#c23b5c!important}
+.ph-tint .ph-chip.ph-blue{background:#eef3fd!important;color:#014dda!important}
+/* info boxes */
+.ph-tint .lp-facts{background:#fff!important;border:1px solid #dde7fb!important;backdrop-filter:none!important;box-shadow:0 8px 22px -18px rgba(16,26,44,.35)}
+.ph-tint .lp-fact{background:transparent!important;border-color:#eef1f6!important}
+.ph-tint .lp-fact+.lp-fact{border-left:1px solid #eef1f6!important}
+.ph-tint .lp-fact>i{background:#eef3fd!important;color:#014dda!important}
+.ph-tint .lp-fact small{color:#7c8aa3!important}
+.ph-tint .lp-fact b{color:#0f1a2e!important}
+/* buttons + links */
+.ph-tint .lp-act{background:#fff!important;border:1px solid #dde7fb!important;color:#24304a!important;backdrop-filter:none!important}
+.ph-tint .lp-act i{color:#014dda!important}
+.ph-tint .lp-act:hover{border-color:#bfd0f1!important;color:#014dda!important}
+.ph-tint .lp-act.primary{background:#014dda!important;border-color:#014dda!important;color:#fff!important}
+.ph-tint .lp-act.primary i{color:#fff!important}
+.ph-tint .lp-links{border-top-color:#dde7fb!important}
+.ph-tint .lp-links a{color:#014dda!important}
+.ph-tint .lp-links a i{color:#014dda!important}
+/* the photo slider stays; give it a light frame instead of the dark glow */
+.ph-tint .lp-slider,.ph-tint .ph-slider{box-shadow:0 20px 40px -24px rgba(16,26,44,.45),0 0 0 1px #dde7fb!important}
+/* category page: search + type chips on the light background */
+.ph-tint .ph-search{border:1px solid #dde7fb;box-shadow:0 8px 22px -18px rgba(16,26,44,.35)!important}
+.ph-tint .ph-types a{color:#24304a!important;background:#fff!important;border:1px solid #dde7fb!important;backdrop-filter:none!important}
+.ph-tint .ph-types a em{background:#f1f4f9!important;color:#5f6b82!important}
+.ph-tint .ph-types a:hover{border-color:#bfd0f1!important;color:#014dda!important}
+.ph-tint .ph-types-l,.ph-tint .ph-types>span{color:#7c8aa3!important}
+
+/* =====================================================================
+   40. NOIDA TODAY — one visual section with topic filters
+   ===================================================================== */
+.nt{background:#fff;border:1px solid var(--cd-line,#e4e8ef);border-radius:var(--cd-r,10px);box-shadow:var(--cd-sh);padding:20px 22px 18px;margin:0 0 26px}
+.nt-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px}
+.nt-live{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#e0446b}
+.nt-live i{width:8px;height:8px;border-radius:50%;background:#e0446b;animation:nbPulse 1.8s infinite}
+.nt-title{margin:4px 0 0!important;font-size:22px!important;font-weight:800!important;letter-spacing:-.02em;color:#0f1a2e!important}
+.nt-title::before,.nt-title::after{display:none!important}
+.nt-meta{font-size:12.5px;font-weight:600;color:#7c8aa3;white-space:nowrap}
+/* topic chips */
+.nt-chips{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #eef1f5}
+.nt-chip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px;border-radius:999px;border:1px solid #e1e6ef;background:#fff;
+  font:inherit;font-size:13px;font-weight:600;color:#3a4660;cursor:pointer;transition:all .18s}
+.nt-chip i{font-size:12px;color:#014dda}
+.nt-chip em{font-style:normal;font-size:11px;font-weight:700;color:#7c8aa3;background:#f1f4f9;padding:1px 7px;border-radius:999px}
+.nt-chip:hover{border-color:#bfd0f1;color:#014dda;transform:translateY(-1px)}
+.nt-chip.on{background:linear-gradient(90deg,#014dda,#3b4fe0);border-color:transparent;color:#fff;box-shadow:0 8px 18px -10px rgba(1,77,218,.7)}
+.nt-chip.on i{color:#fff}
+.nt-chip.on em{background:rgba(255,255,255,.22);color:#fff}
+/* stories: one big lead + picture rows */
+.nt-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-auto-flow:dense;gap:12px 22px}
+.nt-item{display:flex;gap:14px;align-items:center;text-decoration:none;color:inherit;border-radius:10px;padding:8px;margin:-8px;transition:background .18s}
+.nt-item[hidden]{display:none!important}
+.nt-item:hover{background:#f6f9ff}
+.nt-ph{position:relative;flex:none;width:104px;height:78px;border-radius:8px;overflow:hidden;background:#e9eef5}
+.nt-ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.nt-item:hover .nt-ph img{transform:scale(1.06)}
+.nt-tag{display:none}
+.nt-bd{min-width:0;display:flex;flex-direction:column;gap:5px}
+.nt-bd b{font-size:14.5px;font-weight:700;line-height:1.35;color:#0f1a2e;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nt-item:hover .nt-bd b{text-decoration:underline;text-decoration-color:rgba(15,26,46,.25);text-underline-offset:3px}
+.nt-x{display:none}
+.nt-foot{display:flex;align-items:center;gap:12px;font-size:11.5px;color:#8a96ad}
+.nt-foot i{font-size:10.5px;margin-right:3px}
+.nt-read{display:none;margin-left:auto;font-weight:700;color:#014dda}
+/* the lead story */
+.nt-item.is-lead{grid-column:1;grid-row:span 4;flex-direction:column;align-items:stretch;gap:12px}
+.nt-item.is-lead .nt-ph{width:100%;height:auto;aspect-ratio:16/9;border-radius:10px}
+.nt-item.is-lead .nt-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(6,14,30,.35),transparent 45%)}
+.nt-item.is-lead .nt-tag{display:inline-block;position:absolute;left:12px;top:12px;z-index:2;padding:4px 9px;border-radius:4px;background:#fff;color:#014dda;
+  font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.nt-item.is-lead .nt-bd b{font-size:20px;line-height:1.28;letter-spacing:-.015em;-webkit-line-clamp:3}
+.nt-item.is-lead .nt-x{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;line-height:1.55;color:#5f6b82}
+.nt-item.is-lead .nt-read{display:inline-flex;align-items:center;gap:5px}
+.nt-item.is-lead:hover{background:transparent}
+/* switching topics: stories slide in */
+.nt-item.nt-in{animation:ntIn .35s ease both}
+@keyframes ntIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.nt-empty{text-align:center;color:#7c8aa3;padding:30px 0}
+.nt-more-wrap{text-align:center;margin-top:16px}
+.nt-more{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 20px;border-radius:999px;border:1px solid #dbe4f3;background:#fff;
+  font:inherit;font-size:13.5px;font-weight:700;color:#014dda;cursor:pointer;transition:background .18s}
+.nt-more:hover{background:#eef3fd}
+.nt-more[hidden]{display:none}
+/* old two-box version is not used any more */
+.nb-grid,.nb-mine{display:none!important}
+@media(max-width:900px){
+  .nt-grid{grid-template-columns:1fr}
+  .nt-item.is-lead{grid-row:auto}
+}
+@media(max-width:720px){
+  .nt{padding:16px 14px 14px}
+  .nt-head{flex-direction:column;align-items:flex-start;gap:6px}
+  .nt-title{font-size:19px!important}
+  .nt-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-14px;margin-right:-14px;padding:0 14px 14px}
+  .nt-chips::-webkit-scrollbar{display:none}
+  .nt-chip{flex:none}
+  .nt-ph{width:88px;height:68px}
+  .nt-item.is-lead .nt-bd b{font-size:17px}
+}
+
+/* =====================================================================
+   41. NEWS PAGE — small, centred, light-blue header (no photos)
+   ===================================================================== */
+.ph-lite.phl-center{padding:22px 0 20px;text-align:center}
+.phl-center .phl-crumb{justify-content:center;margin-bottom:8px}
+.phl-center .phl-row{flex-direction:column;align-items:center;gap:12px}
+.phl-center .phl-title{font-size:30px!important}
+.phl-center .phl-sub{margin-left:auto!important;margin-right:auto!important}
+.phl-center .phl-pills{justify-content:center;margin-top:10px}
+.phl-center .phl-act{justify-content:center}
+@media(max-width:720px){
+  .ph-lite.phl-center{padding:16px 0 14px}
+  .phl-center .phl-title{font-size:23px!important}
+  .phl-center .phl-pills,.phl-center .phl-act{justify-content:flex-start}
+}
+
+/* =====================================================================
+   42. NOIDA TODAY — "For you" (learns from what this reader opens)
+   ===================================================================== */
+.nt-chip.is-you{border-color:#d9c8fb;background:linear-gradient(90deg,#f5f0ff,#eef3fd);color:#5b3fd6}
+.nt-chip.is-you i{color:#7c3aed}
+.nt-chip.is-you.on{background:linear-gradient(90deg,#7c3aed,#014dda);color:#fff;border-color:transparent;box-shadow:0 8px 18px -10px rgba(124,58,237,.7)}
+.nt-chip.is-you.on i{color:#fff}
+.nt-why{display:flex;align-items:center;gap:8px;margin:-6px 0 14px;font-size:13px;color:#5b3fd6;background:#f7f3ff;border:1px solid #ece3ff;border-radius:8px;padding:8px 12px}
+.nt-why[hidden]{display:none}
+.nt-why i{font-size:12px}
+.nt-why span{flex:1}
+.nt-why button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:700;color:#7c8aa3;cursor:pointer;text-decoration:underline}
+.nt-item.is-read .nt-bd b{color:#6b7891}
+.nt-item.is-read .nt-foot::after{content:"✓ Read";margin-left:2px;font-weight:700;color:#1fae5b}
+
+/* =====================================================================
+   43. BANNER WITHOUT PHOTO CARD (contact) — one soft background photo
+   ===================================================================== */
+section.det-hero.ph-noslide .lp-hero-grid{grid-template-columns:1fr!important}
+section.det-hero.ph-noslide .lp-hero-main{max-width:760px}
+section.det-hero.det-hero.ph-noslide::before{opacity:.55!important;filter:blur(2px) saturate(1.15)!important;transform:scale(1.04)!important}
+section.det-hero.det-hero.ph-noslide::after{background:
+  radial-gradient(560px 340px at 6% 0%,rgba(42,99,230,.5),transparent 70%),
+  linear-gradient(90deg,rgba(6,13,32,.95) 0%,rgba(7,16,40,.82) 45%,rgba(8,20,52,.35) 100%)!important}
+@media(max-width:720px){
+  section.det-hero.det-hero.ph-noslide::after{background:linear-gradient(180deg,rgba(6,13,32,.88),rgba(7,16,40,.82))!important}
+}
+
+/* =====================================================================
+   44. CONTACT HEADER — small, centred, blue + violet (brand kit)
+   ===================================================================== */
+section.det-hero.det-hero.ph-noslide{padding-top:30px!important;padding-bottom:30px!important}
+section.det-hero.det-hero.ph-noslide::after{background:
+  radial-gradient(520px 300px at 15% 10%,rgba(1,77,218,.55),transparent 70%),
+  radial-gradient(520px 300px at 85% 90%,rgba(124,58,237,.55),transparent 70%),
+  linear-gradient(120deg,rgba(6,13,32,.9) 0%,rgba(16,20,60,.82) 50%,rgba(40,22,90,.78) 100%)!important}
+.ph-noslide .lp-hero-main{max-width:720px!important;margin:0 auto;align-items:center!important;text-align:center!important}
+.ph-noslide .det-crumb{justify-content:center!important}
+.ph-noslide .det-name{font-size:34px!important;margin-bottom:6px!important;justify-content:center}
+.ph-noslide .det-tagline{margin-left:auto!important;margin-right:auto!important}
+.ph-noslide .det-meta,.ph-noslide .lp-actions,.ph-noslide .lp-links{justify-content:center!important}
+/* the info box: one compact row, centred */
+.ph-noslide .lp-facts{margin:16px auto 0!important;max-width:680px;grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;grid-auto-flow:column;text-align:left}
+.ph-noslide .lp-facts .lp-fact,.ph-noslide .lp-facts .lp-fact-wide{grid-column:auto!important}
+.ph-noslide .lp-fact{padding:10px 14px!important}
+.ph-noslide .lp-actions{margin-top:16px!important}
+.ph-noslide .lp-links{margin-top:14px!important;padding-top:12px!important;border-top-color:rgba(255,255,255,.12)!important}
+/* violet accent: the main button */
+.ph-noslide .lp-act.primary{background:linear-gradient(90deg,#014dda,#7c3aed)!important;border-color:transparent!important;color:#fff!important;
+  box-shadow:0 10px 24px -12px rgba(124,58,237,.8)}
+.ph-noslide .lp-act.primary i{color:#fff!important}
+.ph-noslide .lp-act.primary:hover{filter:brightness(1.1)}
+.ph-noslide .lp-links a i{color:#b89cf5!important}
+@media(max-width:720px){
+  section.det-hero.det-hero.ph-noslide{padding-top:20px!important;padding-bottom:20px!important}
+  .ph-noslide .det-name{font-size:25px!important}
+  .ph-noslide .lp-facts{grid-auto-flow:row;grid-template-columns:1fr!important}
+  section.det-hero.det-hero.ph-noslide::after{background:
+    radial-gradient(260px 200px at 0% 0%,rgba(1,77,218,.5),transparent 70%),
+    radial-gradient(260px 200px at 100% 100%,rgba(124,58,237,.5),transparent 70%),
+    linear-gradient(180deg,rgba(6,13,32,.9),rgba(30,20,80,.85))!important}
+}
+
+/* =====================================================================
+   45. HOME CATEGORY TILES — smaller, inside the page width, more air
+   ===================================================================== */
+@media(min-width:1101px){
+  .hcatgrid{width:auto!important;max-width:1060px;left:auto!important;transform:none!important;margin:0 auto!important;gap:22px!important}
+  .hcat{padding:12px!important;border-radius:10px!important}
+  .hcat-ic{top:10px!important;left:10px!important;width:32px!important;height:32px!important;font-size:13px!important;border-radius:8px!important}
+  .hcat-bd b{font-size:14.5px!important;line-height:1.2}
+  .hcat-bd .hcat-n{font-size:10.5px!important;padding:2px 8px!important;margin-top:5px!important}
+  .hcat-go{right:10px!important;bottom:12px!important;width:26px!important;height:26px!important;font-size:11px!important}
+  .hcat-bd{padding-right:30px!important}
+}
+@media(min-width:761px) and (max-width:1100px){ .hcatgrid{max-width:760px;margin:0 auto!important} }
+
+/* =====================================================================
+   46. LIGHT HEADER — small label, used on News, Events, Offers, Contact
+   ===================================================================== */
+.phl-eb{display:inline-flex;align-items:center;gap:7px;margin-bottom:8px;padding:5px 12px;border-radius:999px;background:#fff;border:1px solid var(--tint-line,#dde7fb);
+  font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#014dda}
+.phl-eb i{font-size:11px}
+.phl-center .phl-txt{display:flex;flex-direction:column;align-items:center}
+.ph-lite .phl-pill{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+
+/* ===== 47. Home section labels (Handpicked, Right now...) — a bright pill so they stand out ===== */
+body.is-home .sec-head[data-eyebrow]::before,.sec-head[data-eyebrow]::before{
+  display:inline-flex;align-items:center;margin:0 0 12px;padding:7px 16px 7px 30px;border-radius:999px;
+  font-size:12px;font-weight:800;letter-spacing:.14em;line-height:1;color:#014dda;
+  background:radial-gradient(circle at 16px 50%,#e0446b 0 3.5px,transparent 4.5px),
+             linear-gradient(90deg,rgba(1,77,218,.12),rgba(124,58,237,.12) 60%,rgba(224,68,107,.12));
+  border:1px solid rgba(1,77,218,.18);box-shadow:0 4px 14px -6px rgba(1,77,218,.35)}
+body:not(.is-home) .sec-head[data-eyebrow]::before{display:none}
+@media(max-width:600px){.sec-head[data-eyebrow]::before{font-size:11px;padding:6px 13px 6px 26px;background-position:-2px 0,0 0}}
+/* keep long pills (email, address) inside the screen on phones */
+.phl-center .phl-txt{width:100%;max-width:100%;min-width:0}
+.ph-lite .phl-pills{max-width:100%;flex-wrap:wrap;justify-content:center}
+@media(max-width:600px){.ph-lite .phl-pill{white-space:normal;text-align:center;max-width:100%}.ph-lite .phl-pill b{word-break:break-word;min-width:0}}
+
+/* ===== 48. ALL listing cards — simple: photo, category, name. No sliding panel ===== */
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich{position:relative!important;height:auto!important;display:flex!important;flex-direction:column!important}
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .ph{position:relative!important;inset:auto!important;height:auto!important;aspect-ratio:4/3;flex:none!important}
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .ph::after{background:none!important}
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .bd,
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich:is(:hover,:focus-visible) .bd{position:static!important;transform:none!important;
+  box-shadow:none!important;padding:14px 16px 16px!important;display:flex!important;flex-direction:column;gap:6px;background:#fff!important}
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .bd .lc-cat{display:inline-flex!important;align-self:flex-start;padding:3px 10px;border-radius:999px;
+  background:var(--tint,#eef4ff);color:#014dda!important;font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1.5;margin:0!important}
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .bd h3{margin:0!important;font-size:15.5px!important;-webkit-line-clamp:1!important;min-height:0!important}
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .bd :is(.loc,.lc-meta,.lc-actions,.lc-foot),
+body :is(.lgrid:not(.aslist),.lscroll) .lcard.rich.rich .ph :is(.rate,.lc-open,.lc-badge){display:none!important}
+
+/* =====================================================================
+   49. LISTINGS SEARCH PANEL — one card: search, quick chips, filters
+   ===================================================================== */
+.sx-sec{padding-top:0!important}
+:is(#searchForm,.sx).sx{position:relative;z-index:5;margin:0 0 18px;background:#fff;border:1px solid var(--cd-line,#e4e8ef);border-radius:18px;
+  padding:18px 18px 16px;box-shadow:0 26px 50px -30px rgba(15,26,46,.45),0 2px 6px rgba(15,26,46,.04);overflow:visible}
+:is(#searchForm,.sx).sx::before{content:"";position:absolute;left:18px;right:18px;top:-1px;height:3px;border-radius:0 0 3px 3px;
+  background:linear-gradient(90deg,#014dda,#2a63e6 35%,#7c3aed 70%,#e0446b)}
+/* search row */
+.sx-top{display:flex;gap:10px;align-items:stretch}
+.sx-q{flex:1;min-width:0;display:flex;align-items:center;gap:12px;height:54px;padding:0 14px 0 18px;border:1.5px solid #e1e6ef;border-radius:14px;
+  background:#f7f9fc;cursor:text;transition:border-color .2s,background .2s,box-shadow .2s}
+.sx-q>i{color:#014dda;font-size:16px}
+.sx-q:focus-within{border-color:#014dda;background:#fff;box-shadow:0 0 0 4px rgba(1,77,218,.12)}
+:is(#searchForm,.sx).sx .sx-q input{flex:1;min-width:0;height:100%!important;border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;
+  padding:0!important;margin:0!important;font:inherit;font-size:15.5px!important;color:#0f1a2e}
+.sx-q input::placeholder{color:#8a96ab;transition:opacity .3s}
+.sx-x{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:#e9eef6;color:#5f6b82;cursor:pointer;display:grid;place-items:center;font-size:12px}
+.sx-x:hover{background:#dfe6f2;color:#0f1a2e}
+.sx-x[hidden]{display:none}
+.sx-kbd{flex:none;font:700 11px/1 Inter,sans-serif;color:#7c8aa3;border:1px solid #d9e0eb;border-bottom-width:2px;border-radius:6px;padding:4px 7px;background:#fff}
+.sx-q:focus-within .sx-kbd{display:none}
+.sx-go{flex:none;display:inline-flex;align-items:center;gap:9px;height:54px;padding:0 26px;border:0;border-radius:14px;cursor:pointer;
+  font:inherit;font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,#014dda,#2a63e6 55%,#7c3aed);
+  box-shadow:0 12px 24px -12px rgba(1,77,218,.7);transition:transform .2s,box-shadow .2s}
+.sx-go:hover{transform:translateY(-1px);box-shadow:0 16px 28px -12px rgba(1,77,218,.8)}
+/* quick chips */
+.sx-quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.sx-chip,.sx-more{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border:1px solid #e1e6ef;border-radius:999px;background:#fff;
+  font:inherit;font-size:13px;font-weight:600;color:#24304a;cursor:pointer;white-space:nowrap;transition:all .18s ease}
+.sx-chip>i:first-child{color:#014dda;font-size:12px}
+.sx-chip:hover,.sx-more:hover{border-color:#b9cdf3;background:#f6f9ff;transform:translateY(-1px)}
+.sx-chip.on{border-color:#014dda;background:linear-gradient(90deg,#eef4ff,#f3efff);color:#014dda;box-shadow:0 0 0 3px rgba(1,77,218,.08)}
+.sx-chip .sx-cx{font-size:10px;opacity:.7}
+.sx-more{margin-left:auto;display:none}
+.sx-more.on{border-color:#014dda;color:#014dda}
+/* the four drop-downs */
+:is(#searchForm,.sx).sx .sx-filters{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px!important;margin:14px 0 0!important;
+  padding:14px 0 0!important;border:0!important;border-top:1px dashed #e4e8ef!important;border-radius:0!important;background:none!important;box-shadow:none!important;
+  overflow:visible!important;-webkit-mask-image:none!important}
+:is(#searchForm,.sx).sx .sx-filters>.sx-f{display:flex;flex-direction:column;gap:6px;min-width:0;height:auto!important;width:auto!important;border-radius:0!important;font-size:inherit!important}
+.sx-l{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7891;display:flex;align-items:center;gap:6px}
+.sx-l i{color:#014dda;font-size:11px}
+:is(#searchForm,.sx).sx .sx-filters .dd-btn{width:100%!important;height:44px;border-radius:10px}
+:is(#searchForm,.sx).sx .sx-filters.is-shut{display:none!important}
+/* what is on + trending */
+.sx-on,.sx-trend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed #e4e8ef}
+.sx-onl{font-size:12.5px;font-weight:700;color:#6b7891;display:inline-flex;align-items:center;gap:6px}
+.sx-onl .fa-fire{color:#e0446b}
+.sx-tag{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border:1px solid #cddcfb;border-radius:999px;background:#eef4ff;
+  font:inherit;font-size:12.5px;font-weight:700;color:#014dda;cursor:pointer;transition:all .18s}
+.sx-tag .fa-xmark{font-size:10px;opacity:.75}
+.sx-tag:hover{background:#014dda;border-color:#014dda;color:#fff}
+.sx-clear{font-size:13px;font-weight:700;color:#e0446b!important;margin-left:4px}
+.sx-clear:hover{text-decoration:underline}
+.sx-trend a{display:inline-flex;align-items:center;height:32px;padding:0 13px;border:1px solid var(--tint-line,#dde7fb);border-radius:999px;
+  background:var(--tint-2,#f6f9ff);font-size:12.5px;font-weight:600;color:#24304a!important;transition:all .18s}
+.sx-trend a:hover{border-color:#014dda;color:#014dda!important;transform:translateY(-1px)}
+/* results line + loading */
+.sx-count{margin:22px 0 14px!important;font-size:14px;color:#6b7891}
+.sx-count b{color:#0f1a2e;font-weight:800}
+.sx-sec .lgrid{transition:opacity .25s}
+.sx-sec .lgrid.is-busy{opacity:.4;pointer-events:none}
+/* tablets */
+@media(max-width:900px){ :is(#searchForm,.sx).sx .sx-filters{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* phones */
+@media(max-width:640px){
+  :is(#searchForm,.sx).sx{padding:14px 12px 12px;border-radius:16px}
+  .sx-q{height:50px;padding:0 10px 0 14px;gap:10px}
+  .sx-kbd{display:none}
+  .sx-go{width:50px;height:50px;padding:0;justify-content:center}
+  .sx-go span{display:none}
+  .sx-quick,.sx-trend{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px}
+  .sx-quick::-webkit-scrollbar,.sx-trend::-webkit-scrollbar{display:none}
+  .sx-chip,.sx-more,.sx-trend a{flex:none}
+  .sx-more{display:inline-flex;order:-1;margin-left:0}
+  :is(#searchForm,.sx).sx .sx-filters{gap:10px!important}
+}
+
+/* the same panel on every page that filters (category, area, property, place, news/events/offers) */
+#searchForm.sx{margin:28px 0 0}
+@media(max-width:640px){ #searchForm.sx{margin-top:16px} }
+:is(#searchForm,.sx).sx .sx-filters{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+#searchForm.sx .sx-filters{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:900px){ :is(#searchForm,.sx).sx .sx-filters,#searchForm.sx .sx-filters{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.sx form{margin:0}
+.sx .sx-top+form .sx-quick,.sx .sx-top+form .sx-filters:first-child{margin-top:14px}
+.sx-busy .lgrid{opacity:.4;pointer-events:none;transition:opacity .25s}
+/* category / topic chips with counts */
+.sx-cats{margin-top:14px}
+.sx-chip em{font-style:normal;font-size:11px;font-weight:700;color:#5f6b82;background:#f1f4f9;padding:2px 7px;border-radius:999px}
+.sx-chip.on em{background:#dce7fd;color:#014dda}
+a.sx-chip{text-decoration:none}
+/* toolbars that were cards already: let the panel lead */
+.cp-toolbar.sx,.pp-toolbar.sx{padding:18px!important;border-radius:18px!important}
+.cp-toolbar.sx .cp-tb-head{margin-bottom:4px}
+.pp-toolbar.sx .pquick{margin-bottom:14px}
+.pp-toolbar.sx .pq{height:36px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;border:1px solid #e1e6ef;background:#fff;font-weight:600}
+.pp-toolbar.sx .pq.on{background:#014dda;border-color:#014dda;color:#fff}
+.pp-toolbar.sx .sx-quick{margin-top:14px}
+@media(max-width:640px){
+  .cp-toolbar.sx,.pp-toolbar.sx{padding:14px 12px!important;border-radius:16px!important}
+  .sx-cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-12px;margin-right:-12px;padding:0 12px}
+  .sx-cats::-webkit-scrollbar{display:none}
+}
+
+/* =====================================================================
+   50. AREAS PAGE — each sector as a small button-card
+   ===================================================================== */
+.ar-links{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))!important;gap:10px!important;padding:16px 20px 20px!important}
+.ar-links a{align-items:center;margin:0!important;padding:10px 12px!important;background:#fff;border:1px solid #e4e8ef;border-radius:10px!important;
+  font-size:14px;font-weight:600;color:#0f1a2e!important;box-shadow:0 1px 2px rgba(15,26,46,.04);transition:all .18s ease}
+.ar-links a span{flex:none;font-size:11px!important;font-weight:700;color:#5f6b82!important;background:#f1f4f9;padding:2px 8px;border-radius:999px}
+.ar-links a:hover{border-color:#014dda;background:#eef4ff;color:#014dda!important;transform:translateY(-2px);box-shadow:0 8px 18px -10px rgba(1,77,218,.45)}
+.ar-links a:hover span{background:#dce7fd;color:#014dda!important}
+.ar-links a.zero{opacity:.55;background:#f7f9fc;box-shadow:none;color:#8a96ab!important}
+.ar-links a.zero:hover{transform:none;border-color:#e4e8ef;background:#f7f9fc;color:#8a96ab!important;box-shadow:none}
+.ar-links a.zero:hover span{background:#f1f4f9;color:#5f6b82!important}
+/* one icon only on each band heading: keep the arrow, drop the extra +/– */
+.sec details.ar-row>summary::after{content:none!important;display:none!important}
+@media(max-width:640px){ .ar-links{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:12px 14px 16px!important} .ar-links a{font-size:13.5px} }
+
+/* =====================================================================
+   51. BUSINESS PAGE HEADER — calmer, clearly grouped text
+   ===================================================================== */
+/* short intro: two lines at most */
+section.det-hero .det-tagline{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font-size:15px!important;line-height:1.6;color:rgba(255,255,255,.72)!important;max-width:56ch;margin:10px 0 0!important}
+/* one meta line */
+.lh-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px}
+.lh-open{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;
+  background:rgba(22,163,74,.16);color:#6ee7a0;border:1px solid rgba(110,231,160,.35)}
+.lh-open i{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25)}
+.lh-open em{font-style:normal;font-weight:500;color:rgba(255,255,255,.8);padding-left:8px;border-left:1px solid rgba(255,255,255,.2)}
+.lh-open.is-shut{background:rgba(224,68,107,.14);color:#ff9fb6;border-color:rgba(255,159,182,.35)}
+.lh-open.is-shut i{background:#e0446b;box-shadow:0 0 0 3px rgba(224,68,107,.25)}
+.lh-dots{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 0;font-size:13.5px;color:rgba(255,255,255,.72)}
+.lh-dots>*{display:inline-flex;align-items:center;gap:6px}
+.lh-dots>*+*::before{content:"";width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.35);margin:0 12px}
+.lh-dots a{color:#fff!important;font-weight:700}
+.lh-dots a:hover{text-decoration:underline}
+.lh-dots i{font-size:12px;opacity:.8}
+.lh-rate i{color:#fbbf24;opacity:1!important}
+.lh-rate small{opacity:.7}
+.lh-new{color:#c4b5fd}
+/* phone + address: two quiet rows */
+.lh-info{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;margin-top:20px;border:1px solid rgba(255,255,255,.12);border-radius:12px;
+  background:rgba(255,255,255,.05);overflow:hidden;max-width:620px}
+.lh-row{display:flex;align-items:center;gap:12px;padding:12px 16px;min-width:0;color:#fff!important;transition:background .2s}
+.lh-row+.lh-row{border-left:1px solid rgba(255,255,255,.12)}
+.lh-row:hover{background:rgba(255,255,255,.07)}
+.lh-row>i{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:rgba(1,77,218,.35);color:#cfe0ff;font-size:13px}
+.lh-row span{display:flex;flex-direction:column;min-width:0}
+.lh-row small{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.lh-row b{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* buttons: three main ones, two small round ones */
+.lh-actions{margin-top:20px!important}
+.lh-actions .lh-ic{width:46px;padding:0!important;justify-content:center;border-radius:50%!important}
+/* the small links underneath */
+.lh-links{margin-top:16px!important;padding-top:14px!important;gap:6px 20px!important}
+.lh-links a{font-size:13px!important;color:rgba(255,255,255,.65)!important;font-weight:600}
+.lh-links a:hover{color:#fff!important}
+/* the old four-box grid is no longer used */
+@media(max-width:720px){
+  .lh-info{grid-template-columns:1fr}
+  .lh-row+.lh-row{border-left:0;border-top:1px solid rgba(255,255,255,.12)}
+  .lh-dots{font-size:13px}
+  .lh-dots>*+*::before{margin:0 9px}
+  .lh-actions .lh-ic{width:42px}
+}
+.lh-info:has(>.lh-row:only-child){grid-template-columns:1fr}
+.lh-actions .lp-act{min-height:44px}
+.lh-actions .lh-ic{flex:none;width:44px!important;height:44px;min-height:44px}
+@media(max-width:720px){ .lh-actions .lh-ic{width:49px!important;height:49px} }
+
+/* =====================================================================
+   52. EVENT / OFFER CARDS — the kind of thing, as small pills
+   ===================================================================== */
+.lcard .bd .cd-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.lcard .bd .cd-tags span{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:var(--tint,#eef4ff);
+  color:#014dda;font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1}
+.lcard .bd .cd-tags span+span{background:#f3efff;color:#7c3aed}
+.sx-types .sx-chip>i:first-child{color:#7c3aed}
+.sx-types .sx-chip.on>i:first-child{color:#014dda}
+
+/* =====================================================================
+   53. DETAIL CARDS (events, offers, news) — livelier, still calm
+   ===================================================================== */
+.ev-grid .ev-card{position:relative;border-radius:16px!important;padding:22px 24px 24px;overflow:hidden}
+.ev-grid .ev-card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#014dda,#2a63e6 35%,#7c3aed 70%,#e0446b)}
+.ev-grid .ev-h{padding-bottom:14px;border-bottom:1px solid #eef1f6!important}
+.ev-grid .ev-ic{width:36px!important;height:36px!important;border-radius:11px!important;font-size:14px;color:#fff!important;
+  background:linear-gradient(135deg,#014dda,#7c3aed)!important;box-shadow:0 8px 16px -8px rgba(1,77,218,.7)}
+/* type pills under the heading */
+.ev-tags{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 16px}
+.ev-tags span{height:24px;display:inline-flex;align-items:center;padding:0 10px;border-radius:999px;font-size:11.5px;font-weight:700;background:#eef4ff;color:#014dda}
+.ev-tags span:nth-child(2n){background:#f3efff;color:#7c3aed}
+.ev-tags span:nth-child(3n){background:#fdeef2;color:#e0446b}
+/* first paragraph becomes a lead with a brand bar */
+.ev-grid .ev-text p:first-child{position:relative;margin:0 0 16px;padding:14px 16px 14px 18px;border-radius:12px;background:linear-gradient(90deg,#f3f7ff,#faf8ff);
+  font-size:16px;line-height:1.6;color:#0f1a2e}
+.ev-grid .ev-text p:first-child::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:4px;background:linear-gradient(#014dda,#7c3aed)}
+.ev-grid .ev-text p{font-size:15px;line-height:1.75;color:#3a4660}
+/* "what to expect" chips in brand tint */
+.ev-grid .ev-pts{margin-top:18px;padding-top:16px;border-top:1px dashed #e4e8ef}
+.ev-grid .ev-chip{background:#fff!important;border:1px solid #dde7fb!important;color:#24304a;border-radius:999px!important;font-weight:600}
+.ev-grid .ev-chip i{color:#7c3aed}
+/* detail tiles */
+.ev-grid .ev-di{background:#f6f9ff;border:1px solid #e6edfb;border-radius:12px!important;transition:border-color .2s,transform .2s}
+.ev-grid .ev-di:hover{border-color:#c9d9f8;transform:translateY(-1px)}
+.ev-grid .ev-di>i{background:linear-gradient(135deg,#eef4ff,#f3efff)!important;color:#014dda;border-radius:10px!important}
+/* side ticket */
+.ev-grid .ev-ticket{border-radius:16px!important;box-shadow:0 24px 44px -28px rgba(15,26,46,.45)!important}
+.ev-grid .ev-date{position:relative;background:linear-gradient(120deg,#0f1a2e,#014dda 55%,#7c3aed)!important;padding:20px 16px!important;overflow:hidden}
+.ev-grid .ev-date::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(224,68,107,.45),transparent 70%)}
+.ev-grid .ev-nodate{justify-content:flex-start!important;align-items:center!important;gap:14px!important;padding:18px 20px!important}
+.ev-grid .ev-nodate>i{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.14);font-size:20px;position:relative;z-index:1}
+.ev-grid .ev-nodate span{display:flex;flex-direction:column;font-size:17px;font-weight:800;position:relative;z-index:1}
+.ev-grid .ev-nodate small{font-size:12px;font-weight:500;opacity:.8;margin-top:2px}
+.ev-grid .ev-tk-bd{padding:18px 20px 6px}
+.ev-grid .ev-tk-bd p{padding:10px 12px;margin:0 0 8px;border-radius:10px;background:#f6f9ff;align-items:center}
+.ev-grid .ev-tk-bd p i{width:28px;height:28px;margin:0;flex:none;border-radius:8px;display:grid;place-items:center;background:#fff;color:#014dda;font-size:12px;box-shadow:0 1px 2px rgba(15,26,46,.06)}
+.ev-grid .ev-btns{padding:10px 20px 20px}
+.ev-grid .ev-btn{border-radius:12px!important;padding:12px}
+.ev-grid .ev-btn.primary{background:linear-gradient(135deg,#014dda,#2a63e6 55%,#7c3aed)!important;border:0!important;box-shadow:0 12px 22px -12px rgba(1,77,218,.75)}
+.ev-grid .ev-btn.primary:hover{filter:none;transform:translateY(-1px);box-shadow:0 16px 26px -12px rgba(1,77,218,.85)}
+@media(max-width:560px){ .ev-grid .ev-card{padding:18px 16px 18px} .ev-grid .ev-text p:first-child{font-size:15px} }
+
+/* =====================================================================
+   54. HOME CATEGORY TILES — use the full page width, evenly spread
+   ===================================================================== */
+@media(min-width:1101px){
+  /* line up with the header (logo to Login button), not the narrower text column */
+  .hcatgrid{max-width:none!important;width:min(1400px,calc(100vw - 160px))!important;position:relative!important;left:50%!important;transform:translateX(-50%)!important;margin:0!important;gap:24px!important}
+  .hcat{aspect-ratio:6/5!important}
+  .hcat-bd b{font-size:16px!important}
+}
+@media(min-width:761px) and (max-width:1100px){ .hcatgrid{max-width:none!important;width:100%!important;gap:18px!important} }
+
+/* =====================================================================
+   55. HOME — "Find your space in Noida" (PG, coworking, commercial, dealers)
+   ===================================================================== */
+.st-sec{background:linear-gradient(180deg,#f4f8ff,#fff 70%)}
+.st-kinds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 22px}
+.st-kind{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1px solid #e4e8ef;border-radius:14px;
+  box-shadow:0 1px 2px rgba(15,26,46,.04);color:#0f1a2e!important;transition:all .2s ease}
+.st-kind:hover{border-color:#014dda;transform:translateY(-2px);box-shadow:0 14px 26px -16px rgba(1,77,218,.5)}
+.st-ki{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:17px;
+  background:linear-gradient(135deg,#014dda,#7c3aed);box-shadow:0 8px 16px -8px rgba(1,77,218,.7)}
+.st-kind:nth-child(2) .st-ki{background:linear-gradient(135deg,#7c3aed,#e0446b)}
+.st-kind:nth-child(3) .st-ki{background:linear-gradient(135deg,#0f1a2e,#014dda)}
+.st-kind:nth-child(4) .st-ki{background:linear-gradient(135deg,#e0446b,#f59e0b)}
+.st-kt{display:flex;flex-direction:column;min-width:0;flex:1}
+.st-kt b{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-kt small{font-size:12.5px;color:#6b7891;font-weight:600}
+.st-kgo{font-size:12px;color:#9aa6bb;transition:transform .2s,color .2s}
+.st-kind:hover .st-kgo{color:#014dda;transform:translateX(3px)}
+.st-move{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:22px;padding:14px 16px;border:1px dashed #d5e0f5;border-radius:14px;background:#fff}
+.st-ml{font-size:13px;font-weight:800;color:#0f1a2e;display:inline-flex;align-items:center;gap:7px;margin-right:4px}
+.st-ml i{color:#e0446b}
+.st-move a{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border:1px solid #e4e8ef;border-radius:999px;background:#f7f9fc;
+  font-size:13px;font-weight:600;color:#24304a!important;transition:all .18s}
+.st-move a i{color:#014dda;font-size:12px}
+.st-move a em{font-style:normal;font-size:11px;font-weight:700;color:#5f6b82;background:#fff;padding:1px 7px;border-radius:999px}
+.st-move a:hover{border-color:#014dda;background:#eef4ff;color:#014dda!important}
+.st-move .st-all{margin-left:auto;background:#014dda;border-color:#014dda;color:#fff!important}
+.st-move .st-all i{color:#fff}
+.st-move .st-all:hover{background:#0b3fb0;color:#fff!important}
+.st-sec .ptab i{margin-right:4px;font-size:12px}
+@media(max-width:900px){ .st-kinds{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:560px){
+  .st-kinds{gap:10px} .st-kind{padding:12px;gap:10px} .st-ki{width:38px;height:38px;font-size:15px} .st-kt b{font-size:13.5px} .st-kgo{display:none}
+  .st-move .st-all{margin-left:0}
+}
+/* the four space tiles now stand on their own */
+.st-sec .st-kinds{margin-bottom:0}
+.st-sec .st-kind{padding:18px 20px}
+.st-sec .st-ki{width:50px;height:50px;font-size:19px}
+.st-sec .st-kt b{font-size:16px}
+@media(max-width:560px){ .st-sec .st-kind{padding:12px} .st-sec .st-ki{width:40px;height:40px;font-size:15px} .st-sec .st-kt b{font-size:13.5px} }
+/* counts inside the space tabs */
+.ptab .ptab-n{font-style:normal;font-size:11px;font-weight:800;margin-left:6px;padding:2px 8px;border-radius:999px;background:#eef4ff;color:#014dda}
+.ptab.on .ptab-n{background:rgba(255,255,255,.22);color:#fff}
+.st-sec .ptabs{margin-top:4px}
+
+/* =====================================================================
+   56. NO SMALL LABELS — the little pills above headings are switched off
+   everywhere (Handpicked, Right now, Just added, Explore, What's on…)
+   ===================================================================== */
+.sec-head[data-eyebrow]::before,body.is-home .sec-head[data-eyebrow]::before{content:none!important;display:none!important}
+.phl-eb,.sec-head .kicker,.ph-eyebrow,.nt-eyebrow,.nt-head .nt-live{display:none!important}
+
+/* =====================================================================
+   57. SIMPLER FILTER PANEL — chips for quick filters, only Area + Sort as
+   drop-downs, and one small "Clear all" (no repeated "Showing" row)
+   ===================================================================== */
+#searchForm.sx .sx-filters{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+:is(#searchForm,.sx).sx .sx-filters>.sx-f[hidden]{display:none!important}
+.sx-quick .sx-clear{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;color:#e0446b!important}
+.sx-quick .sx-clear:hover{background:#fdeef2;text-decoration:none}
+.sx-filters+.sx-clear,.sx-filters>.sx-clear{margin-top:12px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#e0446b!important}
+@media(max-width:640px){ #searchForm.sx .sx-filters{grid-template-columns:repeat(2,minmax(0,1fr))!important} .sx-quick .sx-clear{margin-left:0} }
+
+/* =====================================================================
+   58. PICK, THEN SEARCH — chips/drop-downs only choose; the button loads
+   ===================================================================== */
+.sx-applyrow{display:flex;justify-content:flex-end;margin-top:14px}
+.sx-apply{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border:0;border-radius:12px;cursor:pointer;font:inherit;font-size:14px;font-weight:800;
+  color:#fff;background:linear-gradient(135deg,#014dda,#2a63e6 55%,#7c3aed);box-shadow:0 12px 22px -12px rgba(1,77,218,.7);transition:transform .2s,box-shadow .2s}
+.sx-apply:hover{transform:translateY(-1px)}
+.sx-go.sx-pending,.sx-apply.sx-pending{animation:sxPulse 1.4s ease-in-out infinite}
+@keyframes sxPulse{0%,100%{box-shadow:0 12px 22px -12px rgba(1,77,218,.7),0 0 0 0 rgba(1,77,218,.35)}50%{box-shadow:0 12px 22px -12px rgba(1,77,218,.7),0 0 0 7px rgba(1,77,218,0)}}
+@media(max-width:640px){ .sx-applyrow{justify-content:stretch} .sx-apply{width:100%;justify-content:center} }
+
+/* =====================================================================
+   59. ONE FILTER LAYOUT EVERYWHERE — search row, chips, drop-downs
+   ===================================================================== */
+.sx .sx-top+.sx-quick,.sx .sx-top+.filterbar{margin-top:14px}
+.pp-toolbar.sx .pquick{display:none!important}   /* Rent / Buy chips below do the same job */
+.cp-toolbar.sx .cp-tb-head{margin-bottom:14px}
+
+/* =====================================================================
+   60. MULTI-PICK DROP-DOWNS (Facilities) — real tick boxes
+   ===================================================================== */
+.dd-multi .dd-tick{visibility:visible!important;flex:none;width:18px;height:18px;border:1.5px solid #c3cddd;border-radius:5px;background:#fff;
+  display:inline-grid;place-items:center;font-size:10px;color:transparent;transition:background .15s,border-color .15s}
+.dd-multi .dd-it:hover .dd-tick{border-color:#014dda}
+.dd-multi .dd-it.on .dd-tick{background:#014dda;border-color:#014dda;color:#fff}
+.dd-multi .dd-it.on{color:#0f1a2e;font-weight:600}
+.dd-multi .dd-it[data-i="0"] .dd-tick{visibility:hidden!important}   /* "Any facility" clears, it isn't a box */
+.dd-multi .dd-it[data-i="0"]{color:#014dda;font-weight:700}
+/* up to 3 facilities */
+.dd-multi .dd-it.dd-lock{opacity:.4}
+.dd-note{margin:6px 4px 2px;font-size:12px;color:#6b7891;display:flex;align-items:center;gap:6px}
+.dd-pan.dd-full .dd-note{color:#e0446b;font-weight:700}
+
+/* =====================================================================
+   61. "POPULAR IN …" — quick picks under every filter panel
+   ===================================================================== */
+.sx-pop a{gap:6px}
+.sx-pop a i{font-size:11px;color:#014dda}
+.sx-pop a em{font-style:normal;font-size:11px;font-weight:700;color:#5f6b82;background:#fff;padding:1px 7px;border-radius:999px;border:1px solid #e4e8ef}
+.sx-pop a:hover em{border-color:#014dda;color:#014dda}
+
+/* =====================================================================
+   62. PHONES — business page header and bottom bar, tidier
+   ===================================================================== */
+@media(max-width:720px){
+  /* the bottom bar already has Call, WhatsApp and Enquire — the header keeps
+     just Directions and Share, as two even buttons */
+  section.det-hero .lh-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:10px!important}
+  section.det-hero .lh-actions .lp-act.primary,
+  section.det-hero .lh-actions .lp-act.wa,
+  section.det-hero .lh-actions a[href="#enquiry"]{display:none!important}
+  section.det-hero .lh-actions .lp-act{width:auto!important;height:46px!important;min-height:46px;padding:0 14px!important;border-radius:12px!important;
+    flex-direction:row!important;justify-content:center;gap:8px;font-size:14px!important;white-space:nowrap}
+  section.det-hero .lh-actions .lh-ic::after{content:"Share";font-weight:700}
+  /* one calm meta line: no floating dots when it wraps */
+  .lh-dots{gap:8px 16px}
+  .lh-dots>*+*::before{display:none}
+  /* the bottom bar: one line per button */
+  .det-stickybar a,.det-stickybar button{flex-direction:row!important;gap:7px!important;height:46px!important;min-height:0!important;padding:0 10px!important;
+    font-size:14px!important;white-space:nowrap;line-height:1}
+  .det-stickybar a i,.det-stickybar button i{margin:0!important;font-size:15px}
+}
+
+/* ---- phones: business header takes less room ---- */
+@media(max-width:720px){
+  section.det-hero .det-tagline{display:none!important}            /* it repeats the address shown below */
+  .lh-dots>span:has(.fa-eye){display:none}                         /* view count: not needed on a phone */
+  .lh-meta{margin-top:12px!important;gap:8px 12px!important}
+  .lh-info{margin-top:14px!important}
+  .lh-info .lh-row:not(.lh-addr){display:none!important}           /* the Call button below already has the number */
+  .lh-info .lh-row{padding:10px 12px!important}
+  .lh-info .lh-row>i{width:28px;height:28px;font-size:12px}
+  section.det-hero .lh-actions{margin-top:14px!important}
+  section.det-hero .det-name{font-size:24px!important;line-height:1.2!important;margin-top:6px!important}
+  /* bottom bar: text sits in the middle of each button */
+  .det-stickybar a,.det-stickybar button{display:flex!important;align-items:center!important;justify-content:center!important;padding-top:0!important;padding-bottom:0!important}
+}
+
+/* =====================================================================
+   63. PHONES — whole site: finger-sized chips, readable small text,
+   single swipe rows, shorter headers
+   ===================================================================== */
+@media(max-width:720px){
+  /* every chip and small button is at least 38px tall — easy to tap */
+  .sx-trend a,.sx-quick .sx-chip,.ph-types a,.typechips a,.hero-pop a,.popsearch-list a,.viewtoggle button,.ptab,.nt-chip{min-height:38px!important;display:inline-flex!important;align-items:center}
+  /* long chip lists swipe sideways in one row instead of piling up */
+  .ph-types,.typechips,.hero-pop,.popsearch-list{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:none;gap:8px!important;
+    margin-left:-16px!important;margin-right:-16px!important;padding:0 16px 4px!important}
+  .ph-types::-webkit-scrollbar,.typechips::-webkit-scrollbar,.hero-pop::-webkit-scrollbar,.popsearch-list::-webkit-scrollbar{display:none}
+  .ph-types a,.typechips a,.hero-pop a,.popsearch-list a{flex:none;white-space:nowrap}
+  .hero-pop .hero-pop-l{flex:none;align-self:center}
+  /* category pages: the type chips in the header repeat the "Popular in…" row */
+  section.det-hero .ph-types{display:none!important}
+  /* small labels were 10–11px; 12px reads comfortably */
+  .lc-cat,.cd-tags span,.nt-tag,.hcat-n,.ph-hero .ph-fact small,.ph-fact small,.dd-it em,.sx-chip em,.sx-pop a em,.ptab .ptab-n{font-size:12px!important}
+  .lp-hero-grid small,.det-hero small{font-size:11.5px}
+  /* the home hero: a little less tall */
+  section.hero{padding-top:28px!important;padding-bottom:26px!important}
+  section.hero h1{font-size:26px!important;line-height:1.2!important}
+  section.hero .hero-sub{font-size:14px!important;margin-top:8px!important}
+}
+@media(max-width:720px){
+  .hcat .hcat-bd .hcat-n{font-size:12px!important}
+  .lp-nav .wrap a{min-height:40px!important;display:inline-flex!important;align-items:center}   /* About · Overview · Reviews… tab bar */
+  .sc-row a{display:inline-block;padding:8px 0}                                                 /* website / email links */
+  .gl-l,.sc-lbl,.typechips a span{font-size:12px!important}
+}

@@ -1,0 +1,37 @@
+# ---- HiNoida: files that must NOT go to GitHub ----
+
+# database dumps — they hold real users' data (emails, phones, passwords)
+*.sql
+_old_sql/
+
+# big photo uploads and archives — too large for GitHub (100 MB limit per file)
+uploads/
+*.zip
+
+# the site's own working files — logs, cache, sessions (rebuilt automatically)
+writable/cache/*
+writable/logs/*
+writable/session/*
+writable/debugbar/*
+writable/uploads/*
+writable/serve.log
+!writable/*/index.html
+!writable/*/.htaccess
+
+# installed libraries — reinstall with "composer install"
+vendor/
+
+# secrets and machine-only settings
+.env
+*.log
+
+# editor / OS clutter
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# helper files from the Git setup
+git-setup.bat
+git-setup-log.txt
+git-files.txt

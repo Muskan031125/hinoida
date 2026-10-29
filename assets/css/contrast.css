@@ -1,0 +1,450 @@
+/* HiNoida — visual weight layer
+ *
+ * The theme's final block (theme.css ~866-1030) flattens the design: section
+ * headings drop to weight 400, every card shadow is set to none, and the
+ * borders sit a shade off the background. Worse, the hero's photo — a sunset
+ * shot of DLF Mall of India — was covered by a 90%-opaque navy wash, so the
+ * banner read as a flat blue rectangle.
+ *
+ * This restores the weight and lets the photograph do its job. Same palette,
+ * same shapes, same identity — just enough contrast to see it.
+ */
+
+/* ---- tokens ----
+ * theme.css declares :root twice. The second one (line ~855) is the real
+ * design: a warm "paper" canvas, near-square corners, and --shadow:none.
+ * That last token is what flattens every surface on the site at once.
+ *
+ * Keeping the warm paper direction — it is the intended look — but a canvas
+ * at #fbfaf8 is so close to the white cards sitting on it that the cards have
+ * no edge to show. Deepening the canvas and giving the shadows back is all
+ * this needs. Same colours, same restraint, just visible.
+ */
+:root{
+  --ink:#161310;
+  --body:#3a352e;
+  --muted:#6b6459;
+  --line:#ddd5c8;                        /* was #e8e4dd — invisible on paper */
+  --gold:#c8912f;
+  --radius:14px;                         /* was 4px */
+  --shadow:0 1px 2px rgba(40,32,20,.05),0 6px 18px rgba(40,32,20,.09);
+  --shadow-lg:0 2px 6px rgba(40,32,20,.07),0 20px 44px rgba(40,32,20,.16);
+}
+
+/* the canvas the white cards have to read against */
+body{background:#f0ece4 !important}
+
+/* ---- header: a real edge instead of a blur that melts into the page ---- */
+.hdr{background:rgba(255,255,255,.90);
+  border-bottom:1px solid rgba(40,32,20,.13);
+  box-shadow:0 1px 0 rgba(255,255,255,.6),0 8px 28px rgba(40,32,20,.13)}
+.nav a{color:#26324a;font-weight:600}
+.nav .btn{box-shadow:0 4px 14px rgba(23,65,166,.30)}
+
+/* =====================================================================
+   HERO — the banner photograph, finally visible
+   ===================================================================== */
+/* The old wash was rgba(6,24,68,.90) → rgba(14,48,124,.80): near-opaque navy
+   flat across the whole frame, which buried the sunset underneath it and
+   fought its warm colour. A bottom-weighted neutral scrim keeps the sky and
+   the lit building while still seating the white text. */
+.hero{
+  background:
+    linear-gradient(to bottom,rgba(8,12,26,.62) 0%,rgba(8,12,26,.30) 34%,rgba(8,12,26,.55) 72%,rgba(8,12,26,.86) 100%),
+    url('/assets/img/hero.jpg') center 42%/cover no-repeat;
+  padding:92px 20px 84px;
+  border-bottom:1px solid rgba(40,32,20,.15)}
+/* the extra radial the theme paints on top only muddied the photo */
+.hero::after{background:radial-gradient(ellipse at 50% 118%,rgba(6,12,28,.45),transparent 62%)}
+.hero h1{font-size:52px;letter-spacing:-.03em;line-height:1.08;text-shadow:0 2px 28px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.4);
+  max-width:24ch;margin-left:auto;margin-right:auto;text-wrap:balance}
+.hero p,.hero-sub{color:rgba(255,255,255,.95);font-size:17px;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.searchbar{max-width:720px;border-radius:18px;box-shadow:0 26px 70px rgba(0,0,0,.42),0 2px 6px rgba(0,0,0,.2)}
+.searchbar input{padding:19px 22px;font-size:16px}
+.searchbar button{padding:0 34px;font-size:15.5px;letter-spacing:.01em}
+@media(max-width:900px){.hero{padding:64px 18px 58px}.hero h1{font-size:38px;max-width:100%}}
+@media(max-width:640px){.hero{padding:48px 16px 44px}.hero h1{font-size:30px}.hero p,.hero-sub{font-size:15px}}
+
+/* ---- section headings: the single biggest cause of the flatness ---- */
+.sec-head h2{font-weight:700;color:var(--ink);letter-spacing:-.022em;font-size:36px}
+.sec-head p{color:var(--muted);font-size:16px}
+.sec-head[data-eyebrow]::before{font-weight:700;letter-spacing:.2em;color:var(--blue)}
+@media(max-width:640px){.sec-head h2{font-size:25px}}
+
+/* white sections need an edge now the page behind them is deeper */
+.sec.alt,.sec[style*="--bg"]{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* =====================================================================
+   LISTING CARDS — used on home, category, area and search
+   ===================================================================== */
+.lcard{border:1px solid rgba(40,32,20,.13);box-shadow:var(--shadow)}
+.lcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
+/* white text was sitting on whatever the photo happened to be */
+.lcard.rich .ph::after{
+  background:linear-gradient(to top,rgba(6,14,30,.96) 0%,rgba(6,14,30,.80) 32%,rgba(6,14,30,.26) 60%,rgba(6,14,30,.06) 100%)}
+.lcard.rich .bd h3,.lcard.rich .bd b{font-size:17.5px;letter-spacing:-.01em}
+/* badges read as pills, not floating text */
+.lcard .rate{box-shadow:0 4px 14px rgba(0,0,0,.35);font-weight:800}
+.lc-feat{background:linear-gradient(135deg,#ffe9b0,var(--gold));color:#4a3405;
+  box-shadow:0 4px 14px rgba(0,0,0,.3);font-weight:800}
+.lc-open{box-shadow:0 4px 12px rgba(0,0,0,.3)}
+/* the quick actions were nearly invisible over a bright photo */
+.lc-btn{background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.42);font-weight:800;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)}
+
+/* ---- home: category tiles ---- */
+.catg{border:1px solid rgba(40,32,20,.13);box-shadow:var(--shadow)}
+.catg:hover{box-shadow:var(--shadow-lg);border-color:#a9c0e8;transform:translateY(-4px)}
+.catg-ic{background:linear-gradient(140deg,#e6eefc,#d7e4fa);color:var(--blue);
+  box-shadow:inset 0 0 0 1px rgba(23,65,166,.12)}
+.catg:hover .catg-ic{background:linear-gradient(140deg,var(--blue),#2f6fd0);color:#fff}
+.catg b{color:var(--ink);font-weight:700}
+.catg-n{color:var(--muted)}
+
+/* ---- home: "how it works" ---- */
+.howbox{border:1px solid rgba(40,32,20,.13);box-shadow:var(--shadow)}
+.howbox:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
+.howbox h3{font-weight:700;color:var(--ink)}
+.howbox p{color:var(--muted)}
+
+/* =====================================================================
+   CATEGORIES PAGE — the cattree blocks
+   ===================================================================== */
+.catblock{border:1px solid rgba(40,32,20,.13);box-shadow:var(--shadow);
+  transition:box-shadow .25s,transform .25s}
+.catblock:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.catblock-head{font-size:15.5px;font-weight:700;letter-spacing:-.005em;padding:16px 18px}
+.catblock-head b{background:rgba(255,255,255,.22);border-radius:20px;padding:2px 11px;font-size:13px;opacity:1}
+.catblock-list a{color:var(--body);font-weight:600}
+.catblock-list a:hover{background:#eef3fc;color:var(--blue)}
+.catblock-list i:first-child{color:var(--blue);opacity:.65}
+.catblock-list em{color:var(--muted)}
+
+/* the locality filter looked like a stray browser control */
+.filterbar select,.fb-check{background:#fff;border:1px solid rgba(40,32,20,.16);
+  box-shadow:var(--shadow);border-radius:10px;padding:11px 15px;font-weight:600}
+
+/* ---- shared links and pills ---- */
+.seeall{border:1px solid rgba(40,32,20,.15);box-shadow:var(--shadow);font-weight:700}
+.seeall:hover{border-color:#a9c0e8}
+.popsearch{border-top:1px solid var(--line)}
+.popsearch-list a{border:1px solid rgba(40,32,20,.13);color:var(--body)}
+.popsearch-list a:hover{border-color:#a9c0e8}
+.freelist{box-shadow:0 6px 20px rgba(245,179,1,.42)}
+
+/* ---- detail / listing pages: panels had their depth stripped too ---- */
+.sidecard,.acc-panel,.glance,.rev,.panel,.gtk-i{
+  border:1px solid rgba(40,32,20,.13);box-shadow:var(--shadow)}
+
+/* ---- footer ---- */
+.ftr{background:#081428;border-top:3px solid var(--blue)}
+.ftr a{color:#b6c3d9}
+.ftr a:hover{color:#fff}
+
+/* =====================================================================
+   LISTING CARD TEXT — legible on any photograph
+   =====================================================================
+   The card relied on one gradient painted across the whole image, so how
+   readable the name was depended entirely on what the photo happened to be
+   doing behind it. A bright plate of food or a white building washed the
+   title out completely. The text block now carries its own scrim, so the
+   name is readable regardless of the picture underneath. */
+.lcard.rich{height:290px}
+.lcard.rich .bd{
+  padding:30px 15px 15px;
+  background:linear-gradient(to top,
+    rgba(5,10,22,.88) 0%,rgba(5,10,22,.80) 46%,rgba(5,10,22,.58) 74%,rgba(5,10,22,.22) 92%,rgba(5,10,22,0) 100%)}
+/* the image-wide gradient can now be lighter — it only has to darken the top
+   third for the badges, letting more of the photograph through */
+.lcard.rich .ph::after{
+  background:linear-gradient(to top,rgba(6,14,30,.96) 0%,rgba(6,14,30,.86) 26%,rgba(6,14,30,.58) 48%,rgba(6,14,30,.16) 74%,rgba(6,14,30,.34) 100%)}
+.lcard.rich .bd h3,.lcard.rich .bd b{
+  font-size:17px;line-height:1.28;text-shadow:0 1px 8px rgba(0,0,0,.6);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lcard.rich .bd .loc{color:rgba(255,255,255,.94);text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.lc-meta{color:rgba(255,255,255,.88);text-shadow:0 1px 6px rgba(0,0,0,.7)}
+@media(max-width:640px){.lcard.rich{height:266px}}
+
+/* =====================================================================
+   CONTACT PAGE
+   =====================================================================
+   Was a 620px column on a 1200px page, so two thirds of the width sat
+   empty and the contact details trailed underneath the form as full-width
+   bars. Form on the left, the things people actually scan for on the right. */
+.ct-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:26px;align-items:start}
+@media(max-width:900px){.ct-grid{grid-template-columns:minmax(0,1fr);gap:20px}}
+
+.ct-form,.ct-card{background:#fff;border:1px solid rgba(40,32,20,.13);
+  border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 28px 26px}
+.ct-side{display:flex;flex-direction:column;gap:18px}
+.ct-h{margin:0 0 6px;font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.ct-sub{margin:0 0 20px;color:var(--muted);font-size:14.5px;line-height:1.6}
+
+/* name + email share a row on desktop, stack on narrow screens */
+.ct-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.ct-row{grid-template-columns:minmax(0,1fr);gap:0}}
+.ct-f{min-width:0}
+.ct-opt{font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;font-size:11.5px}
+.ct-fine{margin:12px 0 0;font-size:12.5px;color:var(--muted);text-align:center}
+
+/* the result of sending — the page used to show nothing at all */
+.ct-note{display:flex;align-items:flex-start;gap:11px;border-radius:11px;
+  padding:13px 15px;margin-bottom:18px;font-size:14px;line-height:1.5;font-weight:600}
+.ct-note i{margin-top:2px;font-size:15px}
+.ct-ok{background:#e7f6ec;color:#15683a;border:1px solid #b9e3c9}
+.ct-bad{background:#fdecec;color:#a52a2a;border:1px solid #f2c4c4}
+
+/* contact rows */
+.ct-item{display:flex;gap:13px;align-items:flex-start;padding:13px 0;
+  border-top:1px solid var(--line);color:var(--body)}
+.ct-item:first-of-type{border-top:0;padding-top:6px}
+.ct-item>i{width:38px;height:38px;flex:none;border-radius:11px;background:#eef3fc;color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:15px;transition:.2s}
+.ct-item:hover>i{background:var(--blue);color:#fff}
+.ct-item span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ct-item b{font-size:13.5px;color:var(--ink);font-weight:700}
+.ct-item em{font-style:normal;font-size:13.5px;color:var(--body);overflow-wrap:anywhere}
+.ct-item u{text-decoration:none;font-size:12.5px;font-weight:700;color:var(--blue);margin-top:3px}
+.ct-item:hover u{text-decoration:underline}
+
+.ct-social{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.ct-social a{width:42px;height:42px;border-radius:12px;background:#eef3fc;color:var(--blue);
+  display:flex;align-items:center;justify-content:center;font-size:17px;transition:.2s}
+.ct-social a:hover{background:var(--blue);color:#fff;transform:translateY(-2px)}
+
+.ct-cta{text-align:center}
+.ct-cta>i{font-size:26px;color:var(--blue);display:block;margin-bottom:10px}
+.ct-cta b{display:block;font-size:16px;color:var(--ink);margin-bottom:5px}
+.ct-cta p{margin:0 0 16px;font-size:13.5px;color:var(--muted);line-height:1.55}
+
+.ct-help b{display:block;font-size:14px;color:var(--ink);margin-bottom:10px}
+.ct-help a{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:13.5px;
+  font-weight:600;color:var(--body)}
+.ct-help a i{width:16px;text-align:center;color:var(--muted)}
+.ct-help a:hover{color:var(--blue)}
+.ct-help a:hover i{color:var(--blue)}
+
+/* Long unbroken values (an address, an email) must not set the track width */
+.ct-form,.ct-card,.ct-item span,.ct-item em{min-width:0}
+.ct-card{overflow-wrap:anywhere}
+@media(max-width:640px){.ct-form,.ct-card{padding:20px 18px}}
+
+/* =====================================================================
+   BLOG / NEWS CARDS
+   =====================================================================
+   These reused the listing card, so a headline sat on top of its own
+   photograph. That works when the photo is dark; half of these are bright
+   skies and white buildings, and the titles disappeared into them. Every
+   card also carried an identical blue "Blog" badge on a page where every
+   item is a blog post. Picture on top, words on white underneath. */
+.bgrid{grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:22px}
+.bcard{display:flex;flex-direction:column;background:#fff;border:1px solid rgba(40,32,20,.13);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  transition:transform .25s,box-shadow .25s;height:auto}
+.bcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.bcard-ph{display:block;aspect-ratio:16/10;overflow:hidden;background:#e9eef5;flex:none}
+.bcard-ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.bcard:hover .bcard-ph img{transform:scale(1.05)}
+.bcard-bd{display:flex;flex-direction:column;gap:8px;padding:16px 17px 15px;flex:1}
+.bcard-bd h3{margin:0;font-size:16px;font-weight:700;line-height:1.34;color:var(--ink);
+  letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bcard-ex{font-size:13.5px;line-height:1.55;color:var(--muted);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bcard-date{display:flex;align-items:center;gap:7px;margin-top:auto;padding-top:11px;
+  border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:600}
+.bcard-date i{color:var(--muted);opacity:.8}
+.bcard-date em{margin-left:auto;font-style:normal;color:var(--blue);font-weight:700}
+.bcard-date em i{color:var(--blue);font-size:11px;transition:transform .18s}
+.bcard:hover .bcard-date em i{transform:translateX(3px)}
+
+/* ---- room under a shortened section ---- */
+.secmore{text-align:center;margin-top:30px}
+
+/* =====================================================================
+   CATEGORIES PAGE — pack the columns
+   =====================================================================
+   The tree was a grid with `align-items:start`, so every column was as tall
+   as its tallest block. Restaurants carries 13 sub-categories and Medical 6,
+   which left half a screen of empty paper between rows. Multi-column flows
+   each block into the shortest column instead, so uneven category sizes stop
+   punching holes in the layout. */
+.cattree{display:block;column-count:3;column-gap:20px}
+.catblock{break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;
+  display:inline-block;width:100%;margin:0 0 20px}
+@media(max-width:1040px){.cattree{column-count:2}}
+@media(max-width:700px){.cattree{column-count:1}}
+
+/* a category's weight, readable at a glance rather than only as a number */
+.catblock-head b{min-width:44px;text-align:center}
+
+/* ---- Instagram reels row ---- */
+.igreels{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px;
+  align-items:start;justify-items:center}
+/* Instagram's embed ships its own inline width/margin; keep it inside the cell */
+.igreels .instagram-media{min-width:0!important;width:100%!important;max-width:340px!important;
+  margin:0!important;border-radius:var(--radius)!important;box-shadow:var(--shadow)!important}
+@media(max-width:640px){.igreels{grid-template-columns:1fr}}
+
+/* =====================================================================
+   HOMEPAGE — "Explore categories"
+   =====================================================================
+   Twelve tiles in an auto-fill grid landed as 5 + 5 + 2, so the section
+   finished on a row that was three-fifths empty. Four across gives three
+   full rows. The tiles now carry the category photographs that were already
+   in the repository instead of an icon on white. */
+.hcatgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+@media(max-width:1000px){.hcatgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}}
+@media(max-width:760px){.hcatgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}}
+
+.hcat{position:relative;display:flex;flex-direction:column;justify-content:flex-end;
+  height:170px;padding:16px 17px;border-radius:var(--radius);overflow:hidden;
+  background-size:cover;background-position:center;box-shadow:var(--shadow);
+  transition:transform .28s cubic-bezier(.2,.7,.3,1),box-shadow .28s}
+.hcat:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.hcat::after{content:"";position:absolute;inset:0;background:rgba(6,14,30,0);transition:background .28s}
+.hcat:hover::after{background:rgba(6,14,30,.14)}
+
+.hcat-ic{position:absolute;top:14px;left:16px;z-index:2;width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.34);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.28s}
+.hcat:hover .hcat-ic{background:var(--blue);border-color:var(--blue)}
+
+.hcat-bd{position:relative;z-index:2;display:flex;flex-direction:column;gap:3px}
+.hcat-bd b{font-size:16.5px;font-weight:700;color:#fff;line-height:1.25;letter-spacing:-.01em;
+  text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.hcat-bd span{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.9);
+  text-shadow:0 1px 8px rgba(0,0,0,.65)}
+@media(max-width:760px){.hcat{height:146px}.hcat-bd b{font-size:15px}}
+
+/* ---- rhythm: 96px between sections left the page feeling hollow ---- */
+.sec{padding:74px 24px}
+@media(max-width:640px){.sec{padding:46px 18px}}
+.sec-head{margin-bottom:38px}
+
+/* ---- the Instagram strip ran straight into the footer ---- */
+.igsec{background:linear-gradient(180deg,#fff,#f0ece4);border-top:1px solid var(--line);
+  padding-bottom:64px}
+.ftr{margin-top:0;padding:52px 0 40px;border-top:3px solid var(--blue)}
+
+/* ---- footer ----
+   `.ftr .wrap{justify-content:space-between}` is meant for the link columns,
+   but it also caught the social row, flinging four icons to the four corners
+   of the page. */
+.ftr .wrap.ftr-social{justify-content:flex-start}
+.ftr-social a{transition:background .2s,color .2s,transform .2s}
+.ftr-social a:hover{background:var(--blue)!important;color:#fff!important;transform:translateY(-2px)}
+
+/* ---- the last three strips all sat on the same paper and read as one ---- */
+/* .sec{background:transparent !important} in theme.css outranks a plain
+   declaration here, and .igsec is a .sec — hence the !important. */
+.popsearch{background:#f7f4ee !important;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.igsec{background:#fff !important;border-top:0}
+
+/* ---- Instagram strip pulled from the account ---- */
+.iggrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.igcard{position:relative;display:block;aspect-ratio:9/16;max-height:420px;border-radius:var(--radius);
+  overflow:hidden;background:#e9eef5;box-shadow:var(--shadow);transition:transform .25s,box-shadow .25s}
+.igcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.igcard img,.igcard video{width:100%;height:100%;object-fit:cover;display:block}
+.igplay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;
+  border-radius:50%;background:rgba(255,255,255,.92);color:#111;display:flex;align-items:center;
+  justify-content:center;font-size:17px;padding-left:3px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.igcap{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 11px;color:#fff;font-size:12.5px;
+  line-height:1.45;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7);
+  background:linear-gradient(to top,rgba(5,10,22,.92),rgba(5,10,22,0))}
+@media(max-width:640px){.iggrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+
+/* ---- hero search on a phone ----
+   A flex item will not shrink below its min-content width, and an <input>
+   without a size attribute reports roughly 20 characters. On a 390px screen
+   that held the field open and pushed the button off the edge, so the label
+   read "SEA". */
+.searchbar input{min-width:0}
+@media(max-width:520px){
+  .searchbar input{padding:15px 15px;font-size:15px}
+  .searchbar button{padding:0 16px;font-size:14px;white-space:nowrap}
+  .searchbar button i{margin-right:2px}
+}
+
+/* =====================================================================
+   FOOTER
+   =====================================================================
+   `.ftr .wrap{display:flex;justify-content:space-between}` spread five
+   columns of very different widths across the page, so the gaps between
+   them were arbitrary and the social icons — the same rule caught them —
+   ended up one per corner. Grid instead, with the brand held to one side. */
+.ftr{background:#081428;padding:0;margin-top:0;border-top:3px solid var(--blue)}
+.ftr .wrap.ftr-top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,3fr);
+  gap:48px;padding-top:54px;padding-bottom:44px;justify-content:initial}
+@media(max-width:960px){.ftr .wrap.ftr-top{grid-template-columns:minmax(0,1fr);gap:34px}}
+
+/* theme.css has `.ftr b{display:block}` and `.ftr a{display:block}` for the
+   old column-heading/link pattern. Both are descendant selectors scoped
+   only to .ftr, so they also caught the logo mark once it moved inside the
+   footer — the "Hi" badge stretched to a full-width block and NOIDA
+   dropped to the line under it. Re-declaring display here, at higher
+   specificity, restores the same small inline mark the header uses. */
+.ftr-brand .logo{display:inline-flex;align-items:center;gap:8px;width:auto;
+  color:#fff;font-size:20px;margin-bottom:14px}
+.ftr-brand .logo b{display:inline-block;width:auto;margin-bottom:0}
+.ftr-brand .logo b{background:var(--blue)}
+.ftr-brand p{margin:0 0 18px;font-size:13.5px;line-height:1.65;color:#93a3bd;max-width:34ch}
+
+.ftr-social{display:flex;gap:10px}
+.ftr-social a{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;background:rgba(255,255,255,.07);color:#cfe0ff;font-size:15px;
+  transition:background .2s,color .2s,transform .2s}
+.ftr-social a:hover{background:var(--blue);color:#fff;transform:translateY(-2px)}
+
+/* auto-fit only fitted four of the five, so Contact dropped to a second row
+   and left a hole beside it. Five explicit tracks, stepped down by width. */
+.ftr-cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:30px 24px}
+@media(max-width:1180px){.ftr-cols{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.ftr-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 18px}}
+.ftr-cols b{color:#fff;display:block;margin-bottom:12px;font-size:12px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase}
+.ftr-cols a{display:block;color:#9fadc6;font-size:13.5px;padding:4px 0;transition:color .18s}
+.ftr-cols a:hover{color:#fff}
+.ftr-contact span,.ftr-contact a{display:flex;gap:9px;align-items:flex-start;
+  font-size:13.5px;line-height:1.6;color:#9fadc6;padding:4px 0}
+.ftr-contact i{margin-top:4px;width:14px;text-align:center;opacity:.7;flex:none}
+
+.ftr-bottom{border-top:1px solid rgba(255,255,255,.09)}
+.ftr-bottom .wrap{display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+  justify-content:space-between;padding-top:18px;padding-bottom:20px;
+  color:#7f8fab;font-size:12.5px}
+.ftr-bottom-links{display:flex;gap:20px}
+.ftr-bottom-links a{color:#7f8fab;font-size:12.5px}
+.ftr-bottom-links a:hover{color:#fff}
+@media(max-width:520px){.ftr-bottom .wrap{justify-content:flex-start}}
+
+/* =====================================================================
+   HEADER — real frosted glass
+   =====================================================================
+   theme.css's flattening pass killed this outright: `.hdr{backdrop-filter:
+   none}` — its own comment calls it "a rule, nothing more". A translucent
+   colour without blur just reads as a flat, slightly-off-white bar; the
+   glass only shows once there is actual blur behind it. Restored here, with
+   a scroll state that mirrors how iOS treats a translucent bar: nearly
+   see-through over whatever is at the very top of the page, and a touch
+   more opaque once content is scrolling underneath it so text stays legible. */
+.hdr{
+  background:rgba(255,255,255,.58);
+  backdrop-filter:blur(22px) saturate(1.9);
+  -webkit-backdrop-filter:blur(22px) saturate(1.9);
+  border-bottom:1px solid rgba(255,255,255,.55);
+  box-shadow:0 1px 0 rgba(255,255,255,.6),0 1px 24px rgba(16,26,44,.06);
+  transition:background .35s ease,box-shadow .35s ease,border-color .35s ease;
+}
+.hdr.is-scrolled{
+  background:rgba(255,255,255,.86);
+  border-bottom-color:rgba(16,26,44,.09);
+  box-shadow:0 1px 0 rgba(255,255,255,.6),0 10px 34px rgba(16,26,44,.12);
+}
+
+/* The footer mark reads white on the dark ground — an image logo is inverted,
+   the text fallback flips to a white tile with blue letters. */
+.ftr-brand .logo{color:#fff}
+.ftr-brand .logo b{background:#fff;color:var(--blue)}
+.ftr-brand .logo img{filter:brightness(0) invert(1)}

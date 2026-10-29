@@ -1,0 +1,293 @@
+/* =====================================================================
+   HiNoida — listing detail page redesign (loaded only on listing pages,
+   after theme.css + contrast.css, so it wins without touching them)
+   ===================================================================== */
+.lpage{--card:#fff;--soft:#f3f6fc;--tint:#eaf0fb;--ring:rgba(23,65,166,.14);
+  --lp-shadow:0 1px 2px rgba(16,26,44,.04),0 10px 30px -14px rgba(16,26,44,.16)}
+
+/* ---------- HERO: two columns — identity + quick-info card ---------- */
+.det-hero{padding:44px 0 40px!important;text-align:left!important;background:#0b1428!important;display:block!important}
+.det-hero::before{opacity:.42!important;filter:blur(3px) saturate(1.1)!important;transform:scale(1.08)}
+.det-hero::after{background:
+  radial-gradient(ellipse 55% 80% at 85% 20%,rgba(61,110,224,.32),transparent 70%),
+  linear-gradient(90deg,rgba(8,16,36,.96) 0%,rgba(9,22,52,.88) 55%,rgba(10,28,70,.72) 100%)!important}
+.det-hero>.wrap{display:block!important;width:100%}
+.lp-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:40px;align-items:center}
+.lp-hero-main{min-width:0;display:flex;flex-direction:column;align-items:flex-start}
+.det-crumb{margin-bottom:14px!important;font-size:12.5px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.det-name{font-size:46px!important;max-width:none!important;text-align:left;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.det-tagline{color:rgba(255,255,255,.78)!important;font-size:15.5px;margin:10px 0 0;max-width:60ch;text-align:left}
+.det-meta{justify-content:flex-start!important;margin-top:18px!important;gap:8px!important}
+.det-meta .dm,.det-meta .dm-loc{display:inline-flex;align-items:center;gap:6px;padding:7px 13px!important;border-radius:999px!important;font-size:12.5px!important}
+.det-meta .dm-loc{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#fff!important;font-weight:600!important}
+.det-meta .dm-loc i{color:#9fb8ee!important}
+
+.lp-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.lp-act{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;font-weight:700;font-size:14px;
+  text-decoration:none;cursor:pointer;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:#fff;
+  font-family:inherit;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s,background .2s,box-shadow .2s}
+.lp-act:hover{transform:translateY(-2px);background:rgba(255,255,255,.2);color:#fff}
+.lp-act.primary{background:#fff;color:#0d1830;border-color:#fff}
+.lp-act.primary:hover{background:#eef3fc;color:#0d1830}
+.lp-act.wa{background:#1faa59;border-color:#1faa59}
+.lp-act.wa:hover{background:#178a48}
+.lp-act i{font-size:14px}
+
+/* photo slider */
+.lp-slider{position:relative;height:330px;border-radius:22px;overflow:hidden;background:#1a2440;
+  box-shadow:0 30px 60px -24px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.14)}
+.lp-slider .lp-slides{display:flex!important;flex-wrap:nowrap!important;height:100%!important;width:100%;margin:0!important;padding:0!important;
+  gap:0!important;overflow:visible!important;grid-template-columns:none!important;max-width:none!important;
+  transition:transform .8s cubic-bezier(.65,0,.35,1);will-change:transform}
+.lp-slider .lp-slides>a{flex:0 0 100%!important;max-width:none!important;height:100%!important;border-radius:0!important;
+  box-shadow:none!important;display:block;position:relative;overflow:hidden}
+.lp-slider .lp-slides img{width:100%;height:100%;object-fit:cover;display:block;transform:none!important}
+.lp-slider::after{content:"";position:absolute;inset:auto 0 0 0;height:90px;pointer-events:none;
+  background:linear-gradient(0deg,rgba(6,12,28,.75),transparent)}
+.lp-sl-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;
+  background:rgba(255,255,255,.9);color:#0d1830;font-size:13px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(0,0,0,.3);opacity:0;transition:opacity .25s,transform .25s}
+.lp-sl-prev{left:12px}.lp-sl-next{right:12px}
+.lp-slider:hover .lp-sl-btn{opacity:1}
+.lp-sl-btn:hover{background:#fff;transform:translateY(-50%) scale(1.08)}
+.lp-sl-foot{position:absolute;left:16px;right:16px;bottom:14px;z-index:3;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.lp-dots{display:flex;gap:6px;pointer-events:auto}
+.lp-dots button{width:8px;height:8px;border-radius:999px;border:0;padding:0;cursor:pointer;background:rgba(255,255,255,.5);transition:width .3s,background .3s}
+.lp-dots button.on{width:24px;background:#fff}
+.lp-sl-count{font-size:12px;font-weight:700;color:#fff;background:rgba(10,20,42,.6);padding:5px 10px;border-radius:999px;
+  display:inline-flex;gap:6px;align-items:center;backdrop-filter:blur(6px)}
+.lp-sl-bar{position:absolute;left:0;right:0;top:0;height:3px;z-index:3;background:rgba(255,255,255,.15)}
+.lp-sl-bar i{display:block;height:100%;width:0;background:#fff}
+
+/* ---------- STICKY SECTION NAV — evenly spread, never cut ---------- */
+.lp-nav{position:sticky;top:64px;z-index:39;background:rgba(255,255,255,.94);backdrop-filter:blur(14px) saturate(1.3);
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);border-bottom:1px solid var(--line);box-shadow:0 8px 20px -16px rgba(16,26,44,.4)}
+.lp-nav .wrap{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-top:8px;padding-bottom:8px}
+.lp-nav .wrap::-webkit-scrollbar{display:none}
+.lp-nav a{flex:1 0 auto;justify-content:center;display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;font-size:13.5px;
+  font-weight:600;color:var(--body);text-decoration:none;white-space:nowrap;transition:background .2s,color .2s}
+.lp-nav a i{font-size:12px;color:var(--muted)}
+.lp-nav a:hover{background:#f1f4fa;color:var(--ink)}
+.lp-nav a.on{background:#eaf0fc;color:var(--blue)}
+.lp-nav a.on i{color:var(--blue)}
+
+/* ---------- MAIN COLUMN: every section is a card ---------- */
+.lpage.det-grid{padding-top:26px!important;gap:26px!important}
+.lpage .det-main{min-width:0}
+.lpage .det-main>.lp-card:first-child{margin-top:0}
+.lp-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 24px 24px;
+  box-shadow:var(--lp-shadow);margin-top:18px;scroll-margin-top:130px}
+.lp-card>h2:first-child{display:flex;align-items:center;gap:12px;font-size:19px!important;font-weight:800;letter-spacing:-.01em;
+  color:var(--ink);margin:0 0 16px!important;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.lp-card>h2:first-child{padding-left:0!important}
+.lp-card>h2:first-child::before{display:none!important}
+.lp-card>h2:first-child span{font-size:13px!important;margin-left:auto;background:var(--soft);color:var(--muted)!important;
+  padding:4px 10px;border-radius:999px;font-weight:700!important}
+.lp-ic{width:36px;height:36px;flex:none;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1741a6,#3d6ee0);color:#fff;font-size:15px;box-shadow:0 6px 14px -6px rgba(23,65,166,.6)}
+/* the subtitle under "What's nearby" sits right under the heading */
+.lp-card .lp-body>p:first-child{margin-top:-6px!important}
+.lp-card .prose,.lp-card .lp-body>p{font-size:15px;color:var(--body)}
+.lp-card .prose p:last-child{margin-bottom:0}
+
+/* gallery sits on its own, slightly lifted */
+.lpage .gallery-grid{margin-bottom:0!important}
+.lpage .gallery-grid a{box-shadow:0 8px 22px -12px rgba(16,26,44,.45);position:relative}
+.lp-more{position:absolute;right:12px;bottom:12px;background:rgba(10,20,42,.78);color:#fff;font-size:12.5px;font-weight:700;
+  padding:7px 12px;border-radius:10px;display:inline-flex;gap:7px;align-items:center;backdrop-filter:blur(6px);pointer-events:none}
+
+/* At a glance — clean tile grid, no box-in-box */
+.lp-card .glance{background:transparent!important;border:0!important;border-radius:0!important;gap:12px!important;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:visible;padding:0!important;box-shadow:none!important}
+.lp-card .glance-i{background:var(--soft)!important;border:1px solid transparent!important;border-radius:14px;padding:14px!important;min-height:0!important;align-items:center!important}
+.lp-card .glance-i:hover{background:#fff!important;border-color:var(--ring)!important;box-shadow:0 8px 20px -12px rgba(23,65,166,.4)}
+.lp-card .glance-i>i{width:38px!important;height:38px!important;border-radius:11px!important;background:#fff!important;font-size:15px!important;
+  box-shadow:0 2px 6px rgba(16,26,44,.08);margin:0!important}
+.lp-card .gl-l{font-size:10.5px!important;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.lp-card .gl-v{font-size:14px!important;font-weight:700;color:var(--ink)}
+
+/* Good to know — highlighted tips */
+.lp-card .gtk-grid{gap:12px!important;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))!important}
+.lp-card .gtk-i{background:linear-gradient(135deg,#f6f9ff,#eef3fc)!important;border:1px solid #dfe7f6!important;border-radius:14px!important;
+  padding:15px 16px!important;backdrop-filter:none!important}
+.lp-card .gtk-i>i{background:#fff!important;width:36px;height:36px;border-radius:11px;box-shadow:0 2px 6px rgba(16,26,44,.08)}
+.lp-card .gtk-i b{font-size:14px!important}
+.lp-card .gtk-i span{font-size:13px!important;color:var(--body)!important;opacity:.85}
+
+/* Amenities chips */
+.lp-card div[style*="minmax(170px"]>span{background:var(--soft)!important;border-color:transparent!important;border-radius:11px!important;
+  padding:10px 13px!important;font-weight:600!important}
+
+/* any table inside a card */
+.lp-card table{border-collapse:separate;border-spacing:0;width:100%;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lp-card table td,.lp-card table th{border-bottom:1px solid var(--line)}
+.lp-card table tr:last-child td{border-bottom:0}
+.lp-card table tr:nth-child(even) td{background:#fafbfd}
+
+/* ---------- SIDEBAR ---------- */
+.lpage>aside{top:130px!important}
+.lpage .sidecard{border-radius:20px!important;background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--lp-shadow)!important}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:1020px){
+  .lp-hero-grid{grid-template-columns:minmax(0,1fr) 340px;gap:28px}
+  .det-name{font-size:38px!important}
+}
+@media(max-width:900px){
+  .lpage>aside{position:static!important}
+  .lp-hero-grid{grid-template-columns:1fr;gap:20px}
+  .lp-slider{height:230px;border-radius:18px}
+  .lp-sl-btn{opacity:1;width:32px;height:32px}
+}
+@media(max-width:720px){
+  .det-hero{padding:40px 0 24px!important;min-height:0}
+  .det-name{font-size:28px!important}
+  .det-tagline{font-size:14px}
+  .lp-actions{gap:8px;margin-top:18px}
+  .lp-act{padding:10px 14px;font-size:13px;flex:1 1 auto;justify-content:center}
+  .lp-nav{top:64px}
+  .lp-card{padding:18px 16px 18px;border-radius:16px;margin-top:14px}
+  .lp-card>h2:first-child{font-size:17px!important;gap:10px;padding-bottom:12px;margin-bottom:14px!important}
+  .lp-ic{width:32px;height:32px;font-size:13px;border-radius:10px}
+  .lp-card .glance{grid-template-columns:1fr 1fr!important;gap:9px!important}
+  .lp-card div[style*="minmax(170px"]{grid-template-columns:1fr 1fr!important}
+  .lp-card .glance-i{padding:11px!important;gap:9px!important}
+  .lp-card .glance-i>i{width:32px!important;height:32px!important;font-size:13px!important}
+}
+
+/* ===================== COMPACT SPACING (v2) ===================== */
+.det-hero{padding:26px 0 28px!important}
+.lp-hero-grid{grid-template-columns:minmax(0,1fr) 400px!important;gap:32px!important;align-items:center}
+.det-crumb{margin-bottom:8px!important}
+.det-name{font-size:38px!important;line-height:1.08!important}
+.det-tagline{margin-top:6px!important;font-size:14.5px!important}
+.det-meta{margin-top:12px!important;gap:6px!important}
+.det-meta .dm,.det-meta .dm-loc{padding:5px 11px!important;font-size:12px!important}
+.lp-actions{margin-top:16px!important;gap:8px!important}
+.lp-act{padding:9px 15px!important;font-size:13.5px!important;border-radius:11px!important}
+.lp-slider{height:240px!important;border-radius:18px!important}
+
+.lp-nav .wrap{padding-top:5px!important;padding-bottom:5px!important}
+.lp-nav a{padding:8px 12px!important;font-size:13px!important}
+
+.lpage.det-grid{padding-top:18px!important;padding-bottom:24px!important;gap:20px!important}
+.lp-card{padding:16px 20px 18px!important;margin-top:12px!important;border-radius:16px!important}
+.lp-card>h2:first-child{font-size:17px!important;margin-bottom:12px!important;padding-bottom:10px!important;gap:10px!important}
+.lp-ic{width:30px!important;height:30px!important;font-size:13px!important;border-radius:9px!important}
+.lp-card .glance{gap:8px!important}
+.lp-card .glance-i{padding:10px 12px!important}
+.lp-card .glance-i>i{width:32px!important;height:32px!important;font-size:13px!important}
+.lp-card .gtk-grid{gap:8px!important}
+.lp-card .gtk-i{padding:11px 13px!important}
+.lpage .sidecard{padding:16px!important}
+.lpage .sidecard+.sidecard{margin-top:12px!important}
+.lpage>aside{top:118px!important}
+.lp-card{scroll-margin-top:118px}
+
+@media(max-width:1020px){
+  .lp-hero-grid{grid-template-columns:minmax(0,1fr) 320px!important;gap:22px!important}
+  .det-name{font-size:32px!important}
+}
+@media(max-width:900px){
+  .lp-hero-grid{grid-template-columns:1fr!important;gap:14px!important}
+  .lp-slider{height:200px!important}
+}
+@media(max-width:720px){
+  .det-hero{padding:18px 0 18px!important}
+  .det-name{font-size:25px!important}
+  .lp-act{padding:9px 10px!important;font-size:12.5px!important}
+  .lp-card{padding:14px 14px 14px!important}
+}
+.lp-card>*:last-child,.lp-card .prose>*:last-child,.lp-body>*:last-child{margin-bottom:0!important}
+
+/* ===================== FULL BANNER, WELL USED (v3) ===================== */
+/* banner keeps its height; the left column carries more, evenly spaced */
+.det-hero{padding:40px 0 42px!important}
+.lp-hero-grid{grid-template-columns:minmax(0,1fr) 440px!important;gap:44px!important;align-items:stretch!important}
+.lp-hero-main{justify-content:center}
+.det-name{font-size:42px!important}
+.det-tagline{margin-top:10px!important;font-size:15px!important;line-height:1.55;color:rgba(255,255,255,.76)!important;max-width:58ch}
+.det-meta{margin-top:14px!important}
+.lp-slider{height:auto!important;min-height:330px}
+
+/* quick facts strip */
+.lp-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:20px;width:100%;max-width:640px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden}
+.lp-fact{display:flex;align-items:center;gap:11px;padding:12px 14px;background:rgba(9,20,48,.72);min-width:0}
+.lp-fact>i{width:34px;height:34px;flex:none;border-radius:10px;background:rgba(120,160,255,.16);color:#a9c3ff;display:flex;align-items:center;justify-content:center;font-size:13px}
+.lp-fact>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.lp-fact small{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.lp-fact b{font-size:13.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-fact b a{color:#fff;text-decoration:none}
+.lp-fact b a:hover{color:#a9c3ff}
+.lp-fact b em{font-style:normal;font-weight:500;color:rgba(255,255,255,.6)}
+.lp-fact-wide{grid-column:1/-1}
+
+.lp-actions{margin-top:18px!important}
+
+/* small text links under the buttons */
+.lp-links{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);width:100%;max-width:640px}
+.lp-links a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:rgba(255,255,255,.72);text-decoration:none;transition:color .2s}
+.lp-links a i{font-size:12.5px;color:#8fb0f5}
+.lp-links a:hover{color:#fff}
+
+@media(max-width:1020px){
+  .lp-hero-grid{grid-template-columns:minmax(0,1fr) 340px!important;gap:26px!important}
+  .lp-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:900px){
+  .lp-hero-grid{grid-template-columns:1fr!important;gap:18px!important}
+  .lp-slider{min-height:0;height:220px!important}
+}
+@media(max-width:720px){
+  .det-hero{padding:22px 0 22px!important}
+  .det-name{font-size:26px!important}
+  .det-tagline{font-size:13.5px!important}
+  .lp-facts{grid-template-columns:1fr 1fr;margin-top:14px}
+  .lp-fact{padding:10px 11px;gap:9px}
+  .lp-fact>i{width:28px;height:28px;font-size:12px}
+  .lp-links{gap:6px 16px;margin-top:12px;padding-top:12px}
+  .lp-links a{font-size:12.5px}
+}
+
+/* ===================== SAME BANNER SIZE ON EVERY BUSINESS PAGE ===================== */
+/* the slider had no fixed height, so a tall (portrait) photo stretched the whole banner */
+#lpSlider{height:400px!important;min-height:0!important;align-self:center}
+#lpSlider .lp-slides{position:absolute!important;inset:0!important;height:100%!important}
+#lpSlider .lp-slides>a,#lpSlider .lp-slides img{height:100%!important}
+.lp-hero-main{min-height:400px}
+@media(max-width:1020px){ #lpSlider{height:340px!important} .lp-hero-main{min-height:340px} }
+@media(max-width:900px){ #lpSlider{height:220px!important} .lp-hero-main{min-height:0} }
+
+/* facts box: no empty slot when a fact (e.g. phone) is missing */
+.lp-facts:has(> .lp-fact-wide:nth-child(3)){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.lp-facts:has(> .lp-fact-wide:nth-child(2)){grid-template-columns:1fr!important}
+.lp-facts:has(> .lp-fact-wide:nth-child(3)) .lp-fact:nth-child(3):not(.lp-fact-wide){grid-column:auto!important}
+
+/* ===================== READABLE + INTERACTIVE SECTIONS ===================== */
+/* services pulled out of the About text */
+.lp-svc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.lp-svc-l{width:100%;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.lp-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:#eef3fc;color:var(--blue);
+  font-size:13px;font-weight:600;border:1px solid #dfe7f6}
+.lp-chip i{font-size:10.5px}
+
+/* click a heading to fold / unfold the section */
+.lp-card>h2.lp-tog{cursor:pointer;user-select:none}
+.lp-card>h2.lp-tog:hover{color:var(--blue)}
+.lp-card>h2 .lp-chev{margin-left:auto;font-size:13px;color:var(--muted);transition:transform .3s;
+  width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#f2f5fa}
+.lp-card>h2 span + .lp-chev{margin-left:10px}
+.lp-card>h2.lp-tog:hover .lp-chev{background:#eef3fc;color:var(--blue)}
+.lp-closed .lp-chev{transform:rotate(-90deg)}
+.lp-closed>.lp-body,.lp-closed>.lp-morebtn{display:none}
+.lp-closed>h2{margin-bottom:0!important;padding-bottom:0!important;border-bottom:0!important}
+
+/* long sections: show the top part + "Show more" */
+.lp-body{position:relative;overflow:hidden;transition:max-height .5s ease}
+.lp-clamp:not(.lp-open)>.lp-body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,0),#fff)}
+.lp-morebtn{display:flex;align-items:center;gap:8px;margin:12px auto 0;border:1px solid var(--line);background:#fff;color:var(--blue);
+  font-weight:700;font-size:13px;padding:8px 18px;border-radius:999px;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s}
+.lp-morebtn:hover{background:#eef3fc;border-color:#cfdcf3}
+.lp-morebtn i{font-size:11px}
