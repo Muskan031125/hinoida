@@ -304,6 +304,8 @@ if (! function_exists('hi_essential_cats')) {
             'School'      => ['graduation-cap', ['school', 'playschool', 'preschool']],
             'Bank / ATM'  => ['building-columns', ['bank', 'atm']],
             'Diagnostics' => ['vial', ['diagnostic', 'pathology', 'lab']],
+            'Hotel'       => ['hotel', ['hotel', 'banquet']],
+            'Shopping'    => ['bag-shopping', ['mall', 'clothing', 'footwear', 'electronics']],
         ];
     }
 }
@@ -327,7 +329,7 @@ if (! function_exists('hi_nearby_essentials')) {
      * Returns rows of ['label','icon','listing','km'] — never invented: a
      * category with nothing within reach is simply left out.
      */
-    function hi_nearby_essentials(array $listing, float $radiusKm = 3.0, int $limit = 8): array
+    function hi_nearby_essentials(array $listing, float $radiusKm = 3.0, int $limit = 8, int $perType = 1): array
     {
         $lat = (float) ($listing['latitude'] ?? 0);
         $lng = (float) ($listing['longitude'] ?? 0);
@@ -362,7 +364,7 @@ if (! function_exists('hi_nearby_essentials')) {
         }
 
         $mine = array_map('intval', (array) json_decode($listing['categories'] ?? '[]', true));
-        $best = [];
+        $all = [];
         foreach ($rows as $r) {
             $cids = array_map('intval', (array) json_decode($r['categories'] ?? '[]', true));
             foreach ($cids as $cid) {
@@ -370,20 +372,135 @@ if (! function_exists('hi_nearby_essentials')) {
                 if ($label === null || in_array($cid, $mine, true)) { continue; }
                 $km = hi_km_between($lat, $lng, (float) $r['latitude'], (float) $r['longitude']);
                 if ($km > $radiusKm) { continue; }
-                if (! isset($best[$label]) || $km < $best[$label]['km']) {
-                    [$icon] = hi_essential_cats()[$label];
-                    // the category id travels with it, so the card can link to
-                    // the others of its kind nearby rather than to a whole
-                    // city-wide category
-                    $best[$label] = ['label' => $label, 'icon' => $icon, 'listing' => $r,
-                                      'km' => $km, 'cat_id' => $cid];
-                }
+                [$icon] = hi_essential_cats()[$label];
+                $all[] = ['label' => $label, 'icon' => $icon, 'listing' => $r, 'km' => $km, 'cat_id' => $cid];
                 break;
             }
         }
-        uasort($best, static fn ($a, $b) => $a['km'] <=> $b['km']);
+        // closest first, then keep only $perType of each type
+        usort($all, static fn ($a, $b) => $a['km'] <=> $b['km']);
+        $out = [];
+        $count = [];
+        foreach ($all as $a) {
+            $c = $count[$a['label']] ?? 0;
+            if ($c >= $perType) { continue; }
+            $count[$a['label']] = $c + 1;
+            $out[] = $a;
+        }
 
-        return array_slice(array_values($best), 0, $limit);
+        return array_slice($out, 0, $limit);
+    }
+}
+
+if (! function_exists('hi_is_residential')) {
+    /**
+     * A place someone would live in: a flat or house (listing_type
+     * "property"), or a listing filed under Rental Listings or PG/Hostel.
+     * Only these get "What's nearby" — dealers, builders, loan providers and
+     * ordinary businesses do not.
+     */
+    function hi_is_residential(array $listing): bool
+    {
+        if (hi_is_property($listing)) { return true; }
+
+        $cids = json_decode((string) ($listing['categories'] ?? ''), true);
+        if (! is_array($cids) || ! $cids) { return false; }
+
+        // the residential categories, found by name once per request
+        static $live = null;
+        if ($live === null) {
+            $live = [];
+            foreach (\Config\Database::connect()->table('category')->select('id, name')->get()->getResultArray() as $c) {
+                $n = strtolower(html_entity_decode((string) $c['name'], ENT_QUOTES | ENT_HTML5));
+                if (str_contains($n, 'rental listing') || str_contains($n, 'pg/hostel') || str_contains($n, 'hostel accommodation')) {
+                    $live[(int) $c['id']] = true;
+                }
+            }
+        }
+        foreach ($cids as $cid) {
+            if (isset($live[(int) $cid])) { return true; }
+        }
+
+        return false;
+    }
+}
+
+if (! function_exists('hi_nearby_venues')) {
+    /**
+     * Every listing of an everyday type within $radiusKm, closest first, as
+     * full rows (photo, rating, locality) for the "What's nearby" cards.
+     * Returns rows of ['label','icon','listing','km','cat_id'].
+     * $perType keeps one busy type (restaurants) from crowding out the rest.
+     */
+    function hi_nearby_venues(array $listing, float $radiusKm = 5.0, int $perType = 12, int $limit = 120): array
+    {
+        $lat = (float) ($listing['latitude'] ?? 0);
+        $lng = (float) ($listing['longitude'] ?? 0);
+        if (! $lat || ! $lng) { return []; }
+
+        $db   = \Config\Database::connect();
+        $dLat = $radiusKm / 111;
+        $dLng = $radiusKm / max(1e-6, 111 * cos(deg2rad($lat)));
+
+        $rows = $db->table('listing li')
+            ->select('li.*, l.name AS locality_name, l.slug AS locality_slug')
+            ->join('locality l', 'l.id = li.locality_id', 'left')
+            ->where('li.status', 'active')->where('li.id !=', (int) ($listing['id'] ?? 0))
+            ->where('li.latitude >=', $lat - $dLat)->where('li.latitude <=', $lat + $dLat)
+            ->where('li.longitude >=', $lng - $dLng)->where('li.longitude <=', $lng + $dLng)
+            // closest first, so the cap below never drops a place round the corner
+            ->orderBy(sprintf('POW(li.latitude - %F, 2) + POW((li.longitude - %F) * %F, 2)', $lat, $lng, cos(deg2rad($lat))), 'ASC', false)
+            ->limit(600)->get()->getResultArray();
+        if (! $rows) { return []; }
+
+        // category id => type label, resolved once per request
+        static $catMap = null;
+        if ($catMap === null) {
+            $catMap = [];
+            $cats   = $db->table('category')->select('id, name')->get()->getResultArray();
+            foreach (hi_essential_cats() as $label => [$icon, $needles]) {
+                foreach ($cats as $c) {
+                    $id = (int) $c['id'];
+                    if (isset($catMap[$id])) { continue; }
+                    $n = strtolower(html_entity_decode((string) $c['name'], ENT_QUOTES | ENT_HTML5));
+                    foreach ($needles as $needle) {
+                        if (str_contains($n, $needle)) { $catMap[$id] = $label; break; }
+                    }
+                }
+            }
+        }
+
+        $types = hi_essential_cats();
+        $mine  = array_map('intval', (array) json_decode($listing['categories'] ?? '[]', true));
+        $all   = [];
+        foreach ($rows as $r) {
+            foreach (array_map('intval', (array) json_decode($r['categories'] ?? '[]', true)) as $cid) {
+                $label = $catMap[$cid] ?? null;
+                if ($label === null || in_array($cid, $mine, true)) { continue; }
+                $km = hi_km_between($lat, $lng, (float) $r['latitude'], (float) $r['longitude']);
+                if ($km > $radiusKm) { break; }
+                $all[] = ['label' => $label, 'icon' => $types[$label][0], 'listing' => $r, 'km' => $km, 'cat_id' => $cid];
+                break;
+            }
+        }
+        usort($all, static fn ($a, $b) => $a['km'] <=> $b['km']);
+
+        $out = []; $count = [];
+        foreach ($all as $a) {
+            $c = $count[$a['label']] ?? 0;
+            if ($c >= $perType) { continue; }
+            $count[$a['label']] = $c + 1;
+            $out[] = $a;
+            if (count($out) >= $limit) { break; }
+        }
+
+        // ratings for the cards, in one query
+        if ($out) {
+            $rated = (new \App\Models\ListingModel())->attachRatings(array_column(array_column($out, 'listing'), null));
+            foreach ($out as $i => $o) { $out[$i]['listing'] = $rated[$i]; }
+        }
+
+        return $out;
     }
 }
 

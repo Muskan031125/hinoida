@@ -291,3 +291,34 @@
   font-weight:700;font-size:13px;padding:8px 18px;border-radius:999px;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s}
 .lp-morebtn:hover{background:#eef3fc;border-color:#cfdcf3}
 .lp-morebtn i{font-size:11px}
+
+/* Sections under the listing (FAQ, Similar, Also nearby, Recently viewed):
+   each had 74px above and below, so two in a row left ~150px of empty space.
+   Tighter here, on listing pages only. */
+main .lpage ~ .sec{padding-top:26px;padding-bottom:26px}
+main .lpage ~ .sec .sec-head{margin-bottom:16px}
+@media(max-width:640px){main .lpage ~ .sec{padding-top:18px;padding-bottom:18px}}
+
+/* Banner, after the phone/address box and the extra line came out: keep it
+   full height and spread the rest evenly instead of bunching it at the top. */
+.lp-hero-main{display:flex!important;flex-direction:column!important;justify-content:center!important;min-height:330px}
+.lp-hero-main .det-crumb{margin-bottom:14px!important}
+.lp-hero-main .det-tagline{margin-top:16px!important;line-height:1.65!important}
+.lp-hero-main .lh-meta{margin-top:24px!important}
+.lp-hero-main .lh-actions{margin-top:28px!important;gap:12px!important}
+.lp-hero-main .lh-actions .lp-act{padding:14px 24px!important;font-size:15.5px!important}
+@media(max-width:900px){
+  .lp-hero-main{min-height:0}
+  .lp-hero-main .lh-meta{margin-top:16px!important}
+  .lp-hero-main .lh-actions{margin-top:18px!important}
+  .lp-hero-main .lh-actions .lp-act{padding:12px 18px!important;font-size:14.5px!important}
+}
+
+/* key-fact chips in the banner */
+.lh-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.lh-chip{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 13px;
+  backdrop-filter:blur(6px);white-space:nowrap}
+.lh-chip i{color:#a9c3ff;font-size:12px}
+.lh-chip.is-rate i{color:#ffc542}
+@media(max-width:900px){.lh-chips{gap:6px;margin-top:14px}.lh-chip{font-size:12.5px;padding:6px 11px}}

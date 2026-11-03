@@ -1,6 +1,6 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('head') ?>
-<link rel="stylesheet" href="<?= base_url('assets/css/listing.css') ?>?v=3">
+<link rel="stylesheet" href="<?= base_url('assets/css/listing.css') ?>?v=6">
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
 <?php
@@ -48,12 +48,31 @@ $loginTo = static function (string $label, string $anchor): string {
       <?php if (! empty($hours)): ?>
         <span class="lh-open <?= $hours['is_open'] ? 'is-open' : 'is-shut' ?>"><i></i><?= $hours['is_open'] ? 'Open now' : 'Closed' ?><?php if (! empty($hours['label'])): ?><em><?= esc($hours['label']) ?></em><?php endif; ?></span>
       <?php endif; ?>
-      <span class="lh-dots">
-        <?php if (! empty($catNames[0])): ?><a href="<?= hi_category_url(esc($catNames[0]['slug'], 'url')) ?>"><?= esc($catNames[0]['name']) ?></a><?php endif; ?>
-        <span><i class="fa-solid fa-location-dot"></i> <?= esc($loc) ?></span>
-        <?php if ($rating['count']): $_q = hi_rating_quality((float) $rating['avg'], (int) $rating['count']); ?><span class="lh-rate"><i class="fa-solid fa-star"></i> <?= esc($rating['avg']) ?> <small>(<?= (int) $rating['count'] ?>)</small></span><?php else: ?><span class="lh-new">New on HiNoida</span><?php endif; ?>
-        <?php if ((int) ($views ?? 0) >= 50): ?><span><i class="fa-regular fa-eye"></i> <?= number_format((int) $views) ?> views</span><?php endif; ?>
-      </span>
+      <?php /* category · sector · New on HiNoida · views line removed on every listing */ ?>
+    </div>
+    <?php
+      /* Key facts as chips — only what is really stored for this listing:
+         its most specific type, sector, rating (or "New listing") and its
+         first three amenities. */
+      $_chips = [];
+      $_tp = $catNames ? html_entity_decode((string) $catNames[count($catNames) - 1]['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
+      foreach (['pg/' => 'PG & Hostel', 'hostel' => 'PG & Hostel', 'rental listing' => 'For rent', 'commercial propert' => 'Commercial space'] as $_k => $_v) {
+          if (stripos($_tp, $_k) !== false) { $_tp = $_v; break; }
+      }
+      if ($_tp !== '') { $_chips[] = ['tag', $_tp]; }
+      $_chips[] = ['location-dot', $loc];
+      $_chips[] = $rating['count'] ? ['star', $rating['avg'] . ' (' . (int) $rating['count'] . ' reviews)'] : ['wand-magic-sparkles', 'New listing'];
+      foreach (array_slice($amenities ?? [], 0, 3) as $_a) {
+          $_ic = preg_replace('/^(fas|far|fab|fa-solid|fa-regular|fa-brands)\s+fa-/', '', trim((string) ($_a['icon'] ?? '')));
+          $_nm = html_entity_decode((string) $_a['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+          $_nm = strtoupper($_nm) === $_nm ? ucwords(strtolower($_nm)) : $_nm;   // "WIFI" → "Wifi"
+          $_chips[] = [preg_match('/^[a-z0-9-]+$/', $_ic) ? $_ic : 'circle-check', $_nm];
+      }
+    ?>
+    <div class="lh-chips">
+      <?php foreach ($_chips as [$_ci, $_ct]): ?>
+        <span class="lh-chip<?= $_ci === 'star' ? ' is-rate' : '' ?>"><i class="fa-solid fa-<?= esc($_ci) ?>"></i> <?= esc($_ct) ?></span>
+      <?php endforeach; ?>
     </div>
     <?php
       $_dirUrl = (! empty($l['latitude']) && ! empty($l['longitude']))
@@ -61,24 +80,13 @@ $loginTo = static function (string $label, string $anchor): string {
         : 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($l['name'] . ', ' . $fullAddr);
     ?>
     <?php /* contact info as two tidy rows instead of four boxes */ ?>
-    <?php if ($phone || $fullAddr !== ''): ?>
-    <div class="lh-info">
-      <?php if ($phone): ?>
-        <a class="lh-row" href="tel:<?= esc(preg_replace('/[^0-9+]/', '', $phone)) ?>" data-track="phone"><i class="fa-solid fa-phone"></i><span><small>Phone</small><b><?= esc($phone) ?></b></span></a>
-      <?php endif; ?>
-      <?php if ($fullAddr !== ''): ?>
-        <a class="lh-row lh-addr" href="<?= esc($_dirUrl, 'attr') ?>" target="_blank" rel="noopener" title="<?= esc($fullAddr, 'attr') ?>"><i class="fa-solid fa-location-dot"></i><span><small>Address</small><b><?= esc($fullAddr) ?></b></span></a>
-      <?php endif; ?>
-    </div>
-    <?php endif; ?>
+    <?php /* phone + address box removed on every listing (address is in Location below) */ ?>
     <div class="lp-actions lh-actions">
       <?php if ($phone): ?>
         <a class="lp-act primary" data-track="phone" href="tel:<?= esc(preg_replace('/[^0-9+]/', '', $phone)) ?>"><i class="fa-solid fa-phone"></i> Call now</a>
         <a class="lp-act wa" data-track="whatsapp" target="_blank" rel="noopener" href="https://wa.me/<?= esc(preg_replace('/[^0-9]/', '', $phone)) ?>"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
       <?php endif; ?>
-      <a class="lp-act" href="<?= esc($_dirUrl, 'attr') ?>" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Directions</a>
-      <a class="lp-act lh-ic" href="#enquiry" title="Enquire" aria-label="Enquire"><i class="fa-solid fa-paper-plane"></i></a>
-      <button type="button" class="lp-act lh-ic" id="lpShare" title="Share" aria-label="Share"><i class="fa-solid fa-share-nodes"></i></button>
+      <?php /* only Call now + WhatsApp in the banner, on every listing */ ?>
     </div>
     </div>
 
@@ -273,19 +281,18 @@ $loginTo = static function (string $label, string $anchor): string {
              real measured distances. Anything in the Property tree gets it — a flat,
              a PG, a coworking desk, a shop — because what is within walking
              distance is half that decision, and means nothing on a restaurant. */ ?>
-    <?php $_showNear = hi_shows_nearby($l); ?>
-    <?php $_near = $_showNear ? hi_nearby_essentials($l) : []; ?>
+       <?php $_showNear = hi_is_residential($l); ?>
+       
+    <?php $_near = $_showNear ?   hi_nearby_venues($l, 5.0, 12, 120) : []; ?>
     <?php
       /* Places worth knowing about — metro, market, mall, park. Blocks, pockets
          and road names are in the same table but are not places anyone chooses a
          flat for, so only the recognised types appear. */
-      $_marks  = $_showNear ? hi_nearby_landmarks($l) : [];
+      $_marks  = []; // landmark chips (market, mall…) removed — the cards below cover it
       $_places = [];
     ?>
     <?php if ($_near || $_places || $_marks): ?>
       <h2 style="margin:30px 0 4px"><?= esc(hi_c('listing.what_s_nearby', 'What’s nearby')) ?></h2>
-      <p style="font-size:13px;color:var(--muted);margin:0 0 14px">
-        Everyday essentials and landmarks around <?= esc($l['name']) ?>, measured from its location.</p>
     <?php endif; ?>
     <?php /* landmarks first — malls, societies and blocks from the live area
              list, positioned by the listings tagged to them */ ?>
@@ -322,46 +329,182 @@ $loginTo = static function (string $label, string $anchor): string {
       </style>
     <?php endif; ?>
     <?php if ($_near): ?>
-      <div class="nearby-grid">
-        <?php foreach ($_near as $n): $np = $n['listing']; ?>
-          <?php /* the label goes to the others of its kind around here, not to
-                   the city-wide category — "every school in Noida" is not what
-                   someone reading a flat's nearby list wants */ ?>
-          <?php $_ls = $np['locality_slug'] ?? ($l['locality_slug'] ?? '');
-              $_all = $_ls !== '' && ($n['cat_id'] ?? 0)
-              ? hi_locality_url($_ls) . '?cat=' . (int) $n['cat_id'] : ''; ?>
-          <div class="nearby-i">
-            <span class="nearby-ic"><i class="fa-solid fa-<?= esc($n['icon']) ?>"></i></span>
-            <span class="nearby-tx">
-              <?php if ($_all !== ''): ?>
-                <a class="nearby-more" href="<?= esc($_all, 'attr') ?>"><?= esc($n['label']) ?> nearby &rsaquo;</a>
-              <?php else: ?>
-                <em><?= esc($n['label']) ?></em>
-              <?php endif; ?>
-              <a class="nearby-nm" href="<?= hi_listing_url($np) ?>"><?= esc($np['name']) ?></a>
-              <span><?= $n['km'] < 1 ? round($n['km'] * 1000 / 50) * 50 . ' m' : number_format($n['km'], 1) . ' km' ?> away</span>
-            </span>
+      <?php /* What's nearby: the site's own listing cards (the same ones as on
+               category and search pages), with a distance + type filter row and
+               6 cards a page. Everything is in the page, so filtering and paging
+               run in the browser with no reload. Class names use "nby-" because
+               "nb-" is already taken by the news brief styles in site.css. */
+        $_nt = [];
+        foreach ($_near as $_n) { $_nt[$_n['label']] ??= $_n['icon']; }
+        $_fmtKm = static fn ($km) => $km < 1 ? (round($km * 1000 / 50) * 50) . ' m' : number_format($km, 1) . ' km';
+      ?>
+      <div class="nby" id="nearbyBox">
+        <div class="nby-filters">
+          <div class="nby-row">
+            <span class="nby-lbl">Distance</span>
+            <?php foreach (['0.5' => '500 m', '1' => '1 km', '2' => '2 km', '5' => '5 km'] as $_v => $_t): ?>
+              <button type="button" class="nby-chip nby-d<?= (string) $_v === '5' ? ' on' : '' ?>" data-km="<?= $_v ?>"><?= $_t ?></button>
+            <?php endforeach; ?>
           </div>
-        <?php endforeach; ?>
+          <div class="nby-row nby-types">
+            <span class="nby-lbl">Type</span>
+            <button type="button" class="nby-chip nby-t on" data-t="*">All <b>0</b></button>
+            <?php foreach ($_nt as $_lb => $_ic): ?>
+              <button type="button" class="nby-chip nby-t" data-t="<?= esc($_lb, 'attr') ?>"><i class="fa-solid fa-<?= esc($_ic) ?>"></i> <?= esc($_lb) ?> <b>0</b></button>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <p class="nby-info"></p>
+        <div class="nby-grid">
+          <?php foreach ($_near as $n): $np = $n['listing'];
+            $_nm  = html_entity_decode((string) $np['name'], ENT_QUOTES | ENT_HTML5);
+            // location: the sector/locality, or the start of the address
+            $_loc = trim(html_entity_decode((string) ($np['locality_name'] ?? ''), ENT_QUOTES | ENT_HTML5));
+            if ($_loc === '') { $_loc = mb_strimwidth(trim(html_entity_decode((string) ($np['address'] ?? ''), ENT_QUOTES | ENT_HTML5)), 0, 32, '…'); }
+            $_cat = trim((string) ($np['_cat_name'] ?? '')) ?: $n['label'];
+          ?>
+            <?php
+              $_tone = ['Hospital' => 'red', 'Pharmacy' => 'red', 'Diagnostics' => 'red',
+                        'Restaurant' => 'orange', 'Cafe' => 'orange',
+                        'School' => 'green', 'Gym' => 'teal', 'Salon' => 'pink',
+                        'Shopping' => 'purple', 'Grocery' => 'purple', 'Hotel' => 'blue', 'Bank / ATM' => 'blue'][$n['label']] ?? 'blue';
+            ?>
+            <a class="nby-card" href="<?= hi_listing_url($np) ?>" data-t="<?= esc($n['label'], 'attr') ?>" data-km="<?= round($n['km'], 3) ?>">
+              <span class="nby-ph">
+                <img src="<?= esc(hi_cover($np)) ?>" alt="<?= esc($_nm) ?>" loading="lazy">
+                <span class="nby-dist"><?= $_fmtKm($n['km']) ?></span>
+              </span>
+              <span class="nby-bd">
+                <span class="nby-tag nby-<?= $_tone ?>"><i class="fa-solid fa-<?= esc($n['icon']) ?>"></i> <?= esc($n['label']) ?></span>
+                <strong><?= esc($_nm) ?></strong>
+                <?php if ($_loc !== ''): ?><span class="nby-loc"><i class="fa-solid fa-location-dot"></i> <?= esc($_loc) ?></span><?php endif; ?>
+                <?php if (! empty($np['_rcount'])): ?>
+                  <span class="nby-ft"><span class="nby-rt"><i class="fa-solid fa-star"></i> <?= esc($np['_ravg']) ?> <small>(<?= (int) $np['_rcount'] ?>)</small></span></span>
+                <?php endif; ?>
+              </span>
+              <i class="fa-solid fa-chevron-right nby-go" aria-hidden="true"></i>
+            </a>
+          <?php endforeach; ?>
+        </div>
+        <p class="nby-empty" style="display:none">Nothing of this type within this distance. Try a wider distance.</p>
+        <nav class="nby-pager" aria-label="Nearby pages"></nav>
       </div>
       <style>
-      .nearby-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:12px}
-      .nearby-i{display:flex;gap:11px;align-items:center;border:1px solid var(--line);border-radius:12px;
-        padding:11px 13px;background:#fff;text-decoration:none}
-      .nearby-i:hover{border-color:#c9d8f2;background:#f8fbff}
-      .nearby-more{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
-        text-decoration:none;font-weight:600}
-      .nearby-more:hover{color:var(--blue)}
-      .nearby-nm{font-size:13.5px;color:var(--ink);text-decoration:none;font-weight:700;
-        overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      .nearby-nm:hover{color:var(--blue)}
-      .nearby-ic{flex:0 0 auto;width:36px;height:36px;border-radius:50%;background:#eef3fc;color:var(--blue);
-        display:flex;align-items:center;justify-content:center;font-size:14px}
-      .nearby-tx{display:flex;flex-direction:column;min-width:0;line-height:1.3}
-      .nearby-tx em{font-style:normal;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-      .nearby-tx b{font-size:13.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-      .nearby-tx span{font-size:12px;color:var(--blue);font-weight:600}
+      .nby-filters{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fbfcfe;margin:0 0 12px}
+      .nby-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+      .nby-lbl{flex:0 0 70px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+      .nby-chip{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 inherit;font-family:inherit;padding:8px 12px;
+        border:1px solid var(--line);border-radius:20px;background:#fff;color:var(--body);cursor:pointer;white-space:nowrap}
+      .nby-chip i{color:var(--blue);font-size:12px}
+      .nby-chip b{font-size:11px;color:var(--muted);background:#eef1f6;border-radius:10px;padding:2px 7px}
+      .nby-chip:hover{border-color:#b9cdf0;background:#f8fbff}
+      .nby-chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+      .nby-chip.on i{color:#fff}
+      .nby-chip.on b{background:rgba(255,255,255,.22);color:#fff}
+      .nby-chip.is-zero{opacity:.45}
+      .nby-info{margin:0 0 10px;font-size:13px;color:var(--muted)}
+      .nby-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .nby-card{display:flex;align-items:center;gap:13px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff;
+        text-decoration:none;color:inherit;min-width:0;box-shadow:0 1px 2px rgba(16,24,40,.04);
+        transition:border-color .15s,box-shadow .15s,transform .15s}
+      .nby-card:hover{border-color:#c9d8f2;box-shadow:0 8px 20px -8px rgba(20,40,80,.18);transform:translateY(-1px)}
+      .nby-ph{position:relative;flex:0 0 84px;width:84px;height:84px;border-radius:11px;overflow:hidden;background:#eef2f7}
+      .nby-ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+      .nby-card:hover .nby-ph img{transform:scale(1.06)}
+      .nby-dist{position:absolute;left:6px;bottom:6px;background:rgba(255,255,255,.96);color:var(--blue);font-size:11px;font-weight:800;
+        border-radius:20px;padding:2px 7px;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+      .nby-bd{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+      .nby-tag{display:inline-flex;align-items:center;gap:5px;max-width:100%;font-size:10.5px;font-weight:800;letter-spacing:.05em;
+        text-transform:uppercase;border-radius:6px;padding:3px 7px;white-space:nowrap}
+      .nby-tag i{font-size:10px}
+      .nby-red{background:#fdecee;color:#c0283f}
+      .nby-orange{background:#fff3e2;color:#b25d00}
+      .nby-green{background:#e7f6ee;color:#16794a}
+      .nby-teal{background:#e3f5f6;color:#0e7480}
+      .nby-pink{background:#fdebf5;color:#b02a78}
+      .nby-purple{background:#f0ebfd;color:#6232c4}
+      .nby-blue{background:#eaf1fd;color:#1741a6}
+      .nby-bd strong{max-width:100%;font-size:15px;line-height:1.25;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .nby-loc{max-width:100%;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .nby-loc i{font-size:10px;margin-right:2px}
+      .nby-ft{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+      .nby-rt{font-weight:700;color:#1d2b45}
+      .nby-rt i{color:#f5a623;font-size:11px}
+      .nby-rt small{color:var(--muted);font-weight:500}
+      .nby-dot{color:#c3ccdb}
+      .nby-go{flex:none;color:#c3ccdb;font-size:12px;padding-right:4px;transition:color .15s,transform .15s}
+      .nby-card:hover .nby-go{color:var(--blue);transform:translateX(2px)}
+      .nby-empty{margin:4px 0 0;padding:22px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted);font-size:13.5px}
+      .nby-pager{display:flex;justify-content:center;gap:6px;margin-top:16px}
+      .nby-pager:empty{display:none}
+      .nby-pg{min-width:34px;height:34px;padding:0 8px;font:600 13px/1 inherit;font-family:inherit;border:1px solid var(--line);
+        border-radius:8px;background:#fff;color:var(--body);cursor:pointer}
+      .nby-pg:hover:not(:disabled){border-color:#b9cdf0;color:var(--blue)}
+      .nby-pg.on{background:var(--blue);border-color:var(--blue);color:#fff}
+      .nby-pg:disabled{opacity:.4;cursor:default}
+      .nby-gap{align-self:center;color:var(--muted);padding:0 2px}
+      @media (max-width:760px){
+        .nby-grid{grid-template-columns:minmax(0,1fr);gap:8px}
+        .nby-ph{flex-basis:72px;width:72px;height:72px}
+        .nby-bd strong{font-size:14px}
+        .nby-lbl{flex-basis:100%}
+        .nby-types{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+        .nby-types::-webkit-scrollbar{display:none}
+        .nby-types .nby-lbl{display:none}
+      }
       </style>
+      <script>
+      (function () {
+        var box = document.getElementById('nearbyBox'); if (!box) return;
+        var cells = [].slice.call(box.querySelectorAll('.nby-card')),
+            types = [].slice.call(box.querySelectorAll('.nby-t')),
+            dists = [].slice.call(box.querySelectorAll('.nby-d')),
+            pager = box.querySelector('.nby-pager'), info = box.querySelector('.nby-info'),
+            empty = box.querySelector('.nby-empty'),
+            // 8 small cards (4 rows of 2) on a laptop, 5 on a phone
+            PER = window.matchMedia('(max-width:760px)').matches ? 5 : 8, type = '*', km = 5, page = 1;
+
+        function draw() {
+          var inRange = cells.filter(function (c) { return +c.getAttribute('data-km') <= km; });
+          types.forEach(function (b) {
+            var t = b.getAttribute('data-t'),
+                n = t === '*' ? inRange.length : inRange.filter(function (c) { return c.getAttribute('data-t') === t; }).length;
+            b.querySelector('b').textContent = n;
+            b.classList.toggle('is-zero', n === 0);
+          });
+          var shown = inRange.filter(function (c) { return type === '*' || c.getAttribute('data-t') === type; }),
+              pages = Math.max(1, Math.ceil(shown.length / PER));
+          if (page > pages) page = pages;
+          var from = (page - 1) * PER;
+          cells.forEach(function (c) { c.style.display = 'none'; });
+          shown.slice(from, from + PER).forEach(function (c) { c.style.display = ''; });
+          empty.style.display = shown.length ? 'none' : '';
+          info.textContent = shown.length ? 'Showing ' + (from + 1) + '–' + Math.min(from + PER, shown.length) + ' of ' + shown.length + ' places' : '';
+          pager.innerHTML = '';
+          if (pages < 2) return;
+          function btn(label, p, opts) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.className = 'nby-pg' + (opts && opts.on ? ' on' : ''); b.innerHTML = label;
+            b.disabled = !!(opts && opts.off);
+            b.addEventListener('click', function () { page = p; draw(); box.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+            pager.appendChild(b);
+          }
+          btn('&lsaquo;', page - 1, { off: page === 1 });
+          var last = 0;
+          for (var i = 1; i <= pages; i++) {
+            if (i !== 1 && i !== pages && Math.abs(i - page) > 1) continue;
+            if (last && i - last > 1) { var g = document.createElement('span'); g.className = 'nby-gap'; g.textContent = '…'; pager.appendChild(g); }
+            btn(i, i, { on: i === page }); last = i;
+          }
+          btn('&rsaquo;', page + 1, { off: page === pages });
+        }
+        types.forEach(function (b) { b.addEventListener('click', function () {
+          types.forEach(function (x) { x.classList.toggle('on', x === b); }); type = b.getAttribute('data-t'); page = 1; draw(); }); });
+        dists.forEach(function (b) { b.addEventListener('click', function () {
+          dists.forEach(function (x) { x.classList.toggle('on', x === b); }); km = +b.getAttribute('data-km'); page = 1; draw(); }); });
+        draw();
+      })();
+      </script>
     <?php endif; ?>
 
     <?php /* Where the two sides meet: a dealer's own flats, on their page. */ ?>
@@ -741,18 +884,7 @@ $loginTo = static function (string $label, string $anchor): string {
 </section>
 <?php endif; ?>
 
-<?php if (! empty($nearby)): ?>
-<section class="sec">
-  <div class="wrap">
-    <div class="sec-head"><h2>Also nearby in <?= esc($loc) ?></h2></div>
-    <div class="lscroll">
-      <?php foreach ($nearby as $s): $s['locality_name'] = $s['locality_name'] ?? $loc; ?>
-        <?= view('frontend/_card', ['l' => $s]) ?>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-<?php endif; ?>
+<?php /* "Also nearby in <sector>" removed — the What's nearby section covers it */ ?>
 
 <?php
   // ---- JSON-LD structured data (SEO / AEO / GEO) ----
@@ -911,7 +1043,7 @@ $loginTo = static function (string $label, string $anchor): string {
     function toggle(){ var closed=c.classList.toggle('lp-closed'); h.setAttribute('aria-expanded',closed?'false':'true'); }
     h.addEventListener('click',function(e){ if(e.target.closest('a,button')) return; toggle(); });
     h.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
-    if(/review|qa|question|location/.test(c.id)) return;
+    if(/review|qa|question|location|nearby/.test(c.id)) return;
     var lim = ci===0 ? 190 : 300;
     if(body.scrollHeight > lim+60){
       c.classList.add('lp-clamp'); body.style.maxHeight=lim+'px';
