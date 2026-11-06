@@ -44,3 +44,7 @@ git-push-log.txt
 # local test-data scripts
 add-*.php
 hinoida-railway.sql
+
+# local mail copies and logs (may hold real emails)
+writable/maillog/
+git-update-log.txt
