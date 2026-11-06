@@ -20,4 +20,4 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 ENV CI_ENVIRONMENT=production
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
-CMD ["/usr/local/bin/start.sh"]
+CMD ["sh", "/usr/local/bin/start.sh"]
