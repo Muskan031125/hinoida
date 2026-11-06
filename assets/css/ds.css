@@ -352,3 +352,13 @@ html body .bl-prose,html body .bl-prose :is(p,ul,ol,li,h2,h3){max-width:none!imp
 /* hero stays still on load/refresh — no sliding or popping search box */
 html body .hero,html body .hero *{animation:none!important}
 html body .hero :is(h1,p,form,.searchbar,.hp-box,.hp-tabs,.hp-wrap,.pills){opacity:1!important;transform:none!important}
+
+/* list & info pages (search, categories, areas, about…): short banner so results show right away */
+@media(min-width:900px){
+  html body section.det-hero.ph-hero{padding:22px 0!important}
+  html body .det-hero.ph-hero .lp-hero-grid{grid-template-columns:minmax(0,1fr) 420px!important;gap:32px!important}
+  html body .det-hero.ph-hero .lp-hero-grid #lpSlider,html body .det-hero.ph-hero .lp-slider{height:220px!important}
+  html body .det-hero.ph-hero h1{font-size:34px!important;margin-bottom:8px!important}
+  html body .det-hero.ph-hero .lp-hero-main p{margin-bottom:14px!important}
+}
+@media(min-width:1600px){html body .det-hero.ph-hero .lp-hero-grid #lpSlider{height:230px!important}}
