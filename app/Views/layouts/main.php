@@ -104,7 +104,7 @@ if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createEl
 s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
 <?php endif; ?>
-<link rel="stylesheet" href="<?= base_url('assets/css/ds.css') ?>?v=21">
+<link rel="stylesheet" href="<?= base_url('assets/css/ds.css') ?>?v=22">
 </head>
 <body<?= $_isHome ? ' class="is-home"' : '' ?>>
 
