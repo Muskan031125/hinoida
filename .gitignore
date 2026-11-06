@@ -48,3 +48,5 @@ hinoida-railway.sql
 # local mail copies and logs (may hold real emails)
 writable/maillog/
 git-update-log.txt
+railway-import.php
+import-log.txt

@@ -91,7 +91,11 @@ textarea.adminp{resize:vertical;min-height:70px}
   .main table{display:block;overflow-x:auto;white-space:nowrap}
   .main img,.main iframe{max-width:100%}
   .top{flex-wrap:wrap;gap:8px;padding:14px 16px!important}
+  .side .brand{display:flex;align-items:center;justify-content:space-between}
+  .adm-menu{display:inline-flex!important}
+  .side:not(.open) .nav,.side:not(.open) .side-foot{display:none!important}
 }
+.adm-menu{display:none;align-items:center;gap:6px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:8px 14px;font:600 14px/1 inherit;cursor:pointer}
 /* ===== POLISH LAYER — same editorial calm as the rest of the site ===== */
 :root{--line:#e8e4dd;--paper:#fbfaf8;--blue:#1741a6}
 body{background:#fbfaf8}
@@ -195,7 +199,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
 </style>
 <div class="shell">
   <aside class="side">
-    <div class="brand"><span>Hi</span> NOIDA</div>
+    <div class="brand"><div style="display:flex;align-items:center;gap:12px"><span>Hi</span> NOIDA</div><button type="button" class="adm-menu" onclick="this.closest('.side').classList.toggle('open');this.textContent=this.closest('.side').classList.contains('open')?'Close':'Menu'">Menu</button></div>
     <nav class="nav">
       <?php foreach($navGroups as $gi => $g):
         $items = $g[2];

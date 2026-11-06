@@ -321,3 +321,30 @@ html body .pr-col{background:#fff;border:1px solid var(--ds-line)!important;bord
 html body .pr-col p{max-width:none!important}
 /* ---------- simple pages (about, terms…): text uses the full card ---------- */
 html body .bl-prose,html body .bl-prose :is(p,ul,ol,li,h2,h3){max-width:none!important}
+
+/* ================= PHONES: compact, thumb-friendly (laptop untouched) ================= */
+@media(max-width:600px){
+  /* listing grids: 2 per row instead of 1 huge card */
+  html body .lgrid:not(.aslist):not(.hscroll){grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+  html body .lgrid:not(.aslist) .lcard .ph,html body .lgrid:not(.aslist) .lcard .lc-ph{aspect-ratio:4/3!important;height:auto!important;min-height:0!important}
+  html body .lgrid:not(.aslist) .lcard .bd,html body .lgrid:not(.aslist) .lcard .lc-bd{padding:8px 2px 4px!important}
+  html body .lgrid:not(.aslist) .lcard :is(h3,.lc-t,.t){font-size:13.5px!important;line-height:1.3!important;white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  html body .lgrid:not(.aslist) .lcard :is(p,.lc-s,.s,.addr){font-size:12px!important;line-height:1.35!important}
+  html body .lgrid:not(.aslist) .lcard{min-width:0!important}
+  html body .lgrid:not(.aslist) .lcard :is(.lc-cat,.lc-meta,.lc-tags,.meta){max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;display:block!important}
+  /* property details: 2 columns */
+  html body .pspecs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html body .pspecs .pspec:last-child{grid-column:auto}
+  html body .pspecs .pspec:nth-child(odd):last-child{grid-column:1/-1}
+  /* bigger tap targets for chips, tabs and small buttons */
+  html body :is(.sx-chip,.ptabs a,.ptabs button,.nt-chips a,.nby-types a,.nby-types button,.nby-d a,.nby-d button,.typechips a,.sx-pop a,.pager a,.pagination a){min-height:38px!important;display:inline-flex!important;align-items:center!important}
+  html body :is(input,select,textarea){font-size:16px!important} /* stops iPhone zoom on focus */
+  /* section spacing a bit tighter */
+  html body .sec{padding-top:26px!important;padding-bottom:26px!important}
+  html body .det-main .lp-card{padding:16px!important}
+  /* leave room for the sticky bars at the bottom */
+  html body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+}
+@media(max-width:360px){
+  html body .lgrid:not(.aslist):not(.hscroll){grid-template-columns:1fr!important}
+}
