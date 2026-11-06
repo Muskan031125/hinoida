@@ -348,3 +348,7 @@ html body .bl-prose,html body .bl-prose :is(p,ul,ol,li,h2,h3){max-width:none!imp
 @media(max-width:360px){
   html body .lgrid:not(.aslist):not(.hscroll){grid-template-columns:1fr!important}
 }
+
+/* hero stays still on load/refresh — no sliding or popping search box */
+html body .hero,html body .hero *{animation:none!important}
+html body .hero :is(h1,p,form,.searchbar,.hp-box,.hp-tabs,.hp-wrap,.pills){opacity:1!important;transform:none!important}

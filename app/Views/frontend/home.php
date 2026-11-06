@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/main') ?>
 <?= $this->section('content') ?>
 <?php $img = static fn (array $l): string => hi_cover($l); ?>
+<script>try{if('scrollRestoration' in history)history.scrollRestoration='manual';window.scrollTo(0,0);}catch(e){}</script>
 <section class="hero">
   <div class="wrap">
     <?php
@@ -72,13 +73,6 @@
       </div>
     </div>
 
-    <?php /* trust line — live counts */ ?>
-    <div class="hp-trust">
-      <?php if (! empty($_hs['sectors'])): ?><span><b><?= number_format((int) $_hs['sectors']) ?></b> sectors</span><?php endif; ?>
-      <?php if ($_pgN): ?><span><b><?= $_pgN ?></b> PGs &amp; hostels</span><?php endif; ?>
-      <?php if ($_dealers): ?><span><b><?= $_dealers ?></b> property dealers</span><?php endif; ?>
-      <span><b><?= number_format((int) ($stats['listings'] ?? 0)) ?></b> local places nearby</span>
-    </div>
   <script>
   (function(){
     var form=document.getElementById('hpForm'), forI=document.getElementById('hpFor'), q=document.getElementById('hpQ'), wrap=document.getElementById('hpWrap');
@@ -244,70 +238,6 @@
       }
   } catch (\Throwable $e) {}
 ?>
-<section class="sec emi-sec">
-  <div class="wrap">
-    <div class="sec-head"><h2>EMI calculator</h2><a class="seeall" href="<?= base_url('property') ?>?for=sale">See homes for sale <i class="fa-solid fa-arrow-right"></i></a></div>
-    <div class="emi-box" id="hEmi" data-lo="<?= (int) $_pr['lo'] ?>" data-hi="<?= (int) $_pr['hi'] ?>" data-avg="<?= (int) $_pr['avg'] ?>">
-      <div class="emi-in">
-        <div class="emi-f">
-          <label for="hEmiP"><span><i class="fa-solid fa-house"></i> Home price</span> <b data-o="p"></b></label>
-          <input type="range" id="hEmiP" min="<?= (int) $_pr['lo'] ?>" max="<?= (int) $_pr['hi'] ?>" step="100000" value="<?= (int) $_pr['avg'] ?>" autocomplete="off">
-          <div class="emi-ends"><span data-o="lo"></span><em data-o="avg"></em><span data-o="hi"></span></div>
-        </div>
-        <div class="emi-f">
-          <label for="hEmiD"><span><i class="fa-solid fa-wallet"></i> Down payment</span> <b data-o="d"></b></label>
-          <input type="range" id="hEmiD" min="10" max="50" step="5" value="20" autocomplete="off">
-          <div class="emi-ends"><span>10%</span><span>50%</span></div>
-        </div>
-        <div class="emi-f">
-          <label for="hEmiR"><span><i class="fa-solid fa-percent"></i> Interest rate</span> <b data-o="r"></b></label>
-          <input type="range" id="hEmiR" min="6" max="14" step="0.05" value="8.5" autocomplete="off">
-          <div class="emi-ends"><span>6%</span><span>14%</span></div>
-        </div>
-        <div class="emi-f">
-          <label for="hEmiN"><span><i class="fa-regular fa-calendar"></i> Loan for</span> <b data-o="n"></b></label>
-          <input type="range" id="hEmiN" min="5" max="30" step="1" value="20" autocomplete="off">
-          <div class="emi-ends"><span>5 years</span><span>30 years</span></div>
-        </div>
-      </div>
-      <div class="emi-out">
-        <small>Your monthly EMI</small>
-        <strong data-o="emi"></strong>
-        <div class="emi-bar"><span data-o="bar"></span></div>
-        <div class="emi-legend"><span><i class="k1"></i>Loan</span><span><i class="k2"></i>Interest</span></div>
-        <dl>
-          <div><dt>Loan amount</dt><dd data-o="loan"></dd></div>
-          <div><dt>Total interest</dt><dd data-o="int"></dd></div>
-          <div><dt>Total you pay</dt><dd data-o="tot"></dd></div>
-        </dl>
-        <a class="emi-go" data-o="go" href="<?= base_url('property') ?>?for=sale">See homes in this budget <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-    </div>
-  </div>
-</section>
-<script>
-(function(){ var box=document.getElementById('hEmi'); if(!box) return;
-  var P=document.getElementById('hEmiP'), D=document.getElementById('hEmiD'), R=document.getElementById('hEmiR'), N=document.getElementById('hEmiN');
-  function o(k){ return box.querySelector('[data-o="'+k+'"]'); }
-  function inr(n){ if(n>=1e7) return '₹'+(n/1e7).toFixed(2).replace(/\.?0+$/,'')+' Cr'; if(n>=1e5) return '₹'+(n/1e5).toFixed(1).replace(/\.0$/,'')+' Lakh'; return '₹'+Math.round(n).toLocaleString('en-IN'); }
-  function fill(r){ r.style.setProperty('--p',((r.value-r.min)/(r.max-r.min)*100)+'%'); }
-  function go(){
-    var price=+P.value, dp=+D.value, rate=+R.value, yrs=+N.value, loan=price*(1-dp/100), m=rate/1200, n=yrs*12;
-    var emi=m? loan*m*Math.pow(1+m,n)/(Math.pow(1+m,n)-1) : loan/n, tot=emi*n, intr=tot-loan;
-    o('p').textContent=inr(price); o('d').textContent=dp+'% · '+inr(price*dp/100); o('r').textContent=rate.toFixed(2).replace(/0$/,'')+'%'; o('n').textContent=yrs+' years';
-    o('emi').textContent='₹'+Math.round(emi).toLocaleString('en-IN'); o('loan').textContent=inr(loan); o('int').textContent=inr(intr); o('tot').textContent=inr(tot);
-    o('bar').style.width=(loan/tot*100)+'%';
-    o('avg').textContent=Math.abs(price-(+box.dataset.avg))<150000?'average home on HiNoida':'';
-    o('go').href=o('go').href.split('?')[0]+'?for=sale&budget=0-'+Math.round(price*1.1);
-    [P,D,R,N].forEach(fill);
-  }
-  o('lo').textContent=inr(+P.min); o('hi').textContent=inr(+P.max);
-  [P,D,R,N].forEach(function(r){ r.addEventListener('input',go); });
-  box.querySelectorAll('.emi-chip').forEach(function(c){ c.addEventListener('click',function(){ P.value=c.dataset.v; go(); }); });
-  var _go=go; go=function(){ _go(); box.querySelectorAll('.emi-chip').forEach(function(c){ c.classList.toggle('on', +c.dataset.v===+P.value); }); };
-  [P].forEach(function(r){ r.addEventListener('input',go); }); go();
-})();
-</script>
 
 <?php if (! empty($localities)): ?>
 <section class="sec loc-sec">
@@ -705,6 +635,71 @@
     </div>
   </div>
 </section>
+
+<section class="sec emi-sec">
+  <div class="wrap">
+    <div class="sec-head"><h2>EMI calculator</h2><a class="seeall" href="<?= base_url('property') ?>?for=sale">See homes for sale <i class="fa-solid fa-arrow-right"></i></a></div>
+    <div class="emi-box" id="hEmi" data-lo="<?= (int) $_pr['lo'] ?>" data-hi="<?= (int) $_pr['hi'] ?>" data-avg="<?= (int) $_pr['avg'] ?>">
+      <div class="emi-in">
+        <div class="emi-f">
+          <label for="hEmiP"><span><i class="fa-solid fa-house"></i> Home price</span> <b data-o="p"></b></label>
+          <input type="range" id="hEmiP" min="<?= (int) $_pr['lo'] ?>" max="<?= (int) $_pr['hi'] ?>" step="100000" value="<?= (int) $_pr['avg'] ?>" autocomplete="off">
+          <div class="emi-ends"><span data-o="lo"></span><em data-o="avg"></em><span data-o="hi"></span></div>
+        </div>
+        <div class="emi-f">
+          <label for="hEmiD"><span><i class="fa-solid fa-wallet"></i> Down payment</span> <b data-o="d"></b></label>
+          <input type="range" id="hEmiD" min="10" max="50" step="5" value="20" autocomplete="off">
+          <div class="emi-ends"><span>10%</span><span>50%</span></div>
+        </div>
+        <div class="emi-f">
+          <label for="hEmiR"><span><i class="fa-solid fa-percent"></i> Interest rate</span> <b data-o="r"></b></label>
+          <input type="range" id="hEmiR" min="6" max="14" step="0.05" value="8.5" autocomplete="off">
+          <div class="emi-ends"><span>6%</span><span>14%</span></div>
+        </div>
+        <div class="emi-f">
+          <label for="hEmiN"><span><i class="fa-regular fa-calendar"></i> Loan for</span> <b data-o="n"></b></label>
+          <input type="range" id="hEmiN" min="5" max="30" step="1" value="20" autocomplete="off">
+          <div class="emi-ends"><span>5 years</span><span>30 years</span></div>
+        </div>
+      </div>
+      <div class="emi-out">
+        <small>Your monthly EMI</small>
+        <strong data-o="emi"></strong>
+        <div class="emi-bar"><span data-o="bar"></span></div>
+        <div class="emi-legend"><span><i class="k1"></i>Loan</span><span><i class="k2"></i>Interest</span></div>
+        <dl>
+          <div><dt>Loan amount</dt><dd data-o="loan"></dd></div>
+          <div><dt>Total interest</dt><dd data-o="int"></dd></div>
+          <div><dt>Total you pay</dt><dd data-o="tot"></dd></div>
+        </dl>
+        <a class="emi-go" data-o="go" href="<?= base_url('property') ?>?for=sale">See homes in this budget <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){ var box=document.getElementById('hEmi'); if(!box) return;
+  var P=document.getElementById('hEmiP'), D=document.getElementById('hEmiD'), R=document.getElementById('hEmiR'), N=document.getElementById('hEmiN');
+  function o(k){ return box.querySelector('[data-o="'+k+'"]'); }
+  function inr(n){ if(n>=1e7) return '₹'+(n/1e7).toFixed(2).replace(/\.?0+$/,'')+' Cr'; if(n>=1e5) return '₹'+(n/1e5).toFixed(1).replace(/\.0$/,'')+' Lakh'; return '₹'+Math.round(n).toLocaleString('en-IN'); }
+  function fill(r){ r.style.setProperty('--p',((r.value-r.min)/(r.max-r.min)*100)+'%'); }
+  function go(){
+    var price=+P.value, dp=+D.value, rate=+R.value, yrs=+N.value, loan=price*(1-dp/100), m=rate/1200, n=yrs*12;
+    var emi=m? loan*m*Math.pow(1+m,n)/(Math.pow(1+m,n)-1) : loan/n, tot=emi*n, intr=tot-loan;
+    o('p').textContent=inr(price); o('d').textContent=dp+'% · '+inr(price*dp/100); o('r').textContent=rate.toFixed(2).replace(/0$/,'')+'%'; o('n').textContent=yrs+' years';
+    o('emi').textContent='₹'+Math.round(emi).toLocaleString('en-IN'); o('loan').textContent=inr(loan); o('int').textContent=inr(intr); o('tot').textContent=inr(tot);
+    o('bar').style.width=(loan/tot*100)+'%';
+    o('avg').textContent=Math.abs(price-(+box.dataset.avg))<150000?'average home on HiNoida':'';
+    o('go').href=o('go').href.split('?')[0]+'?for=sale&budget=0-'+Math.round(price*1.1);
+    [P,D,R,N].forEach(fill);
+  }
+  o('lo').textContent=inr(+P.min); o('hi').textContent=inr(+P.max);
+  [P,D,R,N].forEach(function(r){ r.addEventListener('input',go); });
+  box.querySelectorAll('.emi-chip').forEach(function(c){ c.addEventListener('click',function(){ P.value=c.dataset.v; go(); }); });
+  var _go=go; go=function(){ _go(); box.querySelectorAll('.emi-chip').forEach(function(c){ c.classList.toggle('on', +c.dataset.v===+P.value); }); };
+  [P].forEach(function(r){ r.addEventListener('input',go); }); go();
+})();
+</script>
 
 <?php if (! empty($newsLatest)): ?>
 <section class="sec nb-sec"><div class="wrap">
