@@ -407,3 +407,14 @@ html body .lp-card.lp-closed .lp-body{display:block!important}
   html body .det-hero .lp-slider img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
   html body .det-hero.ph-hero .lp-hero-grid #lpSlider,html body .det-hero.ph-hero .lp-slider{aspect-ratio:16/9!important}
 }
+
+/* phones: hero chips, breadcrumbs and fact boxes wrap instead of running off-screen */
+@media(max-width:899px){
+  html body .det-hero .det-meta{flex-wrap:wrap!important;max-width:100%!important;overflow:visible!important}
+  html body .det-hero .det-crumb{white-space:normal!important;flex-wrap:wrap!important;max-width:100%!important;overflow:hidden!important}
+  html body .det-hero .det-crumb>*{white-space:normal!important}
+  html body .det-hero .det-crumb>:last-child{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  html body .det-hero .lp-fact,html body .det-hero .lp-fact>*{min-width:0!important;max-width:100%!important}
+  html body .det-hero .lp-fact :is(b,small){white-space:normal!important;overflow-wrap:anywhere}
+  html body .det-hero .lp-hero-main{min-width:0!important;max-width:100%!important}
+}
