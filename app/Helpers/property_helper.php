@@ -562,7 +562,7 @@ if (! function_exists('hi_property_badges')) {
         if (($p['possession'] ?? '') === 'ready') { $out[] = ['Ready to move', 'key', 'ok']; }
         if (($p['possession'] ?? '') === 'under') { $out[] = ['New launch', 'helmet-safety', 'new']; }
         if (trim((string) ($p['rera'] ?? '')) !== '') { $out[] = ['RERA registered', 'certificate', 'ok']; }
-        if (! empty($listing['is_featured'])) { $out[] = ['Verified owner', 'circle-check', 'ok']; }
+        if (! empty($listing['is_verified'])) { $out[] = ['Verified by HiNoida', 'circle-check', 'ok']; }
         if (! empty($p['meals'])) { $out[] = ['Meals included', 'utensils', 'ok']; }
 
         return $out;
@@ -851,5 +851,266 @@ if (! function_exists('hi_place_name')) {
         if (preg_match('/^(metro\s*(station|stn)?|station|stadium|market|mall|park)$/i', $name)) { return ''; }
 
         return mb_strlen($name) < 3 ? '' : $name;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Trust on the property card: Verified, who posted it, and how fresh it is.
+ * ------------------------------------------------------------------------- */
+
+if (! function_exists('hi_ensure_verified_column')) {
+    /** listing.is_verified — an admin ticks it after checking the listing. */
+    function hi_ensure_verified_column($db = null): bool
+    {
+        static $known = null;
+        if ($known !== null) { return $known; }
+        $db = $db ?: \Config\Database::connect();
+        if ($db->fieldExists('is_verified', 'listing')) { return $known = true; }
+        try { $db->query('ALTER TABLE listing ADD COLUMN is_verified TINYINT(1) NOT NULL DEFAULT 0'); } catch (\Throwable $e) {}
+        $db->resetDataCache();
+
+        return $known = $db->fieldExists('is_verified', 'listing');
+    }
+}
+
+if (! function_exists('hi_listing_poster')) {
+    /** "Owner", "Dealer" or "HiNoida" — read from the account that added it. */
+    function hi_listing_poster(array $l): string
+    {
+        static $roles = [];
+        $uid = (int) ($l['user_id'] ?? 0) ?: (int) ($l['created_by'] ?? 0);
+        if ($uid <= 0) { return ''; }
+        if (! array_key_exists($uid, $roles)) {
+            try {
+                $r = \Config\Database::connect()->table('user')->select('role_id')->where('id', $uid)->get()->getRowArray();
+                $roles[$uid] = (int) ($r['role_id'] ?? 0);
+            } catch (\Throwable $e) { $roles[$uid] = 0; }
+        }
+
+        return [1 => 'HiNoida', 2 => 'Dealer', 3 => 'Owner'][$roles[$uid]] ?? '';
+    }
+}
+
+if (! function_exists('hi_posted_ago')) {
+    /** "Today", "3 days ago", "2 weeks ago", "Mar 2025". */
+    function hi_posted_ago(array $l): string
+    {
+        $raw = $l['date_added'] ?? ($l['created_at'] ?? '');
+        $ts  = is_numeric($raw) ? (int) $raw : strtotime((string) $raw);
+        if (! $ts || $ts < 946684800) { return ''; }
+        $d = (int) floor((time() - $ts) / 86400);
+        if ($d <= 0)  { return 'Today'; }
+        if ($d === 1) { return 'Yesterday'; }
+        if ($d < 7)   { return $d . ' days ago'; }
+        if ($d < 35)  { $w = (int) floor($d / 7); return $w . ' week' . ($w > 1 ? 's' : '') . ' ago'; }
+
+        return date('M Y', $ts);
+    }
+}
+
+if (! function_exists('hi_property_facts')) {
+    /** The small fact chips on a card: [icon, text] — BHK / beds, size, furnishing. */
+    function hi_property_facts(array $p): array
+    {
+        $labels = hi_property_labels();
+        $out = [];
+        if (! empty($p['bedrooms'])) { $out[] = ['bed', (int) $p['bedrooms'] . ' BHK']; }
+        if (! empty($p['sharing']))  { $out[] = ['user-group', ($labels['sharing'][2][$p['sharing']] ?? ucfirst((string) $p['sharing'])) . ' sharing']; }
+        if (! empty($p['seats']))    { $out[] = ['chair', (int) $p['seats'] . ' seats']; }
+        if (! empty($p['carpet_area'])) {
+            $unit  = $labels['area_unit'][2][$p['area_unit'] ?? 'sqft'] ?? 'sq ft';
+            $out[] = ['ruler-combined', number_format((float) $p['carpet_area'], 0) . ' ' . $unit];
+        }
+        if (! empty($p['furnishing'])) { $f = $labels['furnishing'][2][$p['furnishing']] ?? ''; if ($f !== '') { $out[] = ['couch', $f]; } }
+        if (! empty($p['for_gender'])) { $g = ['boys' => 'Boys', 'girls' => 'Girls', 'any' => 'Boys & girls', 'male' => 'Boys', 'female' => 'Girls'][strtolower((string) $p['for_gender'])] ?? ''; if ($g !== '') { $out[] = ['venus-mars', $g]; } }
+
+        return array_slice($out, 0, 3);
+    }
+}
+
+if (! function_exists('hi_card_icon')) {
+    /** A Font Awesome icon for a card's corner badge, picked from its category or deal. */
+    function hi_card_icon(string $label): string
+    {
+        $map = ['pg' => 'bed', 'hostel' => 'bed', 'cowork' => 'laptop', 'commercial' => 'building', 'office' => 'briefcase', 'shop' => 'store',
+                'dealer' => 'handshake', 'rent' => 'key', 'sale' => 'house', 'plot' => 'map', 'restaur' => 'utensils', 'food' => 'utensils',
+                'cafe' => 'mug-hot', 'bakery' => 'cake-candles', 'fashion' => 'shirt', 'cloth' => 'shirt', 'medical' => 'hospital', 'hospital' => 'hospital',
+                'clinic' => 'stethoscope', 'pharma' => 'pills', 'educat' => 'graduation-cap', 'school' => 'school', 'coaching' => 'book-open',
+                'hotel' => 'hotel', 'banquet' => 'champagne-glasses', 'wedding' => 'ring', 'jewel' => 'gem', 'interior' => 'couch', 'furniture' => 'couch',
+                'salon' => 'scissors', 'beauty' => 'spa', 'spa' => 'spa', 'gym' => 'dumbbell', 'fitness' => 'dumbbell', 'auto' => 'car', 'car' => 'car',
+                'home service' => 'screwdriver-wrench', 'repair' => 'screwdriver-wrench', 'electron' => 'tv', 'mobile' => 'mobile-screen', 'pet' => 'paw',
+                'event' => 'calendar-days', 'travel' => 'plane', 'bank' => 'building-columns', 'sector' => 'location-dot'];
+        foreach ($map as $k => $v) { if (stripos($label, $k) !== false) { return $v; } }
+
+        return 'store';
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Price guide, nearby homes and "Notify me" alerts.
+ * ------------------------------------------------------------------------- */
+
+if (! function_exists('hi_area_property_rows')) {
+    /** Property listings in one locality (newest first). */
+    function hi_area_property_rows(int $localityId, int $limit = 8, ?string $deal = null): array
+    {
+        $db = \Config\Database::connect();
+        if ($localityId <= 0 || ! $db->tableExists('listing_property')) { return []; }
+        $b = $db->table('listing li')->select('li.*, l.name AS locality_name')
+            ->join('locality l', 'l.id = li.locality_id', 'left')
+            ->join('listing_property lp', 'lp.listing_id = li.id')
+            ->where('li.status', 'active')->where('li.locality_id', $localityId);
+        if ($deal !== null) { $b->where('lp.deal', $deal); }
+
+        return $b->orderBy('li.is_featured', 'DESC')->orderBy('li.id', 'DESC')->limit($limit)->get()->getResultArray();
+    }
+}
+
+if (! function_exists('hi_price_guide')) {
+    /**
+     * Average asking price for homes like this one: same deal, same kind group,
+     * same locality (or all Noida when the locality has too few).
+     * Returns ['avg' => float, 'n' => int, 'where' => 'Sector 62'|'Noida', 'per' => '/month'|''] or [].
+     */
+    function hi_price_guide(string $deal, string $group, int $localityId = 0, string $localityName = '', int $bhk = 0): array
+    {
+        $db = \Config\Database::connect();
+        if (! in_array($deal, ['sale', 'rent', 'pg'], true) || ! $db->tableExists('listing_property')) { return []; }
+        $kinds = array_keys(array_filter(hi_property_kinds(), static fn ($k) => $k[1] === $group));
+        if (! $kinds) { return []; }
+        // narrowest first: this sector + BHK, then all Noida + BHK, then all Noida
+        $tries = [];
+        if ($localityId > 0) { $tries[] = [$localityId, $bhk, $localityName !== '' ? $localityName : 'this area']; }
+        if ($bhk > 0) { $tries[] = [0, $bhk, 'Noida']; }
+        $tries[] = [0, 0, 'Noida'];
+        foreach ($tries as [$_loc, $_bhk, $_where]) {
+            $r = (static function () use ($db, $deal, $kinds, $_loc, $_bhk) {
+                $b = $db->table('listing_property lp')->select('AVG(lp.price) AS a, COUNT(*) AS n', false)
+                    ->join('listing li', 'li.id = lp.listing_id')
+                    ->where('li.status', 'active')->where('lp.deal', $deal)->whereIn('lp.kind', $kinds)->where('lp.price >', 0);
+                if ($_loc > 0) { $b->where('li.locality_id', $_loc); }
+                if ($_bhk > 0) { $b->where('lp.bedrooms', $_bhk); }
+                return $b->get()->getRowArray() ?: ['a' => 0, 'n' => 0];
+            })();
+            if ((int) $r['n'] >= 2) {
+                return ['avg' => (float) $r['a'], 'n' => (int) $r['n'], 'where' => $_where, 'bhk' => $_bhk, 'per' => $deal === 'sale' ? '' : '/month'];
+            }
+        }
+
+        return [];
+    }
+}
+
+if (! function_exists('hi_ensure_alert_table')) {
+    /** property_alert — "tell me when a home like this is listed". */
+    function hi_ensure_alert_table(): bool
+    {
+        static $ok = null;
+        if ($ok !== null) { return $ok; }
+        $db = \Config\Database::connect();
+        if ($db->tableExists('property_alert')) { return $ok = true; }
+        try {
+            $db->query('CREATE TABLE property_alert (
+                id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(120) NOT NULL DEFAULT "",
+                phone VARCHAR(20) NOT NULL DEFAULT "",
+                deal VARCHAR(20) NOT NULL DEFAULT "",
+                kind VARCHAR(30) NOT NULL DEFAULT "",
+                bhk TINYINT UNSIGNED NOT NULL DEFAULT 0,
+                budget VARCHAR(40) NOT NULL DEFAULT "",
+                area VARCHAR(120) NOT NULL DEFAULT "",
+                page VARCHAR(255) NOT NULL DEFAULT "",
+                created_at DATETIME NULL,
+                KEY deal_idx (deal)
+            ) DEFAULT CHARSET=utf8mb4');
+        } catch (\Throwable $e) {}
+        $db->resetDataCache();
+
+        return $ok = $db->tableExists('property_alert');
+    }
+}
+
+if (! function_exists('hi_property_family_ids')) {
+    /** Category ids of "Property" and every kind under it (PG, coworking, commercial, dealers…). */
+    function hi_property_family_ids(): array
+    {
+        static $ids = null;
+        if ($ids !== null) { return $ids; }
+        $ids = [];
+        try {
+            $db  = \Config\Database::connect();
+            $top = $db->table('category')->select('id')->like('name', 'Propert', 'after')->where('parent', 0)->get()->getResultArray();
+            foreach ($top as $t) {
+                $ids[] = (int) $t['id'];
+                foreach ($db->table('category')->select('id')->where('parent', (int) $t['id'])->get()->getResultArray() as $k) { $ids[] = (int) $k['id']; }
+            }
+        } catch (\Throwable $e) { $ids = []; }
+
+        return $ids = array_values(array_unique($ids));
+    }
+}
+
+if (! function_exists('hi_is_property_family')) {
+    /** Can this listing go on a shortlist? Homes and property-type places only — not salons or restaurants. */
+    function hi_is_property_family(array $l): bool
+    {
+        if (hi_is_property($l)) { return true; }
+        preg_match_all('/\d+/', (string) ($l['categories'] ?? ''), $m);
+
+        return (bool) array_intersect(array_map('intval', $m[0]), hi_property_family_ids());
+    }
+}
+
+if (! function_exists('hi_quality_score')) {
+    /**
+     * Listing quality score, 0-100, with the few things that would raise it.
+     * Owners see it on their dashboard; it is computed from what is actually
+     * on the listing, nothing is stored.
+     *
+     * @return array{0:int,1:list<string>}
+     */
+    function hi_quality_score(array $l): array
+    {
+        $checks = [];   // [points, passed, tip]
+        $photos = count(array_filter((array) json_decode($l['photos'] ?? '[]', true)))
+            + (! empty($l['listing_cover']) ? 1 : 0);
+        $desc   = mb_strlen(trim(strip_tags(html_entity_decode((string) ($l['description'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'))));
+        $checks[] = [20, $photos >= 5, $photos ? 'Add ' . max(1, 5 - $photos) . ' more photo' . (5 - $photos === 1 ? '' : 's') : 'Add at least 5 photos'];
+        $checks[] = [15, $desc >= 150, 'Write a longer description (150+ characters)'];
+        $checks[] = [15, ! empty($l['phone']), 'Add a phone number'];
+        $checks[] = [10, ! empty($l['locality_id']), 'Pick the sector or locality'];
+        $checks[] = [10, ! empty($l['latitude']) && ! empty($l['longitude']), 'Set the map location'];
+        if (function_exists('hi_is_property') && hi_is_property($l)) {
+            $p = function_exists('hi_property_of') ? (hi_property_of((int) $l['id']) ?: []) : [];
+            $checks[] = [15, ! empty($p['price']), 'Add the price'];
+            $checks[] = [10, ! empty($p['carpet_area']), 'Add the area (sq ft)'];
+            $checks[] = [5, ! empty($p['furnishing']) || in_array($p['kind'] ?? '', ['plot', 'shop', 'office'], true), 'Say if it is furnished'];
+        } else {
+            $checks[] = [15, ! empty($l['hours_json']) || (string) ($l['opened_minutes'] ?? '') !== '', 'Add opening hours'];
+            $checks[] = [10, ! empty($l['website']) || ! empty($l['email']), 'Add a website or email'];
+            $checks[] = [5, ! empty($l['amenities']), 'List your amenities'];
+        }
+        $total = array_sum(array_column($checks, 0));
+        $got   = 0; $tips = [];
+        foreach ($checks as [$pts, $ok, $tip]) { if ($ok) { $got += $pts; } else { $tips[] = $tip; } }
+        return [(int) round($got * 100 / max(1, $total)), $tips];
+    }
+}
+
+if (! function_exists('hi_saved_searches')) {
+    /** Saved searches table (created on first use) and a user's list. */
+    function hi_ensure_saved_search($db): void
+    {
+        if ($db->tableExists('saved_search')) { return; }
+        $inc = $db->DBDriver === 'MySQLi' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT';
+        $db->query('CREATE TABLE saved_search (id INTEGER PRIMARY KEY ' . $inc . ', user_id INT NOT NULL,
+            label VARCHAR(190), url VARCHAR(500), created_at DATETIME)');
+    }
+    function hi_saved_searches(int $uid): array
+    {
+        if ($uid < 1) { return []; }
+        $db = \Config\Database::connect();
+        hi_ensure_saved_search($db);
+        return $db->table('saved_search')->where('user_id', $uid)->orderBy('id', 'DESC')->limit(50)->get()->getResultArray();
     }
 }

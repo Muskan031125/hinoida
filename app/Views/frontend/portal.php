@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="<?= base_url('assets/css/dash.css') ?>?v=7">
+<link rel="stylesheet" href="<?= base_url('assets/css/dash.css') ?>?v=9">
 </head>
 <body>
 <?php
@@ -245,14 +245,16 @@
               <a class="btn" style="display:inline-block;margin-top:14px" href="<?= $b ?>list?kind=property">Add your first property</a></div>
           <?php else: ?>
             <table>
-              <tr><th>Property</th><th>For</th><th>Price</th><th>Status</th><th></th></tr>
+              <tr><th>Property</th><th>For</th><th>Price</th><th>Quality</th><th>Status</th><th></th></tr>
               <?php foreach($props as $pl): $pp = hi_property_of((int)$pl['id']); $st = $pl['status'] ?? 'pending'; ?>
                 <tr>
-                  <td><b><?= esc($pl['name']) ?></b>
+                  <td><b><?= esc(preg_replace('/^Sample\s*·\s*/u', '', (string) $pl['name'])) ?></b>
                     <?php $sum = hi_property_summary($pp); if($sum!==''): ?>
                       <div style="color:#94a1b8;font-size:12.5px"><?= esc($sum) ?></div><?php endif; ?></td>
                   <td><?= esc(hi_property_deals()[$pp['deal'] ?? ''] ?? '—') ?></td>
                   <td><b><?= esc(hi_property_price($pp)) ?></b></td>
+                  <?php [$_qs, $_qt] = hi_quality_score($pl); ?>
+                  <td><span class="qs <?= $_qs >= 80 ? 'hi' : ($_qs >= 50 ? 'mid' : 'lo') ?>" title="<?= esc(implode(' · ', $_qt), 'attr') ?>"><?= $_qs ?>%</span></td>
                   <td><span class="chip <?= $st==='active'?'chip-live':'chip-pending' ?>"><?= esc(ucfirst($st)) ?></span></td>
                   <td style="text-align:right;white-space:nowrap">
                     <a class="abtn gh" href="<?= $b ?>list/specs/<?= (int)$pl['id'] ?>" title="Edit"><i class="fa-solid fa-pen"></i></a>
@@ -377,7 +379,10 @@
           <?php if(!$mine): ?><div class="empty"><i class="fa-solid fa-store"></i>No listings yet.<br><a class="btn" style="display:inline-block;margin-top:14px" href="<?= $b ?>list">Add your business</a></div>
           <?php else: foreach($mine as $l): ?>
             <div class="lrow"><img src="<?= esc(hi_cover($l)) ?>" alt="">
-              <div class="g"><b><?= esc($l['name']) ?></b><small><i class="fa-solid fa-location-dot"></i> <?= esc($l['address']?:'Noida') ?></small></div>
+              <?php helper('property'); [$_qs, $_qt] = hi_quality_score($l); ?>
+              <div class="g"><b><?= esc(preg_replace('/^Sample\s*·\s*/u', '', (string) $l['name'])) ?></b><small><i class="fa-solid fa-location-dot"></i> <?= esc($l['address']?:'Noida') ?></small>
+                <?php if ($_qt): ?><ul class="qs-tips"><?php foreach (array_slice($_qt, 0, 3) as $_t): ?><li><?= esc($_t) ?></li><?php endforeach; ?></ul><?php endif; ?></div>
+              <span class="qs <?= $_qs >= 80 ? 'hi' : ($_qs >= 50 ? 'mid' : 'lo') ?>" title="Listing quality: how complete this listing is">Quality <?= $_qs ?>%</span>
               <span class="chip <?= ($l['status']??'')==='active'?'chip-live':'chip-pending' ?>"><?= esc(ucfirst($l['status']??'pending')) ?></span>
               <?php $_np = count((array) json_decode($l['photos'] ?? '[]', true)); ?>
               <a class="abtn" href="<?= $b ?>dashboard/photos/<?= (int)$l['id'] ?>"><i class="fa-regular fa-image"></i> Photos<?= $_np ? ' (' . $_np . ')' : '' ?></a>
@@ -507,7 +512,15 @@
           <?php endforeach; endif; ?>
         </div>
 
-      <?php elseif($sec==='saved'): ?>
+      <?php elseif($sec==='saved'): $_ss = hi_saved_searches((int) session()->get('uid')); ?>
+        <div class="panel" style="margin-bottom:14px"><h3>Saved searches (<?= count($_ss) ?>)</h3>
+          <?php if(!$_ss): ?><div class="empty"><i class="fa-regular fa-bookmark"></i>No saved searches. On any property search, tap “Save this search”.</div>
+          <?php else: foreach($_ss as $_s): ?>
+            <div class="lrow"><div class="g"><b><?= esc($_s['label']) ?></b><small>Saved <?= esc(date('j M Y', strtotime((string) $_s['created_at']))) ?></small></div>
+              <a class="abtn" href="<?= base_url(ltrim((string) $_s['url'], '/')) ?>">Open</a>
+              <form method="post" action="<?= $b ?>search/delete/<?= (int) $_s['id'] ?>" style="display:inline"><button class="abtn" style="background:#fdecec;color:#b3262f;border-color:#f5c6c6"><i class="fa-solid fa-xmark"></i> Remove</button></form></div>
+          <?php endforeach; endif; ?>
+        </div>
         <div class="panel"><h3>Saved places (<?= count($saved) ?>)</h3>
           <?php if(!$saved): ?><div class="empty"><i class="fa-solid fa-heart"></i>No saved places. Tap the heart on any listing to save it here.</div>
           <?php else: foreach($saved as $l): ?>

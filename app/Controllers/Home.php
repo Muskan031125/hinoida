@@ -31,7 +31,7 @@ class Home extends BaseController
 
         // Popular listings per category, for the tabs on the home page:
         // the most-viewed places this month, split by the busiest categories.
-        $trendingByCat=$remember('home_trending_cat2_v4',3600,static function() use ($db,$listingModel,$topCats){
+        $trendingByCat=$remember('home_trending_cat2_v6',3600,static function() use ($db,$listingModel,$topCats){
             if (! $db->tableExists('profile_views')) { return []; }
             $since=date('Y-m-d H:i:s', strtotime('-30 days'));
             $views=[];
@@ -54,7 +54,7 @@ class Home extends BaseController
                     $ids=json_decode((string)($r['categories'] ?? ''),true);
                     if (! is_array($ids)) { preg_match_all('/\d+/',(string)($r['categories'] ?? ''),$_m); $ids=$_m[0]; }
                     $ids=array_map('intval',$ids);
-                    if (in_array($cid,$ids,true)) { $pick[]=$r; if (count($pick)>=4) break; }
+                    if (in_array($cid,$ids,true)) { $pick[]=$r; if (count($pick)>=6) break; }
                 }
                 if (count($pick)>=3) { $out[]=['name'=>html_entity_decode((string)$c['name'],ENT_QUOTES|ENT_HTML5,'UTF-8'),'slug'=>$c['slug'],'rows'=>$listingModel->attachRatings($pick)]; }
             }
@@ -83,13 +83,13 @@ class Home extends BaseController
             // so a busy directory read as a static list.
             'trendingByCat'=>$trendingByCat,
             'newsLatest'=>$news['latest'] ?? [], 'newsCats'=>$news['cats'] ?? [],
-            'trending'=>$remember('home_trending_v4',3600,static function() use ($db, $listingModel){
+            'trending'=>$remember('home_trending_v6',3600,static function() use ($db, $listingModel){
                 if (! $db->tableExists('profile_views')) { return []; }
                 $since = date('Y-m-d H:i:s', strtotime('-30 days'));
                 $ids = [];
                 foreach ($db->table('profile_views')->select('listing_id, COUNT(*) AS n')
                     ->where('created_at >=', $since)->groupBy('listing_id')
-                    ->orderBy('n', 'DESC')->limit(4)->get()->getResultArray() as $r) {
+                    ->orderBy('n', 'DESC')->limit(6)->get()->getResultArray() as $r) {
                     $ids[(int) $r['listing_id']] = (int) $r['n'];
                 }
                 if (! $ids) { return []; }
@@ -101,7 +101,14 @@ class Home extends BaseController
             }),
             // newest per category — feeds the tabs on "New on HiNoida"
             // "Stay & work in Noida": PGs, coworking, commercial, dealers — the Property family
-            'stays'=>$remember('home_stays_v4',600,static function() use ($db,$listingModel,$topCats){
+            // the hero's trust line: real counts, refreshed every 10 minutes
+            'heroStats'=>$remember('home_hero_stats',600,static function() use ($db){
+                $sectors=(int)($db->query("SELECT COUNT(DISTINCT locality_id) n FROM listing WHERE status='active' AND locality_id>0")->getRow()->n ?? 0);
+                $homes=0;
+                if (function_exists('hi_only_property')) { $b=$db->table('listing li')->where('li.status','active'); hi_only_property($b,'li'); $homes=(int)$b->countAllResults(); }
+                return ['sectors'=>$sectors,'homes'=>$homes];
+            }),
+            'stays'=>$remember('home_stays_v6',600,static function() use ($db,$listingModel,$topCats){
                 $prop=null; foreach ($topCats as $c) { if (stripos((string)$c['name'],'propert')===0) { $prop=$c; break; } }
                 if (! $prop || ! $db->tableExists('category')) { return []; }
                 $kids=$db->table('category')->select('id,name,slug')->where('parent',(int)$prop['id'])->get()->getResultArray();
@@ -111,19 +118,45 @@ class Home extends BaseController
                     $rows=$listingModel->where('status','active')->like('categories',(string)$cid)->orderBy('is_featured','DESC')->orderBy('id','DESC')->findAll(80);
                     $rows=array_values(array_filter($rows,static function($r) use ($cid){ preg_match_all('/\d+/',(string)($r['categories'] ?? ''),$m); return in_array($cid,array_map('intval',$m[0]),true); }));
                     if (! $rows) { continue; }
-                    $out[]=['name'=>html_entity_decode((string)$k['name'],ENT_QUOTES|ENT_HTML5,'UTF-8'),'slug'=>$k['slug'],'n'=>count($rows),'rows'=>$listingModel->attachRatings(array_slice($rows,0,4))];
+                    $out[]=['name'=>html_entity_decode((string)$k['name'],ENT_QUOTES|ENT_HTML5,'UTF-8'),'slug'=>$k['slug'],'n'=>count($rows),'rows'=>$listingModel->attachRatings(array_slice($rows,0,6))];
                 }
                 usort($out,static fn($a,$b)=>$b['n']<=>$a['n']);
                 return ['prop'=>['name'=>html_entity_decode((string)$prop['name'],ENT_QUOTES|ENT_HTML5,'UTF-8'),'slug'=>$prop['slug'],'n'=>(int)$prop['listing_count']],'kinds'=>$out];
             }),
+            // "Popular localities": the busiest sectors, with a photo and how many homes they have
+            'localities'=>$remember('home_localities_v3',600,static function() use ($db,$listingModel){
+                if (! $db->tableExists('locality')) { return []; }
+                $rows=$db->query("SELECT lo.id, lo.name, lo.slug, COUNT(li.id) AS n,
+                        SUM(CASE WHEN li.listing_type='property' THEN 1 ELSE 0 END) AS homes
+                    FROM listing li JOIN locality lo ON lo.id=li.locality_id
+                    WHERE li.status='active' AND lo.slug<>'' GROUP BY lo.id, lo.name, lo.slug ORDER BY n DESC LIMIT 12")->getResultArray();
+                foreach ($rows as &$_r) {
+                    $_r['cover']=$listingModel->where('status','active')->where('locality_id',(int)$_r['id'])
+                        ->orderBy('is_featured','DESC')->orderBy('id','DESC')->first() ?: [];
+                } unset($_r);
+                return $rows;
+            }),
             // after you find a place: set it up
-            'moveIn'=>array_values(array_filter(array_map(static function($c){
-                foreach ([['interior','couch'],['home serv','screwdriver-wrench'],['packer','truck'],['furnit','chair']] as $m) {
-                    if (stripos((string)$c['name'],$m[0])!==false) { return ['name'=>html_entity_decode((string)$c['name'],ENT_QUOTES|ENT_HTML5,'UTF-8'),'slug'=>$c['slug'],'n'=>(int)$c['listing_count'],'icon'=>$m[1]]; }
+            'moveIn'=>$remember('home_movein_v2',600,static function() use ($catModel){
+                $want=[['mover','Movers & packers','truck'],['packer','Movers & packers','truck'],['interior','Interiors','couch'],['furnit','Furniture','chair'],
+                    ['clean','House cleaning','broom'],['pest','Pest control','bug'],['plumb','Plumbers','faucet-drip'],['electrician','Electricians','plug'],
+                    ['carpent','Carpenters','hammer'],['ac repair','AC repair','snowflake'],['paint','Painters','paint-roller'],['internet','Internet','wifi'],
+                    ['home serv','Home services','screwdriver-wrench'],['security','Security','shield-halved']];
+                $all=(new \App\Models\CategoryModel())->select('id,name,slug')->findAll(2000);
+                $out=[]; $seen=[];
+                foreach ($want as [$k,$label,$icon]) {
+                    if (isset($seen[$label])) { continue; }
+                    foreach ($all as $c) {
+                        if (stripos((string)$c['name'],$k)===false) { continue; }
+                        $n=$catModel->countForCategory((int)$c['id']);
+                        if ($n<1) { continue; }
+                        $out[]=['name'=>$label,'slug'=>$c['slug'],'n'=>$n,'icon'=>$icon]; $seen[$label]=1; break;
+                    }
+                    if (count($out)>=12) { break; }
                 }
-                return null;
-            },$cats))),
-            'newestByCat'=>$remember('home_newest_cat_v4',300,static function() use ($listingModel,$topCats){
+                return $out;
+            }),
+            'newestByCat'=>$remember('home_newest_cat_v6',300,static function() use ($listingModel,$topCats){
                 $rows=$listingModel->where('status','active')->where('date_added >',0)->orderBy('date_added','DESC')->findAll(400);
                 $out=[];
                 foreach (array_slice($topCats,0,7) as $c) {
@@ -131,7 +164,7 @@ class Home extends BaseController
                     foreach ($rows as $r) {
                         $ids=json_decode((string)($r['categories'] ?? ''),true);
                         if (! is_array($ids)) { preg_match_all('/\d+/',(string)($r['categories'] ?? ''),$_m); $ids=$_m[0]; }
-                        if (in_array($cid,array_map('intval',$ids),true)) { $pick[]=$r; if (count($pick)>=4) break; }
+                        if (in_array($cid,array_map('intval',$ids),true)) { $pick[]=$r; if (count($pick)>=6) break; }
                     }
                     if (count($pick)>=2) { $out[]=['name'=>html_entity_decode((string)$c['name'],ENT_QUOTES|ENT_HTML5,'UTF-8'),'slug'=>$c['slug'],'rows'=>$listingModel->attachRatings($pick)]; }
                 }

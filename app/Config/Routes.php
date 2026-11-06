@@ -19,6 +19,9 @@ $routes->get('cron/rotate-featured', 'Cron::rotateFeatured');
 $routes->get('listings', 'Search::index');
 // the property front door — businesses are at /listings, flats and PGs here
 $routes->get('property', 'Property::index');
+$routes->post('property/alert', 'Property::alert');
+$routes->post('search/save', 'Property::saveSearch');
+$routes->post('search/delete/(:num)', 'Property::deleteSearch/$1');
 // the original's search form posted here
 $routes->match(['get', 'post'], 'search/search', 'Search::index');
 $routes->get('category', 'Categories::index');
@@ -60,6 +63,8 @@ $routes->post('l/(:num)/report', 'Listing::report/$1');
 $routes->post('l/(:num)/track', 'Listing::track/$1');
 $routes->get('l/(:num)/save', 'Listing::save/$1');
 $routes->post('wishlist/toggle', 'Listing::wishlist');
+$routes->post('shortlist/set', 'Listing::shortlistSet');
+$routes->post('shortlist/sync', 'Listing::shortlistSync');
 $routes->get('claim/(:num)', 'Claim::form/$1');
 $routes->post('claim/(:num)', 'Claim::send/$1');
 
@@ -205,6 +210,7 @@ $routes->post('ajax/set-location', 'Ajax::setLocation');
 $routes->get('locality/set/(:num)', 'Ajax::setLocality/$1');
 $routes->get('locality/clear', 'Ajax::setLocality/0');
 $routes->get('ajax/footer-categories', 'Ajax::footerCategories');
+$routes->get('ajax/search-index', 'Ajax::searchIndex');
 
 // ---------------------------------------------------------------------------
 // Legacy short paths from the first cut of this rebuild — 301 to the live

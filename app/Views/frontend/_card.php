@@ -1,4 +1,5 @@
 <?php
+$l['name'] = preg_replace('/^Sample\s*·\s*/u', '', (string) ($l['name'] ?? ''));
 /**
  * Rich listing card — used across category / area / search / home.
  * Expects: $l (listing row, ideally with _ravg/_rcount and locality_name)
@@ -42,6 +43,17 @@ if ($today) {
   <span class="ph">
     <?php $_src = hi_cover($l); ?>
     <img src="<?= esc($_src) ?>" alt="<?= esc($l['name']) ?>"<?= str_starts_with($_src, 'data:') ? '' : ' loading="lazy"' ?>>
+    <?php
+      $_cat = trim((string) ($l['category_name'] ?? $l['cat_name'] ?? $l['_cat_name'] ?? ''));
+      if (preg_match('/^propert/i', $_cat) && trim((string) ($l['_sub_name'] ?? '')) !== '') { $_cat = trim($l['_sub_name']); }
+      foreach (['pg/'=>'PG & Hostel','hostel'=>'PG & Hostel','cowork'=>'Coworking','commercial propert'=>'Commercial Space','property dealer'=>'Property Dealer'] as $_k => $_v) { if (stripos($_cat, $_k) !== false) { $_cat = $_v; break; } }
+    ?>
+    <?php if (hi_is_property_family($l)): /* only homes and property places can be shortlisted */
+      $_svImg = hi_cover($l);
+      $_sv = json_encode(['id' => $lid, 'n' => (string) $l['name'], 'u' => hi_listing_url($l), 'i' => str_starts_with($_svImg, 'data:') ? '' : $_svImg, 's' => (string) $loc], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+      <span class="hi-save" role="button" tabindex="0" aria-label="Save to shortlist" title="Save" data-save="<?= esc($_sv, 'attr') ?>"><i class="fa-regular fa-heart"></i></span>
+    <?php endif; ?>
+    <span class="lc-ic" aria-hidden="true"><i class="fa-solid fa-<?= esc(hi_card_icon($_cat !== '' ? $_cat : (string) $l['name'])) ?>"></i></span>
     <?php if (! empty($l['is_featured'])): ?><span class="lc-feat"><i class="fa-solid fa-crown"></i> Featured</span><?php endif; ?>
     <?php /* an optional caller-supplied badge — view counts on the trending row */ ?>
     <?php if (! empty($badge)): ?><span class="lc-badge"><i class="fa-solid fa-arrow-trend-up"></i> <?= esc($badge) ?></span><?php endif; ?>
@@ -53,8 +65,9 @@ if ($today) {
   <div class="bd">
     <?php /* a heading, not bold text — a card title is a real heading and
            screen readers and search engines both rely on that */ ?>
-    <?php $_cat = trim((string) ($l['category_name'] ?? $l['cat_name'] ?? $l['_cat_name'] ?? '')); if (preg_match('/^propert/i', $_cat) && trim((string) ($l['_sub_name'] ?? '')) !== '') { $_cat = trim($l['_sub_name']); } foreach (['pg/'=>'PG & Hostel','hostel'=>'PG & Hostel','cowork'=>'Coworking','commercial propert'=>'Commercial Space','property dealer'=>'Property Dealer'] as $_k => $_v) { if (stripos($_cat, $_k) !== false) { $_cat = $_v; break; } } if ($_cat !== ''): ?><span class="lc-cat"><?= esc($_cat) ?></span><?php endif; ?>
-    <h3><?= esc($l['name']) ?></h3>
+    <?php if ($_cat !== ''): ?><span class="lc-cat"><?= esc($_cat) ?></span><?php endif; ?>
+    <h3><?= esc($l['name']) ?><?php if (! empty($l['is_verified'])): ?> <i class="fa-solid fa-circle-check v-ok" title="Verified by HiNoida" aria-label="Verified"></i><?php endif; ?></h3>
+    <span class="lc-explore">View <i class="fa-solid fa-arrow-right"></i></span>
     <span class="loc"><i class="fa-solid fa-location-dot"></i> <?= esc($addr ? mb_strimwidth($addr, 0, 34, '…') . ', ' : '') ?><?= esc($loc) ?></span>
     <span class="lc-meta">
       <?php if ($hoursTxt): ?><span><i class="fa-regular fa-clock"></i> <?= esc($hoursTxt) ?></span><?php endif; ?>

@@ -209,6 +209,7 @@ class Areas extends BaseController
             'metaDescription'=>"Local businesses in {$an}, Noida — ".number_format($total)." listings with phone, address, timings, photos & reviews on HiNoida.",
             'canonical'=>$pg['page']>1 ? hi_page_url($pg['page']) : $url,
             'area'=>$area,'listings'=>$listings,'pg'=>$pg,'intro'=>$intro,'faqs'=>$faqs,
+            'propRows'=>(static function() use ($area){ helper('property'); return hi_area_property_rows((int)$area['id'], 8); })(),
             'total'=>$total,'propHere'=>$propHere,'shown'=>$shown,'facet'=>$facet,'facetCats'=>$facetCats,'sort'=>$sort,
             'amens'=>$amens,
             'places'=>$places,

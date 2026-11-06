@@ -710,7 +710,7 @@ class Admin extends BaseController
         $new=(string)$this->request->getPost('new_password');
         if($new!==''){
             $cur=(string)$this->request->getPost('current_password');
-            if(sha1($cur)!==(string)$me['password']){
+            if(!hi_pass_check((string)$cur,(string)$me['password'])){
                 session()->setFlashdata('saved','That is not your current password — nothing was changed.');
                 return redirect()->to('/admin/profile');
             }
@@ -722,7 +722,7 @@ class Admin extends BaseController
                 session()->setFlashdata('saved','The two new passwords do not match.');
                 return redirect()->to('/admin/profile');
             }
-            $upd['password']=sha1($new);
+            $upd['password']=hi_pass_hash((string)$new);
         }
 
         $db->table('user')->where('id',$uid)->update($upd);
@@ -877,7 +877,7 @@ class Admin extends BaseController
         if($id>0){
             if($pass!==''){
                 if(strlen($pass)<8){ session()->setFlashdata('saved','Use at least 8 characters for the password.'); return redirect()->to('/admin/team'); }
-                $d['password']=sha1($pass);
+                $d['password']=hi_pass_hash((string)$pass);
             }
             $db->table('user')->where('id',$id)->update($d);
             session()->setFlashdata('saved','Saved.');
@@ -888,7 +888,7 @@ class Admin extends BaseController
             session()->setFlashdata('saved','Give the new admin a password of at least 8 characters.');
             return redirect()->to('/admin/team');
         }
-        $d+=['password'=>sha1($pass),'role_id'=>1,'is_verified'=>1,'approved'=>1,
+        $d+=['password'=>hi_pass_hash((string)$pass),'role_id'=>1,'is_verified'=>1,'approved'=>1,
              'verification_code'=>'','wishlists'=>'[]','social'=>'{}'];
         if($db->fieldExists('created_date','user')){ $d['created_date']=time(); }
         $d += hi_user_defaults($db);   // otp / updated_date are NOT NULL on the live schema
@@ -1294,8 +1294,11 @@ class Admin extends BaseController
             'longitude'=>is_numeric(trim((string)$p->getPost('longitude'))) ? (float)$p->getPost('longitude') : null,
             'amenities'=>json_encode($amen),
             'is_featured'=>$p->getPost('is_featured')?1:0,
+            'is_verified'=>$p->getPost('is_verified')?1:0,
             'status'=>trim((string)$p->getPost('status'))?:'active',
         ];
+        helper('property');
+        if (! hi_ensure_verified_column($db ?? null)) { unset($data['is_verified']); }
         // Only touch fields the form actually submitted. Without this a partial
         // POST silently blanks phone/address/email and the rest.
         if ($id) {
@@ -1312,6 +1315,7 @@ class Admin extends BaseController
             if ($p->getPost('social_facebook') === null) { unset($data['social']); }
             // a checkbox is absent when unticked, so only honour it if the form was really shown
             if ($p->getPost('status') === null)          { unset($data['is_featured']); }
+            if ($p->getPost('status') === null)          { unset($data['is_verified']); }
         }
 
         // ---- opening hours, one row per day (same shape the wizard writes) ---

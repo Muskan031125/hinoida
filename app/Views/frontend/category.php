@@ -36,11 +36,7 @@ $children = array_values(array_filter($children, static fn ($c) => (int) ($c['li
   'title'  => esc($cat['name']) . ' <span>in Noida</span>',
   'sub'    => 'Compare ' . number_format($total ?? count($listings)) . ' ' . strtolower($cat['name']) . ' businesses in Noida — ratings, timings, photos and direct contact.',
   'extra'  => $_extra,
-  'facts'  => [
-    ['store', 'Businesses', number_format($total ?? count($listings))],
-    ['location-dot', 'Areas covered', $_areasN ? (string) $_areasN : ''],
-    ['clock', 'Open now', ! empty($fc['open']) ? (string) (int) $fc['open'] : ''],
-  ],
+  'facts'  => [],   // Businesses / Areas covered / Open now box removed from the banner
   'links'  => [['folder-open', 'All categories', hi_page('categories')], ['map', 'Browse by area', hi_page('areas')], ['square-plus', 'List your business', base_url('list')]],
   'slides' => $_slides,
 ], ['saveData' => false]) ?>

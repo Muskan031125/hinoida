@@ -69,10 +69,8 @@ $lab = 'font-size:13px;font-weight:600;color:#444;display:block;margin:12px 0 6p
 
     <?php if (! $reg): ?>
       <div style="text-align:center;position:relative;margin:20px 0 14px"><span style="background:#fff;padding:0 12px;font-size:12px;font-weight:600;text-transform:uppercase;color:#9aa6bd;position:relative;z-index:1">New to HiNoida?</span><span style="position:absolute;top:50%;left:0;right:0;height:1px;background:var(--line)"></span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <a href="<?= hi_page('register') ?>" style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--blue);background:#fff;border:1.5px solid var(--blue);border-radius:10px;padding:12px;text-decoration:none"><i class="fa-solid fa-user"></i> Signup as User</a>
-        <a href="<?= hi_page('register/business') ?>" style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--blue);background:#fff;border:1.5px solid var(--blue);border-radius:10px;padding:12px;text-decoration:none"><i class="fa-solid fa-store"></i> Signup as Business</a>
-      </div>
+      <?php /* one way in — business owners can still switch on the sign-up page */ ?>
+      <a href="<?= hi_page('register') ?>" style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14.5px;font-weight:700;color:var(--blue);background:#fff;border:1.5px solid var(--blue);border-radius:10px;padding:13px;text-decoration:none"><i class="fa-solid fa-user-plus"></i> Sign up</a>
     <?php else: ?>
       <p style="text-align:center;margin-top:16px;font-size:14px;color:#666">Already have an account? <a href="<?= hi_page('login') ?>">Log in</a><?php if ($biz): ?><br>Just want to save places? <a href="<?= hi_page('register') ?>">Sign up as a user</a><?php else: ?><br>Own a business? <a href="<?= hi_page('register/business') ?>">Sign up as a business</a><?php endif; ?></p>
     <?php endif; ?>

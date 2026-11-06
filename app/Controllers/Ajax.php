@@ -137,4 +137,64 @@ class Ajax extends BaseController
 
         return $this->response->setJSON($rows);
     }
+
+    /**
+     * Everything the search box's suggestion dropdown needs, in one small
+     * JSON file: categories (with counts), areas and active listing names.
+     * Built at most once every 10 minutes and cached by the browser for an
+     * hour, so typing in the box never queries the database.
+     */
+    public function searchIndex()
+    {
+        $cache = \Config\Services::cache();
+        $data  = $cache->get('search_index_v1');
+        if ($data === null) {
+            $db  = \Config\Database::connect();
+            $dec = static fn ($s) => html_entity_decode((string) $s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $rows = $db->table('listing li')
+                ->select('li.id, li.name, li.listing_type, li.categories, li.locality_id, l.name AS loc')
+                ->join('locality l', 'l.id = li.locality_id', 'left')
+                ->where('li.status', 'active')->get()->getResultArray();
+
+            $catCount = []; $locIds = [];
+            $L = [];
+            foreach ($rows as $r) {
+                $cids = json_decode((string) $r['categories'], true);
+                $cids = is_array($cids) ? array_map('intval', $cids) : [];
+                foreach ($cids as $c) { $catCount[$c] = ($catCount[$c] ?? 0) + 1; }
+                if ($r['locality_id']) { $locIds[(int) $r['locality_id']] = true; }
+                // [name, url, area, category ids]
+                $L[] = [$dec($r['name']), hi_listing_url($r), self::areaName($dec($r['loc'] ?? '')), $cids];
+            }
+
+            $C = [];
+            foreach ($db->table('category')->select('id, name, slug, parent')->get()->getResultArray() as $c) {
+                $n = $catCount[(int) $c['id']] ?? 0;
+                if ($n === 0) { continue; }
+                // [id, name, url, count, parent id]
+                $C[] = [(int) $c['id'], $dec($c['name']), hi_category_url($c['slug']), $n, (int) $c['parent']];
+            }
+
+            $A = [];
+            if ($locIds) {
+                foreach ($db->table('locality')->select('id, name, slug')->whereIn('id', array_keys($locIds))->get()->getResultArray() as $a) {
+                    // [id, name, url]
+                    $A[] = [(int) $a['id'], self::areaName($dec($a['name'])), hi_locality_url($a['slug'] ?? '')];
+                }
+            }
+
+            $data = ['c' => $C, 'a' => $A, 'l' => $L, 'search' => hi_page('search')];
+            $cache->save('search_index_v1', $data, 600);
+        }
+
+        return $this->response->setHeader('Cache-Control', 'public, max-age=3600')->setJSON($data);
+    }
+
+    /** "Sector - 66" and "sector 66" both read as "Sector 66". */
+    private static function areaName(string $n): string
+    {
+        $n = trim($n);
+
+        return preg_match('/^sector\s*-?\s*(\d+\w?)$/i', $n, $m) ? 'Sector ' . $m[1] : $n;
+    }
 }

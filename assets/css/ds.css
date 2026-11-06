@@ -1,0 +1,323 @@
+/* =====================================================================
+   HiNoida design system  (loaded last, on every page)
+   One set of colours, text sizes, spacing, radius and shadows, and the
+   shared pieces built from them: buttons, inputs, chips, section heads,
+   content sections, side panels, tables, badges, empty states.
+   Rule of thumb: sections are separated by space and thin lines, not by
+   boxes. Boxes are kept for things you click (cards, chips, buttons) and
+   for one side panel per page.
+   ===================================================================== */
+:root{
+  /* colour */
+  --ds-ink:#0f1a2e; --ds-text:#2b3547; --ds-muted:#5b6679; --ds-faint:#8a94a6;
+  --ds-line:#e3e7ee; --ds-line-2:#eef1f5;
+  --ds-bg:#f4f1ec;          /* page */
+  --ds-surface:#ffffff;     /* panels, inputs, menus */
+  --ds-soft:#f7f8fb;        /* quiet fills: table heads, chips */
+  --ds-blue:#014dda; --ds-blue-ink:#0b3aa6; --ds-blue-soft:#eef3fd;
+  --ds-green:#0f8a55; --ds-green-soft:#e8f7ef;
+  --ds-red:#c62d3b;  --ds-red-soft:#fdeeee;
+  --ds-amber:#b86e00;--ds-amber-soft:#fff4e0;
+  /* type: 12 13 14 16 20 26 34 */
+  --ds-f12:12px; --ds-f13:13px; --ds-f14:14px; --ds-f16:16px; --ds-f20:20px; --ds-f26:26px; --ds-f34:34px;
+  /* space: 4 8 12 16 24 32 48 */
+  --ds-s1:4px; --ds-s2:8px; --ds-s3:12px; --ds-s4:16px; --ds-s5:24px; --ds-s6:32px; --ds-s7:48px;
+  /* radius + shadow */
+  --ds-r-sm:8px; --ds-r:12px; --ds-r-lg:16px; --ds-pill:999px;
+  --ds-sh-1:0 1px 2px rgba(16,26,46,.06);
+  --ds-sh-2:0 8px 24px -12px rgba(16,26,46,.18);
+  --ds-sh-pop:0 18px 40px -16px rgba(16,26,46,.28);
+  --ds-focus:0 0 0 3px rgba(1,77,218,.18);
+}
+html body{background:var(--ds-bg);color:var(--ds-text)}
+
+/* ---------- headings ---------- */
+html body :is(h1,h2,h3,h4){color:var(--ds-ink);letter-spacing:-.01em}
+html body .det-hero h1,html body .ph-hero h1,html body .det-name{font-size:var(--ds-f34)!important;font-weight:700!important;line-height:1.2!important}
+html body .det-hero :is(.det-name,.det-crumb,h1,p),html body .ph-hero :is(h1,p){color:#fff}
+@media(max-width:600px){html body .det-hero h1,html body .ph-hero h1,html body .det-name{font-size:26px!important}}
+
+/* ---------- buttons ---------- */
+html body :is(.btn,.sc-btn,.freelist,.lp-band-btn,.emi-go,.al-btn){border-radius:10px!important;font-weight:600!important;font-size:var(--ds-f14)!important;letter-spacing:0!important;text-transform:none!important}
+html body .freelist{display:inline-flex;align-items:center;gap:8px;padding:11px 20px!important;background:var(--ds-blue)!important;color:#fff!important;box-shadow:none!important;text-decoration:none}
+html body .freelist:hover{background:var(--ds-blue-ink)!important}
+
+/* ---------- inputs ---------- */
+html body :is(input[type=text],input[type=email],input[type=tel],input[type=password],input[type=number],input[type=search],select,textarea):not([type=range]){
+  border-radius:10px;border-color:var(--ds-line);font-size:var(--ds-f14)}
+html body :is(input,select,textarea):focus-visible{outline:none;box-shadow:var(--ds-focus)!important;border-color:var(--ds-blue)!important}
+
+/* ---------- chips (filters, tabs, tags) ---------- */
+html body :is(.ptab,.nt-chip,.nby-chip,.np-sub,.chip){border-radius:var(--ds-pill)!important;font-size:var(--ds-f14)!important;font-weight:600!important}
+
+/* ---------- badges ---------- */
+.ds-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--ds-pill);font-size:var(--ds-f12);font-weight:600;line-height:18px;background:var(--ds-soft);color:var(--ds-muted)}
+.ds-badge.ok{background:var(--ds-green-soft);color:var(--ds-green)}
+.ds-badge.info{background:var(--ds-blue-soft);color:var(--ds-blue)}
+.ds-badge.warn{background:var(--ds-amber-soft);color:var(--ds-amber)}
+.ds-badge.bad{background:var(--ds-red-soft);color:var(--ds-red)}
+
+/* ---------- empty state ---------- */
+.ds-empty{padding:40px 24px;text-align:center;color:var(--ds-muted);border:1px dashed var(--ds-line);border-radius:var(--ds-r-lg);background:transparent}
+.ds-empty b{display:block;color:var(--ds-ink);font-size:var(--ds-f16);margin-bottom:4px}
+.ds-empty .btn,.ds-empty a.ds-btn{margin-top:12px}
+.ds-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--ds-blue);color:#fff!important;font-size:14px;font-weight:600;text-decoration:none;border:0;cursor:pointer}
+.ds-btn:hover{background:var(--ds-blue-ink)}
+.ds-btn.ghost{background:var(--ds-surface);color:var(--ds-ink)!important;border:1px solid var(--ds-line)}
+.ds-btn.ghost:hover{border-color:#c9d3e3}
+
+/* ---------- KPI row (dashboards) ---------- */
+.ds-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:1px solid var(--ds-line);border-bottom:1px solid var(--ds-line)}
+.ds-kpi{padding:16px 20px;border-left:1px solid var(--ds-line)}
+.ds-kpi:first-child{border-left:0;padding-left:0}
+.ds-kpi small{display:block;font-size:var(--ds-f13);color:var(--ds-muted)}
+.ds-kpi b{display:block;font-size:var(--ds-f26);font-weight:700;color:var(--ds-ink);line-height:1.25}
+.ds-kpi em{font-style:normal;font-size:var(--ds-f12);color:var(--ds-green)}
+
+/* ---------- tables ---------- */
+.ds-table{width:100%;border-collapse:collapse;font-size:var(--ds-f14)}
+.ds-table th{text-align:left;font-size:var(--ds-f12);font-weight:600;color:var(--ds-muted);padding:10px 12px;background:var(--ds-soft);border-bottom:1px solid var(--ds-line)}
+.ds-table td{padding:12px;border-bottom:1px solid var(--ds-line-2);vertical-align:middle}
+.ds-table tr:hover td{background:#fafbfd}
+
+/* =====================================================================
+   PAGES
+   ===================================================================== */
+
+/* ---------- listing / property detail: sections, not boxes ---------- */
+
+/* ---------- home: explore categories lines up with everything else ---------- */
+html body .hcatgrid{margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important;gap:16px!important}
+html body .hcat{box-shadow:none!important}
+
+/* ---------- home: "what's happening": no outer box ---------- */
+html body.is-home .nt{background:transparent!important;border:0!important;box-shadow:none!important;padding-left:0!important;padding-right:0!important}
+
+/* ---------- home: how it works: three plain columns ---------- */
+html body .howsec .howgrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:32px!important;border-top:1px solid var(--ds-line);padding-top:28px}
+html body .howsec .howbox{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;text-align:left!important}
+html body .howsec .howbox i{display:inline-grid!important;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--ds-blue-soft);color:var(--ds-blue);font-size:16px;margin:0 0 12px!important}
+html body .howsec .howbox h3{font-size:var(--ds-f16)!important;font-weight:700!important;margin:0 0 6px!important}
+html body .howsec .howbox p{font-size:var(--ds-f14)!important;color:var(--ds-muted)!important;margin:0!important}
+html body .howsec .howsec-go{margin-top:24px}
+@media(max-width:760px){html body .howsec .howgrid{grid-template-columns:1fr!important;gap:20px!important}}
+
+/* ---------- footer: headings on one line, even columns ---------- */
+html body .ftr .ftr-cols{column-gap:32px!important}
+html body .ftr .ftr-cols h4,html body .ftr .ftr-cols :is(h5,.ftr-h){white-space:nowrap}
+
+/* ---------- property pages: post band spacing ---------- */
+html body .lp-band.lp-band-inline{margin-top:40px}
+
+/* ---------- property detail: price in the banner ---------- */
+html body .det-price{display:flex;align-items:baseline;gap:6px;margin:10px 0 2px;color:#fff}
+html body .det-price b{font-size:30px;font-weight:700;letter-spacing:-.01em}
+html body .det-price span{font-size:16px;opacity:.8}
+html body .det-facts{margin:0 0 6px;color:rgba(255,255,255,.85);font-size:15px}
+/* property: the "contact the owner" form is the first thing in the side panel */
+html body .det-side.side-prop{display:flex;flex-direction:column;gap:16px}
+html body .det-side.side-prop>#enquiry{order:-1}
+html body .det-side.side-prop>.sidecard+.sidecard{margin-top:0}
+
+/* ---------- pricing: free + featured, side by side, no boxes ---------- */
+.pr-free{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:8px 0}
+.pr-col{padding-top:20px;border-top:1px solid var(--ds-line)}
+.pr-col h2{font-size:var(--ds-f26);margin:10px 0 8px}
+.pr-col p{color:var(--ds-muted);font-size:var(--ds-f16);line-height:1.6;margin:0 0 16px;max-width:52ch}
+.pr-col ul{list-style:none;padding:0;margin:0 0 20px;display:grid;gap:8px;font-size:var(--ds-f14)}
+.pr-col li i{color:var(--ds-green);margin-right:8px}
+@media(max-width:760px){.pr-free{grid-template-columns:1fr;gap:28px}}
+
+/* ---------- save this search ---------- */
+html body .ss-bar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin:0 0 12px;flex-wrap:wrap}
+html body .ss-bar form{margin:0}
+
+/* ---------- verified tick on cards ---------- */
+html body .lcard .bd h3 .v-ok{color:#0f8a55;font-size:.85em;margin-left:2px}
+@media(min-width:1101px){html body .hcatgrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;justify-content:stretch!important;width:100%!important}}
+@media(min-width:761px) and (max-width:1100px){html body .hcatgrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;width:100%!important}}
+html body .ftr .ftr-cols>div>b{white-space:nowrap}
+
+/* ---------- small link chips (places in a sector, sub-types) ---------- */
+html body .typechips{display:flex;flex-wrap:wrap;gap:8px}
+html body .typechips a{font-size:13px!important;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;
+  padding:6px 12px!important;border-radius:999px!important;background:var(--ds-surface)!important;border:1px solid var(--ds-line)!important;color:var(--ds-ink)!important;box-shadow:none!important;text-decoration:none}
+html body .typechips a:hover{border-color:#c9d3e3!important}
+
+/* home rows: 6 listings on big screens, 5 on laptops (the 6th waits for a wider screen) */
+@media(min-width:1100px) and (max-width:1499px){html body.is-home .lgrid:not(.aslist):not(.loc-tiles)>.lcard:nth-child(n+6){display:none!important}}
+
+/* ---------- home: property news + a "Top news" column ---------- */
+html body .nt-duo{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start}
+html body .nt-duo .nt{min-width:0}
+html body .nt-top{position:sticky;top:96px;padding-left:28px;border-left:1px solid var(--ds-line);margin-top:8px}
+html body .nt-top-h{font-size:var(--ds-f20)!important;font-weight:700;margin:0 0 12px}
+html body .nt-top ol{list-style:none;margin:0;padding:0}
+html body .nt-top li+li{border-top:1px solid var(--ds-line)}
+html body .nt-top li a{display:flex;gap:14px;padding:14px 0;text-decoration:none;color:var(--ds-ink)}
+html body .nt-top li a:hover b{color:var(--ds-blue)}
+html body .nt-top-n{flex:none;width:26px;font-size:var(--ds-f20);font-weight:700;color:var(--ds-blue);line-height:1.2}
+html body .nt-top-b b{display:block;font-size:var(--ds-f14);font-weight:600;line-height:1.4}
+html body .nt-top-b small{display:block;margin-top:4px;font-size:var(--ds-f12);color:var(--ds-muted)}
+html body .nt-top-all{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:var(--ds-f14);font-weight:600;color:var(--ds-blue);text-decoration:none}
+@media(max-width:1100px){html body .nt-duo{grid-template-columns:1fr;gap:24px}html body .nt-top{position:static;padding-left:0;border-left:0;border-top:1px solid var(--ds-line);padding-top:20px}}
+
+/* ---------- EMI calculator: tinted, filled, not a blank white box ---------- */
+html body .emi-box{border:0!important;background:linear-gradient(135deg,#e9f0ff 0%,#f3eeff 55%,#fff4ea 100%)!important;box-shadow:0 18px 40px -28px rgba(23,65,166,.45)}
+html body .emi-in{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;padding:22px!important;align-content:start!important}
+html body .emi-pre{grid-column:1/-1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+html body .emi-pre>span{font-size:14px;font-weight:600;color:var(--ds-ink)}
+html body .emi-pre>span i{color:#6d3fe0;margin-right:6px}
+html body .emi-chips{display:flex;gap:8px;flex-wrap:wrap}
+html body .emi-chip{border:1px solid #d5def3;background:rgba(255,255,255,.75);color:var(--ds-ink);font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}
+html body .emi-chip:hover{border-color:#014dda;color:#014dda}
+html body .emi-chip.on{background:#014dda;border-color:#014dda;color:#fff}
+html body .emi-f{background:#fff;border-radius:14px;padding:14px 16px 12px;box-shadow:0 1px 2px rgba(16,26,46,.05)}
+html body .emi-f label span{display:inline-flex;align-items:center;gap:8px;color:var(--ds-muted)}
+html body .emi-f label span i{width:28px;height:28px;border-radius:8px;display:inline-grid;place-items:center;font-size:12px;background:#eef3fd;color:#014dda}
+html body .emi-f:nth-of-type(3) label span i{background:#f1ecff;color:#6d3fe0}
+html body .emi-f:nth-of-type(4) label span i{background:#fff1e3;color:#c76a00}
+html body .emi-f:nth-of-type(5) label span i{background:#e8f7ef;color:#0f8a55}
+@media(max-width:600px){html body .emi-in{grid-template-columns:1fr!important}}
+
+/* ---------- "See all …" under a row: a small text link, not a button ---------- */
+html body :is(.ptmore,.np-more,.secmore){margin:12px 0 0!important;padding:0!important;text-align:left!important}
+html body :is(.ptmore,.np-more,.secmore) a,html body .seeall{display:inline-flex!important;align-items:center;gap:6px;
+  background:none!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;
+  font-size:14px!important;font-weight:600!important;color:var(--ds-blue)!important;text-decoration:none}
+html body :is(.ptmore,.np-more,.secmore) a:hover,html body .seeall:hover{text-decoration:underline!important;transform:none!important}
+html body :is(.ptmore,.np-more,.secmore) a i,html body .seeall i{font-size:12px}
+
+/* ---------- "See all" as small text in the section heading ---------- */
+html body.is-home .moved-up{display:none!important}
+html body.is-home .ptmore,html body.is-home .secmore{display:none!important}
+html body .sec-head .sec-more-link,html body .sec-head>a.seeall{margin-left:auto;align-self:center;display:inline-flex;align-items:center;gap:6px;
+  font-size:14px!important;font-weight:600!important;color:var(--ds-blue)!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;text-decoration:none;white-space:nowrap}
+html body .sec-head .sec-more-link:hover,html body .sec-head>a.seeall:hover{text-decoration:underline}
+html body .sec-head .sec-more-link i,html body .sec-head>a.seeall i{font-size:12px}
+
+/* ---------- everywhere: "more" links are small blue text, not pill buttons ---------- */
+html body :is(.nt-more,.ctb-more,#mapbtn){background:none!important;border:0!important;box-shadow:none!important;padding:4px 0!important;border-radius:0!important;
+  color:var(--ds-blue)!important;font-size:14px!important;font-weight:600!important;cursor:pointer;width:auto!important;display:inline-flex!important;align-items:center;gap:6px;text-transform:none!important;letter-spacing:0!important}
+html body :is(.nt-more,.ctb-more,#mapbtn):hover{text-decoration:underline;transform:none!important;background:none!important}
+html body .nt-more-wrap{text-align:left!important;justify-content:flex-start!important;margin-top:12px!important}
+html body .ctb-more{margin:6px 0 0 12px!important}
+
+/* ---------- filter chips: colourful icons, a clear "selected" state ---------- */
+html body .np-subs{gap:10px!important;margin:0 0 20px!important}
+html body .np-sub{height:44px!important;padding:0 16px 0 6px!important;gap:10px!important;border:1px solid #e6e1d8!important;background:#fff!important;
+  font-size:14px!important;font-weight:600!important;color:var(--ds-ink)!important;box-shadow:0 1px 2px rgba(16,26,46,.05);transition:transform .15s,box-shadow .15s,border-color .15s}
+html body .np-sub i{width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;font-size:13px!important;
+  background:#eef3fd;color:#014dda!important;transition:background .15s,color .15s}
+html body .np-sub:nth-child(2) i{background:#e8f7ef;color:#0f8a55!important}
+html body .np-sub:nth-child(3) i{background:#f1ecff;color:#6d3fe0!important}
+html body .np-sub:nth-child(4) i{background:#fff1e3;color:#c76a00!important}
+html body .np-sub:nth-child(5) i{background:#e6f6fb;color:#0a7ea4!important}
+html body .np-sub:nth-child(6) i{background:#fdecef;color:#c22a55!important}
+html body .np-sub:nth-child(7) i{background:#f0f4e6;color:#5b7a12!important}
+html body .np-sub em{font-size:12px!important;font-weight:700!important;color:var(--ds-muted)!important;background:#f3f1ec!important;border-radius:999px!important;padding:2px 8px!important}
+html body .np-sub:hover{transform:translateY(-1px);box-shadow:0 8px 18px -12px rgba(1,77,218,.45);border-color:#c9d6f3!important}
+html body .np-sub.on{background:linear-gradient(135deg,#014dda,#5b3fd6)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 10px 22px -12px rgba(1,77,218,.7)}
+html body .np-sub.on i{background:rgba(255,255,255,.2)!important;color:#fff!important}
+html body .np-sub.on em{background:rgba(255,255,255,.22)!important;color:#fff!important}
+@media(max-width:600px){html body .np-sub{height:40px!important}html body .np-sub i{width:28px;height:28px}}
+
+/* ---------- filters, final: plain text tabs with an underline (Airbnb / Housing style) ---------- */
+html body .np-subs{gap:28px!important;margin:0 0 24px!important;border-bottom:1px solid var(--ds-line);flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none}
+html body .np-subs::-webkit-scrollbar{display:none}
+html body .np-sub,html body .np-sub.on,html body .np-sub:hover{height:auto!important;padding:0 0 12px!important;gap:6px!important;border:0!important;border-radius:0!important;
+  background:none!important;box-shadow:none!important;transform:none!important;color:var(--ds-muted)!important;font-size:15px!important;font-weight:500!important;
+  flex:none;position:relative;margin-bottom:-1px;border-bottom:2px solid transparent!important}
+html body .np-sub i{display:none!important}
+html body .np-sub em,html body .np-sub.on em{background:none!important;padding:0!important;color:var(--ds-faint)!important;font-size:13px!important;font-weight:500!important}
+html body .np-sub:hover{color:var(--ds-ink)!important}
+html body .np-sub.on{color:var(--ds-ink)!important;font-weight:600!important;border-bottom-color:var(--ds-ink)!important}
+@media(max-width:600px){html body .np-subs{gap:20px!important;margin-right:-16px!important;padding-right:16px}}
+html body .np-sub em{display:none!important}
+
+/* =====================================================================
+   FILTERS, SITE-WIDE: simple and minimal
+   1. tab rows  -> plain text, thin underline under the chosen one
+   2. link rows -> plain text links, no pills
+   3. toggles   -> thin outline, dark when on
+   No counts anywhere in filters.
+   ===================================================================== */
+/* 1. tab rows */
+html body :is(.ptabs,.nt-chips,.nby-types,.catfilter-list,.ct-jump){display:flex!important;flex-wrap:nowrap!important;gap:24px!important;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--ds-line);padding:0!important;background:none!important;box-shadow:none!important;justify-content:flex-start!important}
+html body :is(.ptabs,.nt-chips,.nby-types,.catfilter-list,.ct-jump)::-webkit-scrollbar{display:none}
+html body :is(.ptabs .ptab,.nt-chips .nt-chip,.nby-types .nby-chip,.catfilter-list a,.ct-jump a){flex:none;display:inline-flex!important;align-items:center;gap:6px;
+  background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;height:auto!important;
+  padding:0 0 12px!important;margin:0 0 -1px!important;border-bottom:2px solid transparent!important;
+  color:var(--ds-muted)!important;font-size:15px!important;font-weight:500!important;text-decoration:none;opacity:1!important;cursor:pointer;white-space:nowrap}
+html body :is(.ptabs .ptab,.nt-chips .nt-chip,.nby-types .nby-chip,.catfilter-list a,.ct-jump a):hover{color:var(--ds-ink)!important;background:none!important}
+html body :is(.ptabs .ptab.on,.ptabs .ptab[aria-selected=true],.nt-chips .nt-chip.on,.nby-types .nby-chip.on,.catfilter-list a.on,.ct-jump a.on){
+  color:var(--ds-ink)!important;font-weight:600!important;border-bottom-color:var(--ds-ink)!important;background:none!important}
+html body :is(.ptabs .ptab,.nt-chips .nt-chip,.nby-types .nby-chip,.catfilter-list a,.ct-jump a) i{display:none!important}
+/* 2. link rows */
+html body :is(.sx-pop,.typechips,.ph-types){display:flex!important;flex-wrap:wrap!important;gap:8px 20px!important;align-items:center}
+html body :is(.sx-pop a,.typechips a,.ph-types a){background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;
+  font-size:14px!important;font-weight:500!important;color:var(--ds-ink)!important;text-decoration:none;text-transform:none!important;letter-spacing:0!important}
+html body :is(.sx-pop a,.typechips a){color:var(--ds-blue)!important}
+html body :is(.sx-pop a,.typechips a,.ph-types a):hover{text-decoration:underline}
+html body .ph-types a{color:rgba(255,255,255,.88)!important}
+html body .ph-types a:hover{color:#fff!important}
+html body :is(.sx-pop a,.typechips a,.ph-types a) i{display:none!important}
+html body .sx-pop .sx-onl{font-size:13px!important;font-weight:500!important;color:var(--ds-muted)!important;background:none!important;padding:0!important}
+html body .sx-pop .sx-onl i{display:none}
+/* 3. toggles (Open now, 4★ & up, Rent / Buy) */
+html body .sx-chip,html body .sx-quick button{background:transparent!important;border:1px solid var(--ds-line)!important;border-radius:8px!important;box-shadow:none!important;
+  color:var(--ds-ink)!important;font-size:14px!important;font-weight:500!important;padding:7px 12px!important;height:auto!important}
+html body .sx-chip:hover,html body .sx-quick button:hover{border-color:#b9c3d6!important}
+html body .sx-chip.on,html body .sx-quick button.on{border-color:var(--ds-ink)!important;color:var(--ds-ink)!important;background:#fff!important;font-weight:600!important}
+/* no counts in any filter */
+html body :is(.ptab,.nt-chip,.nby-chip,.catfilter-list a,.sx-pop a,.typechips a,.ph-types a,.np-sub) :is(em,b,span){display:none!important}
+html body .nby-d{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:4px 0!important;margin-right:16px;color:var(--ds-muted)!important;font-size:14px!important;font-weight:500!important}
+html body .nby-d.on{color:var(--ds-ink)!important;font-weight:600!important;text-decoration:underline;text-underline-offset:6px}
+html body .nby-d:hover{color:var(--ds-ink)!important}
+
+/* "Why people use HiNoida": each point in its own bordered card */
+html body .howsec .howgrid{border-top:0!important;padding-top:0!important;gap:20px!important;align-items:stretch}
+html body .howsec .howbox{background:#fff!important;border:1px solid var(--ds-line)!important;border-radius:16px!important;padding:24px!important;
+  box-shadow:0 1px 2px rgba(16,26,46,.04)!important;display:flex;flex-direction:column;align-items:flex-start}
+html body .howsec .howbox:hover{border-color:#c9d3e3!important}
+html body .howsec .howbox i{flex:none}
+
+/* ---------- inner pages: use the full width, no empty side gutters ---------- */
+html body .ar-box{max-width:none!important}
+@media(min-width:1100px){html body .ar-box .ar-pop{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+html body .area-nearby-note{margin:-4px 0 12px;font-size:13px;color:var(--ds-muted)}
+
+/* ---------- listing page bottom: FAQ in two columns, similar row full width ---------- */
+html body .det-faq .wrap{display:block}
+@media(min-width:1000px){html body .det-faq .wrap{display:grid;grid-template-columns:1fr 1fr;column-gap:16px}html body .det-faq .sec-head{grid-column:1/-1}}
+html body .det-faq details{background:#fff!important;border:1px solid var(--ds-line)!important;border-radius:12px!important;align-self:start}
+html body .det-faq summary{font-size:15px!important;font-weight:600!important}
+html body .det-similar{background:transparent!important}
+@media(min-width:1100px){html body .det-similar .lgrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:24px 16px!important}}
+@media(min-width:1100px) and (max-width:1499px){html body .det-similar .lgrid{grid-template-columns:repeat(5,minmax(0,1fr))!important}html body .det-similar .lgrid>.lcard:nth-child(n+6){display:none!important}}
+/* listing page: FAQ and similar rows line up with the content above them */
+html body section.det-faq,html body section.det-similar{padding-left:0!important;padding-right:0!important}
+
+/* ---------- property & listing pages: tighter, no blank blocks ---------- */
+html body .det-main .loginbox{display:flex!important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:12px 16px!important;margin:0 0 10px!important;border:1px solid var(--ds-line)!important;border-radius:12px!important;background:#fff!important;box-shadow:none!important;text-align:left!important}
+html body .det-main .loginbox p{margin:0!important;font-size:14px;color:var(--ds-muted)}
+html body .det-main .loginbox .loginbtn{padding:8px 14px!important;font-size:14px!important;border-radius:9px!important;margin:0!important}
+
+/* ---------- detail hero: photo fills the right half, no empty middle ---------- */
+@media(min-width:900px){
+  html body section.det-hero{padding:30px 0 30px!important}
+  html body .det-hero .lp-hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:36px!important;align-items:center!important}
+  html body .det-hero .lp-hero-grid #lpSlider,html body .det-hero .lp-slider{height:340px!important;min-height:0!important;width:100%!important;max-width:none!important}
+  html body .det-hero .lp-hero-main{min-height:0!important}
+}
+@media(min-width:1600px){html body .det-hero .lp-hero-grid #lpSlider{height:380px!important}}
+html body .pspecs .pspec:last-child{grid-column:auto/-1}
+
+/* ---------- pricing: two proper cards ---------- */
+html body .pr-free{gap:20px!important}
+html body .pr-col{background:#fff;border:1px solid var(--ds-line)!important;border-radius:14px;padding:26px 28px!important;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+html body .pr-col p{max-width:none!important}
+/* ---------- simple pages (about, terms…): text uses the full card ---------- */
+html body .bl-prose,html body .bl-prose :is(p,ul,ol,li,h2,h3){max-width:none!important}

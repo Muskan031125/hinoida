@@ -199,4 +199,15 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // On Railway the site address comes from APP_URL or Railway's own domain
+        $url = getenv('APP_URL') ?: (getenv('RAILWAY_PUBLIC_DOMAIN') ? 'https://' . getenv('RAILWAY_PUBLIC_DOMAIN') : '');
+        if ($url !== '') {
+            $this->baseURL = rtrim($url, '/') . '/';
+        }
+    }
 }

@@ -5,6 +5,7 @@
 <?= $this->section('content') ?>
 <?php
 helper('image');
+$l['name'] = preg_replace('/^Sample\s*·\s*/u', '', (string) $l['name']);   // samples keep the marker in the database only
 $loc   = $l['locality_name'] ?: 'Noida';
 $phone = $l['phone'] ?? '';
 $addr  = $l['address'] ?? '';
@@ -32,6 +33,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <div class="det-crumb"><a href="<?= base_url('/') ?>">Home</a> &rsaquo; <?php if (! empty($catNames[0])): ?><a href="<?= hi_category_url(esc($catNames[0]['slug'], 'url')) ?>"><?= esc($catNames[0]['name']) ?></a> &rsaquo; <?php endif; ?><span><?= esc($l['name']) ?></span></div>
     <h1 class="det-name"><?= esc($l['name']) ?>
       <?php if (! empty($l['is_featured'])): ?><span class="det-featured"><i class="fa-solid fa-crown"></i> Featured</span><?php endif; ?>
+      <?php if (! empty($l['is_verified'])): ?><span class="det-featured det-verified"><i class="fa-solid fa-circle-check"></i> Verified</span><?php endif; ?>
     </h1>
     <?php /* the original's head_point — one line of what the place is */ ?>
     <?php if (trim((string) ($l['head_point'] ?? '')) !== ''): ?>
@@ -43,37 +45,8 @@ $loginTo = static function (string $label, string $anchor): string {
       ?>
       <?php if ($_ex !== ''): ?><p class="det-tagline"><?= esc(html_entity_decode($_ex, ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></p><?php endif; ?>
     <?php endif; ?>
-    <?php /* one calm line: open status first, then the plain facts */ ?>
-    <div class="lh-meta">
-      <?php if (! empty($hours)): ?>
-        <span class="lh-open <?= $hours['is_open'] ? 'is-open' : 'is-shut' ?>"><i></i><?= $hours['is_open'] ? 'Open now' : 'Closed' ?><?php if (! empty($hours['label'])): ?><em><?= esc($hours['label']) ?></em><?php endif; ?></span>
-      <?php endif; ?>
-      <?php /* category · sector · New on HiNoida · views line removed on every listing */ ?>
-    </div>
-    <?php
-      /* Key facts as chips — only what is really stored for this listing:
-         its most specific type, sector, rating (or "New listing") and its
-         first three amenities. */
-      $_chips = [];
-      $_tp = $catNames ? html_entity_decode((string) $catNames[count($catNames) - 1]['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
-      foreach (['pg/' => 'PG & Hostel', 'hostel' => 'PG & Hostel', 'rental listing' => 'For rent', 'commercial propert' => 'Commercial space'] as $_k => $_v) {
-          if (stripos($_tp, $_k) !== false) { $_tp = $_v; break; }
-      }
-      if ($_tp !== '') { $_chips[] = ['tag', $_tp]; }
-      $_chips[] = ['location-dot', $loc];
-      $_chips[] = $rating['count'] ? ['star', $rating['avg'] . ' (' . (int) $rating['count'] . ' reviews)'] : ['wand-magic-sparkles', 'New listing'];
-      foreach (array_slice($amenities ?? [], 0, 3) as $_a) {
-          $_ic = preg_replace('/^(fas|far|fab|fa-solid|fa-regular|fa-brands)\s+fa-/', '', trim((string) ($_a['icon'] ?? '')));
-          $_nm = html_entity_decode((string) $_a['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-          $_nm = strtoupper($_nm) === $_nm ? ucwords(strtolower($_nm)) : $_nm;   // "WIFI" → "Wifi"
-          $_chips[] = [preg_match('/^[a-z0-9-]+$/', $_ic) ? $_ic : 'circle-check', $_nm];
-      }
-    ?>
-    <div class="lh-chips">
-      <?php foreach ($_chips as [$_ci, $_ct]): ?>
-        <span class="lh-chip<?= $_ci === 'star' ? ' is-rate' : '' ?>"><i class="fa-solid fa-<?= esc($_ci) ?>"></i> <?= esc($_ct) ?></span>
-      <?php endforeach; ?>
-    </div>
+    <?php /* banner keeps only name, description, photos, Call + WhatsApp; open status is in Opening hours below */ ?>
+    <?php /* key-fact chips removed: type, sector and amenities are already shown lower on the page */ ?>
     <?php
       $_dirUrl = (! empty($l['latitude']) && ! empty($l['longitude']))
         ? 'https://www.google.com/maps/dir/?api=1&destination=' . (float) $l['latitude'] . ',' . (float) $l['longitude']
@@ -81,12 +54,34 @@ $loginTo = static function (string $label, string $anchor): string {
     ?>
     <?php /* contact info as two tidy rows instead of four boxes */ ?>
     <?php /* phone + address box removed on every listing (address is in Location below) */ ?>
+    <?php if (hi_is_property($l) && ($_hp = hi_property_of((int) $l['id']))): ?>
+      <?php
+        $_per  = ['month' => '/month', 'year' => '/year'][$_hp['price_period'] ?? ''] ?? '';
+        $_amt  = hi_inr($_hp['price'] ?? 0);
+        $_line = array_filter([
+          ! empty($_hp['bedrooms']) ? (int) $_hp['bedrooms'] . ' BHK' : '',
+          ! empty($_hp['carpet_area']) ? number_format((float) $_hp['carpet_area']) . ' ' . ($_hp['area_unit'] ?? 'sq ft') : '',
+          ['full' => 'Furnished', 'semi' => 'Semi-furnished', 'unfurnished' => 'Unfurnished'][$_hp['furnishing'] ?? ''] ?? '',
+          $loc,
+        ]);
+      ?>
+      <div class="det-price"><b><?= $_amt !== '' ? '₹' . esc($_amt) : 'Price on request' ?></b><?php if ($_amt !== '' && $_per): ?><span><?= esc($_per) ?></span><?php endif; ?></div>
+      <?php if ($_line): ?><p class="det-facts"><?= esc(implode(' · ', $_line)) ?></p><?php endif; ?>
+    <?php endif; ?>
     <div class="lp-actions lh-actions">
+      <?php if (hi_is_property($l)): ?>
+        <a class="lp-act primary" href="#enquiry" data-track="enquiry"><i class="fa-solid fa-paper-plane"></i> Contact owner</a>
+      <?php endif; ?>
       <?php if ($phone): ?>
         <a class="lp-act primary" data-track="phone" href="tel:<?= esc(preg_replace('/[^0-9+]/', '', $phone)) ?>"><i class="fa-solid fa-phone"></i> Call now</a>
         <a class="lp-act wa" data-track="whatsapp" target="_blank" rel="noopener" href="https://wa.me/<?= esc(preg_replace('/[^0-9]/', '', $phone)) ?>"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
       <?php endif; ?>
-      <?php /* only Call now + WhatsApp in the banner, on every listing */ ?>
+      <?php if (hi_is_property_family($l)): ?>
+      <?php /* save to / remove from the shortlist — same list as the hearts on cards */
+        $_sv = json_encode(['id' => (int) $l['id'], 'n' => (string) $l['name'], 'u' => hi_listing_url($l),
+            'i' => str_starts_with((string) $cover, 'data:') ? '' : (string) $cover, 's' => (string) $loc], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+      <span class="lp-act hi-save hi-save-btn" role="button" tabindex="0" aria-label="Save to shortlist" data-save="<?= esc($_sv, 'attr') ?>"><i class="fa-regular fa-heart"></i><span class="hs-t"></span></span>
+      <?php endif; ?>
     </div>
     </div>
 
@@ -150,6 +145,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <?php endif; ?>
 
     <!-- AT A GLANCE — one dense, organised quick-facts panel -->
+    <?php $_isPropPage = hi_is_property($l); ?>
     <?php ob_start(); ?>
     <h2 style="margin:28px 0 12px"><?= esc(hi_c('listing.at_a_glance', 'At a glance')) ?></h2>
     <?php
@@ -178,7 +174,7 @@ $loginTo = static function (string $label, string $anchor): string {
         </div>
       <?php endforeach; ?>
     </div>
-    <?php $_glanceHtml = ob_get_clean(); if (count($glance) >= 2) echo $_glanceHtml; ?>
+    <?php $_glanceHtml = ob_get_clean(); if (count($glance) >= 2 && ! $_isPropPage) echo $_glanceHtml; ?>
 
     <?php if (! empty($catalog)): ?>
       <h2 style="margin:30px 0 12px"><?= esc(hi_catalog_heading($gkey)) ?></h2>
@@ -213,7 +209,7 @@ $loginTo = static function (string $label, string $anchor): string {
       /* hi_group_highlights() added claims such as "Verified technicians" or
          "Parking on site" to every listing in a category — not shown any more. */
     ?>
-    <?php if (! empty($gtk)): ?>
+    <?php if (! empty($gtk) && ! $_isPropPage): ?>
       <h2 style="margin:30px 0 12px"><?= esc(hi_c('listing.good_to_know', 'Good to know')) ?></h2>
       <div class="gtk-grid">
         <?php foreach (array_slice($gtk, 0, 8) as $g): ?>
@@ -339,15 +335,14 @@ $loginTo = static function (string $label, string $anchor): string {
         $_fmtKm = static fn ($km) => $km < 1 ? (round($km * 1000 / 50) * 50) . ' m' : number_format($km, 1) . ' km';
       ?>
       <div class="nby" id="nearbyBox">
+        <?php /* compact filters: a small distance switch, then small type buttons that wrap (no sideways scrolling) */ ?>
         <div class="nby-filters">
-          <div class="nby-row">
-            <span class="nby-lbl">Distance</span>
+          <div class="nby-seg" role="group" aria-label="Distance">
             <?php foreach (['0.5' => '500 m', '1' => '1 km', '2' => '2 km', '5' => '5 km'] as $_v => $_t): ?>
-              <button type="button" class="nby-chip nby-d<?= (string) $_v === '5' ? ' on' : '' ?>" data-km="<?= $_v ?>"><?= $_t ?></button>
+              <button type="button" class="nby-d<?= (string) $_v === '5' ? ' on' : '' ?>" data-km="<?= $_v ?>"><?= $_t ?></button>
             <?php endforeach; ?>
           </div>
-          <div class="nby-row nby-types">
-            <span class="nby-lbl">Type</span>
+          <div class="nby-types" role="group" aria-label="Type">
             <button type="button" class="nby-chip nby-t on" data-t="*">All <b>0</b></button>
             <?php foreach ($_nt as $_lb => $_ic): ?>
               <button type="button" class="nby-chip nby-t" data-t="<?= esc($_lb, 'attr') ?>"><i class="fa-solid fa-<?= esc($_ic) ?>"></i> <?= esc($_lb) ?> <b>0</b></button>
@@ -390,19 +385,22 @@ $loginTo = static function (string $label, string $anchor): string {
         <nav class="nby-pager" aria-label="Nearby pages"></nav>
       </div>
       <style>
-      .nby-filters{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fbfcfe;margin:0 0 12px}
-      .nby-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-      .nby-lbl{flex:0 0 70px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
-      .nby-chip{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 inherit;font-family:inherit;padding:8px 12px;
+      .nby-filters{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 6px}
+      .nby-seg{flex:none;display:inline-flex;gap:1px;background:#eef1f6;border-radius:9px;padding:2px;margin-right:4px}
+      .nby-d{border:0;background:none;font:600 12px/1 inherit;font-family:inherit;padding:6px 9px;border-radius:7px;color:var(--muted);cursor:pointer;white-space:nowrap}
+      .nby-d:hover{color:var(--ink)}
+      .nby-d.on{background:#fff;color:var(--blue);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+      .nby-types{display:contents}
+      .nby-chip{flex:none;display:inline-flex;align-items:center;gap:4px;font:600 12px/1 inherit;font-family:inherit;padding:6px 9px;
         border:1px solid var(--line);border-radius:20px;background:#fff;color:var(--body);cursor:pointer;white-space:nowrap}
-      .nby-chip i{color:var(--blue);font-size:12px}
-      .nby-chip b{font-size:11px;color:var(--muted);background:#eef1f6;border-radius:10px;padding:2px 7px}
+      .nby-chip i{color:var(--blue);font-size:10.5px}
+      .nby-chip b{font-size:10px;color:var(--muted);font-weight:700}
       .nby-chip:hover{border-color:#b9cdf0;background:#f8fbff}
       .nby-chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
       .nby-chip.on i{color:#fff}
-      .nby-chip.on b{background:rgba(255,255,255,.22);color:#fff}
+      .nby-chip.on b{color:rgba(255,255,255,.8)}
       .nby-chip.is-zero{opacity:.45}
-      .nby-info{margin:0 0 10px;font-size:13px;color:var(--muted)}
+      .nby-info{margin:0 0 14px;font-size:12px;color:var(--muted)}
       .nby-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
       .nby-card{display:flex;align-items:center;gap:13px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff;
         text-decoration:none;color:inherit;min-width:0;box-shadow:0 1px 2px rgba(16,24,40,.04);
@@ -447,10 +445,8 @@ $loginTo = static function (string $label, string $anchor): string {
         .nby-grid{grid-template-columns:minmax(0,1fr);gap:8px}
         .nby-ph{flex-basis:72px;width:72px;height:72px}
         .nby-bd strong{font-size:14px}
-        .nby-lbl{flex-basis:100%}
-        .nby-types{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-        .nby-types::-webkit-scrollbar{display:none}
-        .nby-types .nby-lbl{display:none}
+        .nby-seg{display:flex;width:100%;margin:0 0 2px}.nby-d{flex:1}
+        .nby-filters{gap:5px}.nby-chip{padding:5px 8px;font-size:11.5px}.nby-info{margin-bottom:10px}
       }
       </style>
       <script>
@@ -510,7 +506,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <?php /* Where the two sides meet: a dealer's own flats, on their page. */ ?>
     <?php if (! empty($theirProps)): ?>
       <h2 style="margin:30px 0 12px">Properties from <?= esc($l['name']) ?> <span style="color:var(--muted);font-weight:500">(<?= count($theirProps) ?>)</span></h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:14px">
+      <div class="lgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:14px">
         <?php foreach ($theirProps as $_tp): ?><?= view('frontend/_propertycard', ['l' => $_tp]) ?><?php endforeach; ?>
       </div>
     <?php endif; ?>
@@ -520,6 +516,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <?php if (hi_is_property($l)): $_p = hi_property_of((int) $l['id']); if ($_p): ?>
       <?php /* the mockup's trust markers — each one read from real data, so a
                listing with no RERA number simply does not carry the badge */ ?>
+      <h2 style="margin:22px 0 12px"><?= esc(hi_c('listing.property_details', 'Property details')) ?></h2>
       <?php $_bd = hi_property_badges($_p, $l); ?>
       <?php if ($_bd): ?>
         <div class="pbadges">
@@ -528,14 +525,13 @@ $loginTo = static function (string $label, string $anchor): string {
           <?php endforeach; ?>
         </div>
         <style>
-        .pbadges{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 0}
+        .pbadges{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
         .pbadge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
           padding:6px 13px;border-radius:20px;border:1px solid #c4e8d1;background:#e9f7ee;color:#12653a}
         .pbadge-new{border-color:#f2ddb4;background:#fdf5e6;color:#8a6d1a}
         .pbadge i{font-size:11px}
         </style>
       <?php endif; ?>
-      <h2 style="margin:22px 0 12px"><?= esc(hi_c('listing.property_details', 'Property details')) ?></h2>
       <div class="pspecs">
         <?php
           $_labs = hi_property_labels();
@@ -560,12 +556,83 @@ $loginTo = static function (string $label, string $anchor): string {
         ?>
       </div>
       <style>
-      .pspecs{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;
-        background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-      .pspec{background:#fff;padding:13px 15px}
+      .pspecs{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:0;
+        background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+      .pspec{background:#fff;padding:13px 15px;box-shadow:1px 0 0 var(--line),0 1px 0 var(--line)}
       .pspec span{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
       .pspec b{display:block;margin-top:3px;font-size:14.5px;color:var(--ink);font-weight:600}
       </style>
+
+      <?php
+        /* What do homes like this usually cost here? A quick, honest check:
+           the average asking price of similar listings on HiNoida. */
+        $_pgDeal = (string) ($_p['deal'] ?? '');
+        $_pgGrp  = hi_property_group((string) ($_p['kind'] ?? ''));
+        $_guide  = hi_price_guide($_pgDeal, $_pgGrp, (int) ($l['locality_id'] ?? 0), (string) $loc, (int) ($_p['bedrooms'] ?? 0));
+        $_mine   = (float) ($_p['price'] ?? 0);
+      ?>
+      <?php if ($_guide && $_mine > 0): $_diff = ($_mine - $_guide['avg']) / max(1, $_guide['avg']) * 100; ?>
+        <div class="pg-guide">
+          <div class="pg-ic"><i class="fa-solid fa-scale-balanced"></i></div>
+          <div>
+            <b>Price check</b>
+            <p>Similar <?= ! empty($_guide['bhk']) ? (int) $_guide['bhk'] . ' BHK ' : '' ?>homes in <?= esc($_guide['where']) ?> ask about
+              <strong>₹<?= esc(hi_inr($_guide['avg'])) ?><?= esc($_guide['per']) ?></strong> on HiNoida (<?= (int) $_guide['n'] ?> listings).
+              This one is <strong class="<?= abs($_diff) < 5 ? '' : ($_diff < 0 ? 'is-low' : 'is-high') ?>"><?= abs($_diff) < 5 ? 'about the same' : (round(abs($_diff)) . '% ' . ($_diff < 0 ? 'lower' : 'higher')) ?></strong>.</p>
+          </div>
+        </div>
+      <?php endif; ?>
+
+      <?php if ($_pgDeal === 'sale' && $_mine > 0): ?>
+        <h2 style="margin:28px 0 12px">Home loan EMI</h2>
+        <div class="emi" data-price="<?= (int) $_mine ?>">
+          <div class="emi-in">
+            <div class="emi-row">
+              <div class="emi-top"><span>Loan amount</span><b data-o="amt"></b></div>
+              <input type="range" data-i="pct" min="10" max="90" step="5" value="80" autocomplete="off" aria-label="Loan as a share of the price">
+              <div class="emi-ends"><span>10%</span><em><span data-o="pct"></span>% of ₹<?= esc(hi_inr($_mine)) ?></em><span>90%</span></div>
+            </div>
+            <div class="emi-row">
+              <div class="emi-top"><span>Interest rate</span><b data-o="rate"></b></div>
+              <input type="range" data-i="rate" min="6" max="14" step="0.1" value="8.5" autocomplete="off" aria-label="Interest rate per year">
+              <div class="emi-ends"><span>6%</span><em>per year</em><span>14%</span></div>
+            </div>
+            <div class="emi-row">
+              <div class="emi-top"><span>Loan time</span><b data-o="yrs"></b></div>
+              <input type="range" data-i="yrs" min="5" max="30" step="1" value="20" autocomplete="off" aria-label="Loan time in years">
+              <div class="emi-ends"><span>5 yrs</span><em>&nbsp;</em><span>30 yrs</span></div>
+            </div>
+          </div>
+          <div class="emi-out">
+            <span class="emi-lb">Your monthly EMI</span>
+            <strong data-o="emi"></strong>
+            <div class="emi-bar" aria-hidden="true"><i data-o="barP"></i><i data-o="barI"></i></div>
+            <ul class="emi-sum">
+              <li><span><i class="d-p"></i> Loan amount</span><b data-o="amt2"></b></li>
+              <li><span><i class="d-i"></i> Total interest</span><b data-o="int"></b></li>
+              <li><span>Total you pay</span><b data-o="tot"></b></li>
+              <li><span>Down payment</span><b data-o="down"></b></li>
+            </ul>
+            <em class="emi-note">Rough guide only. Your bank sets the final rate.</em>
+          </div>
+        </div>
+        <script>
+        (function(){ var r=document.querySelector('.emi'); if(!r) return; var P=+r.dataset.price;
+          var D={pct:80,rate:8.5,yrs:20};
+          function inr(n){ n=Math.round(n); if(n>=1e7) return '₹'+(n/1e7).toFixed(2).replace(/\.?0+$/,'')+' Cr'; if(n>=1e5) return '₹'+(n/1e5).toFixed(2).replace(/\.?0+$/,'')+' Lakh'; return '₹'+n.toLocaleString('en-IN'); }
+          function o(k){ return r.querySelector('[data-o='+k+']'); }
+          function fill(i){ var p=(i.value-i.min)/(i.max-i.min)*100; i.style.setProperty('--p',p+'%'); }
+          function go(){ var pct=+r.querySelector('[data-i=pct]').value, rate=+r.querySelector('[data-i=rate]').value, yrs=+r.querySelector('[data-i=yrs]').value;
+            var L=P*pct/100, m=rate/1200, n=yrs*12, e=m? L*m*Math.pow(1+m,n)/(Math.pow(1+m,n)-1) : L/n, T=e*n, I=T-L;
+            o('amt').textContent=inr(L); o('amt2').textContent=inr(L); o('pct').textContent=pct;
+            o('rate').textContent=rate.toFixed(1)+'%'; o('yrs').textContent=yrs+' years';
+            o('emi').textContent='₹'+Math.round(e).toLocaleString('en-IN'); o('int').textContent=inr(I); o('tot').textContent=inr(T); o('down').textContent=inr(P-L);
+            o('barP').style.width=(L/T*100)+'%'; o('barI').style.width=(I/T*100)+'%';
+            r.querySelectorAll('input').forEach(fill); }
+          r.querySelectorAll('input').forEach(function(i){ i.value=D[i.dataset.i]; i.addEventListener('input',go); }); go(); })();
+        </script>
+      <?php endif; ?>
+
     <?php endif; ?>
     <?php elseif (! empty($week) && array_filter($week)): $tk = hi_today_key(); $di = 0; ?>
       <h2 style="margin:30px 0 12px"><?= esc(hi_c('listing.opening_hours', 'Opening hours')) ?></h2>
@@ -582,7 +649,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <?php if (! empty($l['latitude']) && ! empty($l['longitude'])): ?>
       <h2 style="margin:30px 0 12px"><?= esc(hi_c('listing.location_directions', 'Location & directions')) ?></h2>
       <div style="border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);background:#fff">
-        <iframe title="Map of <?= esc($l['name']) ?>" width="100%" height="300" style="border:0;display:block" loading="lazy"
+        <iframe title="Map of <?= esc($l['name']) ?>" width="100%" height="220" style="border:0;display:block" loading="lazy"
           src="https://www.openstreetmap.org/export/embed.html?bbox=<?= (float)$l['longitude']-0.01 ?>,<?= (float)$l['latitude']-0.007 ?>,<?= (float)$l['longitude']+0.01 ?>,<?= (float)$l['latitude']+0.007 ?>&layer=mapnik&marker=<?= (float)$l['latitude'] ?>,<?= (float)$l['longitude'] ?>"></iframe>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;flex-wrap:wrap">
           <span style="font-size:14px;color:var(--body)"><i class="fa-solid fa-location-dot" style="color:var(--blue)"></i> <?= esc($addr ? $addr . ', ' : '') ?><?= esc($loc) ?>, Noida</span>
@@ -595,7 +662,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <h2 id="reviews" style="margin:30px 0 12px"><?= esc(hi_c('listing.ratings_reviews', 'Ratings & reviews')) ?></h2>
     <?php /* shown even at zero — the original does, and an empty breakdown
              tells a visitor there is nothing yet rather than looking broken */ ?>
-    <?php if (true): ?>
+    <?php if ((int) $rating['count'] > 0): ?>
       <div style="display:flex;gap:26px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;background:#fff;flex-wrap:wrap">
         <div style="text-align:center;min-width:110px">
           <div style="font-size:44px;font-weight:800;color:var(--ink);line-height:1"><?= esc($rating['avg']) ?></div>
@@ -708,7 +775,7 @@ $loginTo = static function (string $label, string $anchor): string {
     <?php endif; /* addon: qa */ ?>
   </div>
 
-  <aside style="position:sticky;top:82px;align-self:start">
+  <aside class="det-side<?= hi_is_property($l) ? ' side-prop' : '' ?>" style="position:sticky;top:82px;align-self:start">
     <div class="sidecard">
       <h3 class="sc-h"><i class="fa-solid fa-headset"></i> Contact</h3>
       <?php if ($phone): ?>
@@ -778,9 +845,10 @@ $loginTo = static function (string $label, string $anchor): string {
 
     <?php if (hi_addon('claims') && \App\Controllers\Claim::claimable($l)): ?>
       <div class="sidecard claimcard">
-        <b>Is this your business?</b>
-        <p>Claim <?= esc($l['name']) ?> to edit its details, add photos and reply to enquiries.</p>
-        <a class="sc-btn sc-ghost" href="<?= base_url('claim/' . (int) $l['id']) ?>"><i class="fa-solid fa-check-double"></i> Claim this business</a>
+        <?php $_pp = hi_is_property($l); ?>
+        <b><?= $_pp ? 'Is this your property?' : 'Is this your business?' ?></b>
+        <p><?= $_pp ? 'Claim this listing to update the price, add photos and reply to people who ask about it.' : 'Claim ' . esc($l['name']) . ' to edit its details, add photos and reply to enquiries.' ?></p>
+        <a class="sc-btn sc-ghost" href="<?= base_url('claim/' . (int) $l['id']) ?>"><i class="fa-solid fa-check-double"></i> <?= $_pp ? 'Claim this listing' : 'Claim this business' ?></a>
       </div>
     <?php endif; ?>
 
@@ -845,8 +913,8 @@ $loginTo = static function (string $label, string $anchor): string {
 </div>
 
 <?php if (! empty($faqs)): ?>
-<section class="sec">
-  <div class="wrap" style="max-width:900px">
+<section class="sec det-faq">
+  <div class="wrap">
     <div class="sec-head"><h2><?= esc(hi_c('listing.frequently_asked_questions', 'Frequently asked questions')) ?></h2></div>
     <?php foreach ($faqs as $f): ?>
       <details style="border:1px solid var(--line);border-radius:12px;padding:0 18px;margin-bottom:10px;background:#fff">
@@ -859,7 +927,7 @@ $loginTo = static function (string $label, string $anchor): string {
 <?php endif; ?>
 
 <?php if ($similar): ?>
-<section class="sec" style="background:var(--bg)">
+<section class="sec det-similar">
   <div class="wrap">
     <?php
       /* For a flat the category is the dealer's ("Property Dealers"), which
@@ -875,9 +943,9 @@ $loginTo = static function (string $label, string $anchor): string {
       }
     ?>
     <div class="sec-head"><h2>Similar <?= esc($_similarLabel) ?> in Noida</h2></div>
-    <div class="lscroll">
+    <div class="lgrid">
       <?php foreach ($similar as $s): if ((int) $s['id'] === (int) $l['id']) { continue; } ?>
-        <?= view('frontend/_card', ['l' => $s]) ?>
+        <?= hi_is_property($s) && hi_property_of((int) $s['id']) ? view('frontend/_propertycard', ['l' => $s]) : view('frontend/_card', ['l' => $s]) ?>
       <?php endforeach; ?>
     </div>
   </div>
@@ -1009,7 +1077,7 @@ $loginTo = static function (string $label, string $anchor): string {
   var icons=[['about','circle-info'],['glance','bolt'],['good to know','lightbulb'],['amenit','list-check'],
     ['menu','utensils'],['room','bed'],['service','tags'],['price','tags'],['product','box-open'],['video','circle-play'],
     ['nearby','map-pin'],['propert','building'],['detail','clipboard-list'],['hour','clock'],['location','map-location-dot'],
-    ['review','star'],['question','comments'],['faq','circle-question']];
+    ['review','star'],['question','comments'],['faq','circle-question'],['emi','calculator'],['alert','bell']];
   var nav=document.getElementById('lpNav'), bar=nav&&nav.querySelector('.wrap'), cards=[];
   Array.prototype.slice.call(main.children).forEach(function(h){
     if(h.tagName!=='H2') return;
@@ -1026,13 +1094,16 @@ $loginTo = static function (string $label, string $anchor): string {
     if(bar){ var a=document.createElement('a'); a.href='#'+card.id;
       var short=[['about','About'],['glance','Overview'],['good to know','Highlights'],['amenit','Amenities'],['menu','Menu'],
         ['nearby','Nearby'],['propert','Properties'],['detail','Details'],['hour','Hours'],['location','Location'],
-        ['review','Reviews'],['question','Q&A'],['video','Video']], lab=txt;
+        ['review','Reviews'],['question','Q&A'],['video','Video'],['emi','EMI'],['alert','Alerts']], lab=txt;
       for(var k=0;k<short.length;k++){ if(low.indexOf(short[k][0])>-1){ lab=short[k][1]; break; } }
       a.innerHTML='<i class="fa-solid fa-'+ic+'"></i>'; a.appendChild(document.createTextNode(' '+lab)); a.title=txt;
       bar.appendChild(a); }
   });
   /* interactive sections: click a heading to fold it; long ones show the top
      part with a "Show more" button. Reviews, Q&A and the map stay fully open. */
+  (function(){ var pd=cards.filter(function(c){ return /property-details/.test(c.id); })[0], first=cards[0];
+    if(pd && first && pd!==first){ first.parentNode.insertBefore(pd, first.nextSibling); cards.splice(cards.indexOf(pd),1); cards.splice(1,0,pd);
+      if(bar){ var lk=bar.querySelector('a[href="#'+pd.id+'"]'), f=bar.querySelector('a'); if(lk&&f) bar.insertBefore(lk, f.nextSibling); } } })();
   cards.forEach(function(c,ci){
     var h=c.querySelector('h2'); if(!h) return;
     var body=document.createElement('div'); body.className='lp-body';
@@ -1043,7 +1114,7 @@ $loginTo = static function (string $label, string $anchor): string {
     function toggle(){ var closed=c.classList.toggle('lp-closed'); h.setAttribute('aria-expanded',closed?'false':'true'); }
     h.addEventListener('click',function(e){ if(e.target.closest('a,button')) return; toggle(); });
     h.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
-    if(/review|qa|question|location|nearby/.test(c.id)) return;
+    if(/review|qa|question|location|nearby|emi|alert/.test(c.id)) return;
     var lim = ci===0 ? 190 : 300;
     if(body.scrollHeight > lim+60){
       c.classList.add('lp-clamp'); body.style.maxHeight=lim+'px';

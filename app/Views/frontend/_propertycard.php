@@ -1,58 +1,72 @@
 <?php
 /**
- * A property, drawn as an ordinary listing card.
+ * A property card — price first, like the big property sites.
  *
- * This used to be a bespoke price-led card with its own stylesheet carried
- * inline. Two cards of different shapes in one grid read as a broken page, so
- * it now uses exactly the same markup and classes as _card.php — .lcard, .ph,
- * .bd, .rate, .lc-meta, .lc-actions. What differs is only what goes in those
- * slots: a flat has a price, a size and a furnishing state where a restaurant
- * has opening hours.
+ * Same outer shape as _card.php (.lcard .ph .bd) so it sits in any grid, but
+ * the body is a home's: the price on top, the facts as chips, who posted it
+ * and how fresh it is. A heart saves it to the visitor's shortlist (kept in
+ * their own browser).
  *
- * Expects: $l (listing row, ideally with _ravg/_rcount and locality_name)
+ * Expects: $l (listing row, ideally with locality_name)
  */
 helper(['image', 'property']);
 
 $lid  = (int) $l['id'];
 $p    = hi_property_of($lid);
-$loc  = $l['locality_name'] ?? ($l['locality'] ?? 'Noida');
-$rc   = (int) ($l['_rcount'] ?? 0);
-$ra   = $l['_ravg'] ?? 0;
+$loc  = $l['locality_name'] ?? ($l['locality'] ?? '');
+if ($loc === '' && ! empty($l['locality_id'])) {
+    // some rows arrive without the sector name; look it up once per sector
+    static $_locNames = [];
+    $_lid = (int) $l['locality_id'];
+    if (! array_key_exists($_lid, $_locNames)) {
+        $_r = \Config\Database::connect()->table('locality')->select('name')->where('id', $_lid)->get()->getRowArray();
+        $_locNames[$_lid] = (string) ($_r['name'] ?? '');
+    }
+    $loc = $_locNames[$_lid];
+}
+if ($loc === '') { $loc = 'Noida'; }
 
 $deal      = strtolower((string) ($p['deal'] ?? ''));
 $dealLabel = ['sale' => 'For sale', 'rent' => 'For rent', 'pg' => 'PG'][$deal] ?? '';
-$price     = hi_property_price($p);
-$summary   = hi_property_summary($p);
-$badges    = hi_property_badges($p, $l);
+$amt       = hi_inr($p['price'] ?? 0);
+$per       = ['month' => '/month', 'year' => '/year'][$p['price_period'] ?? ''] ?? '';
+$deposit   = hi_inr($p['deposit'] ?? 0);
+$facts     = hi_property_facts($p);
 $project   = trim((string) ($p['project'] ?? ''));
+$verified  = ! empty($l['is_verified']);
+$poster    = hi_listing_poster($l);
+$ago       = hi_posted_ago($l);
+$ready     = ($p['possession'] ?? '') === 'ready';
+$src       = hi_cover($l);
+$url       = hi_listing_url($l);
+$save      = json_encode([
+    'id' => $lid, 'n' => (string) $l['name'], 'u' => $url,
+    'i' => str_starts_with($src, 'data:') ? '' : $src,
+    's' => $amt !== '' ? '₹' . $amt . $per : (string) $loc,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 ?>
-<a class="lcard rich" href="<?= hi_listing_url($l) ?>">
+<?php
+  /* Same as every other card on the site: photo, one small label, the name.
+     Everything else (deposit, size, furnishing, who posted it) is on the
+     listing page itself. The label carries the deal and the price. */
+  $_title = preg_replace('/^Sample\s*·\s*/u', '', (string) $l['name']);
+  // one line a renter can read at a glance: price · BHK · sector
+  $_bits = [];
+  $_bits[] = $amt !== '' ? '₹' . $amt . (['month' => '/mo', 'year' => '/yr'][$p['price_period'] ?? ''] ?? '') : 'Price on request';
+  if (! empty($p['bedrooms'])) { $_bits[] = (int) $p['bedrooms'] . ' BHK'; }
+  elseif (! empty($facts[0][1])) { $_bits[] = $facts[0][1]; }
+  if ($loc !== '') { $_bits[] = $loc; }
+  $_pill = implode(' · ', $_bits);
+?>
+<a class="lcard rich pcard" href="<?= $url ?>">
   <span class="ph">
-    <?php $_src = hi_cover($l); ?>
-    <img src="<?= esc($_src) ?>" alt="<?= esc($l['name']) ?>"<?= str_starts_with($_src, 'data:') ? '' : ' loading="lazy"' ?>>
-    <?php if (! empty($l['is_featured'])): ?><span class="lc-feat"><i class="fa-solid fa-crown"></i> Featured</span><?php endif; ?>
-    <?php if (! empty($badge)): ?><span class="lc-badge"><i class="fa-solid fa-arrow-trend-up"></i> <?= esc($badge) ?></span><?php endif; ?>
-    <?php if ($rc): $_q = hi_rating_quality((float) $ra, (int) $rc); ?>
-      <span class="rate"><i class="fa-solid fa-star"></i> <?= esc($ra) ?> <small><?= $_q !== '' ? esc($_q) . ' &middot; ' : '' ?>(<?= $rc ?>)</small></span>
-    <?php endif; ?>
-    <?php /* where a restaurant says Open now, a flat says what it is for */ ?>
-    <?php if ($dealLabel !== ''): ?>
-      <span class="lc-open <?= $deal === 'sale' ? 'is-open' : 'is-soon' ?>"><?= esc($dealLabel) ?></span>
-    <?php endif; ?>
+    <img src="<?= esc($src) ?>" alt="<?= esc($l['name']) ?>"<?= str_starts_with($src, 'data:') ? '' : ' loading="lazy"' ?>>
+    <span class="lc-ic" aria-hidden="true"><i class="fa-solid fa-<?= esc(hi_card_icon($deal !== '' ? $deal : 'sale')) ?>"></i></span>
+    <span class="hi-save" role="button" tabindex="0" aria-label="Save to shortlist" title="Save" data-save="<?= esc($save, 'attr') ?>"><i class="fa-regular fa-heart"></i></span>
   </span>
   <div class="bd">
-    <h3><?= esc($l['name']) ?></h3>
-    <span class="loc"><i class="fa-solid fa-location-dot"></i>
-      <?= esc($project !== '' ? mb_strimwidth($project, 0, 34, '…') . ', ' : '') ?><?= esc($loc) ?></span>
-    <span class="lc-meta">
-      <?php if ($price !== ''): ?><span><i class="fa-solid fa-indian-rupee-sign"></i> <?= esc(ltrim($price, '₹')) ?></span><?php endif; ?>
-      <?php if ($summary !== ''): ?><span><i class="fa-solid fa-ruler-combined"></i> <?= esc($summary) ?></span><?php endif; ?>
-      <?php foreach (array_slice($badges, 0, 1) as [$_bl, $_bi, $_bk]): ?>
-        <span><i class="fa-solid fa-<?= esc($_bi) ?>"></i> <?= esc($_bl) ?></span>
-      <?php endforeach; ?>
-    </span>
-    <span class="lc-actions">
-      <span class="lc-btn lc-view"><i class="fa-solid fa-arrow-right"></i> <?= esc(hi_c('_propertycard.view_details', 'View details')) ?></span>
-    </span>
+    <?php if ($_pill !== ''): ?><span class="lc-cat"><?= esc($_pill) ?></span><?php endif; ?>
+    <h3><?= esc($_title) ?><?php if ($verified): ?> <i class="fa-solid fa-circle-check v-ok" title="Verified by HiNoida" aria-label="Verified"></i><?php endif; ?></h3>
+    <span class="lc-explore">View <i class="fa-solid fa-arrow-right"></i></span>
   </div>
 </a>

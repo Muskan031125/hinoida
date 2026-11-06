@@ -1,0 +1,36 @@
+HiNoida on Railway - simple steps
+=================================
+
+1. Sign up at https://railway.com (use "Login with GitHub" or email).
+
+2. New Project -> "Empty project".
+   - Click "+ Create" -> Database -> MySQL.      (this is the database)
+   - Click "+ Create" -> Empty Service, name it "web". (this is the site)
+
+3. Open the "web" service -> Variables -> add these:
+     MYSQLHOST      = ${{MySQL.MYSQLHOST}}
+     MYSQLPORT      = ${{MySQL.MYSQLPORT}}
+     MYSQLUSER      = ${{MySQL.MYSQLUSER}}
+     MYSQLPASSWORD  = ${{MySQL.MYSQLPASSWORD}}
+     MYSQLDATABASE  = ${{MySQL.MYSQLDATABASE}}
+     MEDIA_BASE     = https://new.hinoida.com
+   ("web" -> Settings -> Networking -> "Generate Domain" to get the site link.)
+
+4. Copy the database:
+   - MySQL service -> Settings -> Networking -> turn on "Public networking"
+     (TCP proxy). Note the host and port it shows.
+   - Double-click  import-db-railway.bat  in this folder and type
+     host, port, database name (railway) and the MySQL password
+     (MySQL service -> Variables -> MYSQLPASSWORD).
+
+5. Upload the site:
+   - Double-click  deploy-railway.bat  in this folder.
+   - Log in in the browser window, pick the project and the "web" service.
+   - Wait for "Deploy complete". Open the domain from step 3.
+
+Notes
+- Photos keep loading from new.hinoida.com (MEDIA_BASE).
+- Photos uploaded on Railway are lost on the next deploy unless you add a
+  Volume mounted at /var/www/html/uploads (web -> Settings -> Volumes).
+- The database copy includes real users' emails and phones - keep the
+  Railway project private and don't share its passwords.

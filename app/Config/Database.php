@@ -206,5 +206,17 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
+
+        // Railway (or any host) gives the database details as MYSQL* settings
+        foreach (['hostname' => 'MYSQLHOST', 'username' => 'MYSQLUSER', 'password' => 'MYSQLPASSWORD',
+                  'database' => 'MYSQLDATABASE', 'port' => 'MYSQLPORT'] as $k => $env) {
+            $v = getenv($env);
+            if ($v !== false && $v !== '') {
+                $this->default[$k] = $k === 'port' ? (int) $v : $v;
+            }
+        }
+        if (getenv('MYSQLHOST')) {
+            $this->default['DBDebug'] = false;
+        }
     }
 }

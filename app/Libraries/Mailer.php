@@ -237,7 +237,9 @@ class Mailer
             ->whereIn('status', ['pending', 'failed'])
             ->where('COALESCE(attempts,0) <', 5)
             ->where('COALESCE(created_at,0) >=', $cutoff)
-            ->orderBy('id', 'ASC')->limit($limit)->get()->getResultArray();
+            // newest first: a sign-up sends one code and processes one email
+            // straight away — oldest-first sent an earlier, failed code instead
+            ->orderBy('id', 'DESC')->limit($limit)->get()->getResultArray();
 
         $sent = 0; $logged = 0; $failed = 0;
         foreach ($rows as $r) {
@@ -294,6 +296,12 @@ class Mailer
             $email->setMessage($r['body']);
             if ($email->send(false)) return [true, ''];
 
+            // Running on this computer (localhost) and the mail server could
+            // not be reached — usually XAMPP's PHP has no SSL certificate
+            // list. Save the email as a file instead so sign-up still works
+            // while testing; a live server never takes this path.
+            if ($this->isLocal()) { return ['logged', $this->writeLocal($r)]; }
+
             // Ask for the debug messages only. Including 'headers' buried the
             // SMTP reply under the message headers, so the stored error was the
             // greeting or a Date: line — never the reason.
@@ -309,7 +317,28 @@ class Mailer
 
             return [false, $why];
         } catch (\Throwable $e) {
+            if ($this->isLocal()) { return ['logged', $this->writeLocal($r)]; }
             return [false, $e->getMessage()];
         }
+    }
+
+    /** Is this the developer's own computer (php spark serve / XAMPP on localhost)? */
+    protected function isLocal(): bool
+    {
+        $h = strtolower((string) ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? ''));
+        $h = preg_replace('/:\d+$/', '', $h);
+
+        return in_array($h, ['localhost', '127.0.0.1', '[::1]', '::1'], true) || str_ends_with($h, '.localhost') || str_ends_with($h, '.test');
+    }
+
+    /** Write the email to writable/maillog/ and return the file path. */
+    protected function writeLocal(array $r): string
+    {
+        $dir = WRITEPATH . 'maillog';
+        if (! is_dir($dir)) { @mkdir($dir, 0777, true); }
+        $file = $dir . DIRECTORY_SEPARATOR . 'mail-' . $r['id'] . '.html';
+        @file_put_contents($file, "To: {$r['to_name']} <{$r['to_email']}>\nSubject: {$r['subject']}\n\n" . $r['body']);
+
+        return $file;
     }
 }

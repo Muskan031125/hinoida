@@ -1,0 +1,34 @@
+# HiNoida — rules for Apache (XAMPP locally, and Apache-type hosting).
+# Not needed by "spark serve", which ignores this file.
+
+# No folder listings in the browser
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    Options +FollowSymlinks
+    RewriteEngine On
+
+    # Code folders and private files are never served to a browser
+    RewriteRule ^(app|vendor|writable|tests|tools|_old_sql|\.git)(/|$) - [F,L]
+
+    # Any address that is not a real file or folder (a photo, a CSS file)
+    # goes to index.php, and the HiNoida code decides which page to show
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L,NC,QSA]
+
+    # Pass the Authorization header through to PHP
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+
+# Private files: the database dump, archives, scripts, settings and logs
+<FilesMatch "\.(sql|zip|bat|env|log)$|^\.env$|^spark$|^composer\.(json|lock)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule !mod_rewrite.c>
+    ErrorDocument 404 index.php
+</IfModule>
+
+ServerSignature Off

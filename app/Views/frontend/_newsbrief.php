@@ -16,6 +16,22 @@ $dec = static fn ($s) => html_entity_decode((string) $s, ENT_QUOTES | ENT_HTML5,
 $catName = [];
 foreach (($cats ?? []) as $_c) { $catName[(int) $_c['id']] = $dec($_c['name']); }
 
+// home page: property news only (rent, buy, real estate, commercial space)
+$_allNews = $latest;   // every topic, newest first — feeds the "Top news" column
+if (! empty($propOnly)) {
+    $_isProp = static fn (string $n): bool => (bool) preg_match('/propert|commercial|real\s*estate|housing|rent|flat|apartment|plot/i', $n);
+    $_keep = array_values(array_filter($latest, static function ($p) use ($catName, $_isProp) {
+        foreach (array_filter(array_map('intval', preg_split('/[,\s]+/', (string) ($p['category_id'] ?? '')) ?: [])) as $_i) {
+            if ($_isProp($catName[$_i] ?? '')) { return true; }
+        }
+        return false;
+    }));
+    if ($_keep) {
+        $latest  = $_keep;
+        $catName = array_filter($catName, $_isProp);
+    }
+}
+
 $ago = static function ($d): string {
     $t = strtotime((string) $d);
     if (! $t || $t < strtotime('2000-01-01')) { return ''; }
@@ -50,16 +66,17 @@ $icons = ['education' => 'graduation-cap', 'school' => 'graduation-cap', 'hospit
           'hotel' => 'hotel', 'banquet' => 'champagne-glasses', 'commercial' => 'briefcase', 'traffic' => 'car', 'event' => 'calendar'];
 $iconFor = static function (string $n) use ($icons): string { foreach ($icons as $k => $v) { if (stripos($n, $k) !== false) { return $v; } } return 'tag'; };
 ?>
+<?php if (! empty($showTop)): ?><div class="nt-duo"><?php endif; ?>
 <section class="nt" id="noidaToday" data-show="5">
   <div class="nt-head">
     <div>
       <span class="nt-live"><i></i> Noida Today</span>
-      <h2 class="nt-title">What's happening in Noida today</h2>
+      <h2 class="nt-title"><?= ! empty($propOnly) ? 'Property news in Noida' : "What's happening in Noida today" ?></h2>
     </div>
     <span class="nt-meta" id="ntMeta"><?= min(5, count($latest)) ?> stories · about 1 minute</span>
   </div>
 
-  <div class="nt-chips" role="tablist" aria-label="Choose a topic">
+  <div class="nt-chips" role="tablist" aria-label="Choose a topic"<?= ! empty($propOnly) ? ' hidden style="display:none"' : '' ?>>
     <button type="button" class="nt-chip on" data-c="all" role="tab" aria-selected="true"><i class="fa-solid fa-bolt"></i> All <em><?= count($latest) ?></em></button>
     <?php foreach ($chips as $cid => $n): ?>
       <button type="button" class="nt-chip" data-c="<?= $cid ?>" role="tab" aria-selected="false"><i class="fa-solid fa-<?= $iconFor($catName[$cid]) ?>"></i> <?= esc($catName[$cid]) ?> <em><?= $n ?></em></button>
@@ -137,10 +154,29 @@ $iconFor = static function (string $n) use ($icons): string { foreach ($icons as
     function learn(el){ cats(el).forEach(function(c){ mem.t[c]=(mem.t[c]||0)+1; }); var id=el.dataset.id; if(id&&mem.r.indexOf(id)<0){ mem.r.push(id); mem.r=mem.r.slice(-200); } put(mem); }
     items.forEach(function(it){ it.addEventListener('click',function(){ learn(it); }); });
     document.querySelectorAll('.bgrid .bcard[data-c]').forEach(function(c){ c.addEventListener('click',function(){ learn(c); }); });
-    // start on: "For you" when we know the reader, else their last topic, else All
-    var saved=null; try{ saved=localStorage.getItem(TKEY); }catch(e){}
-    var start=(saved&&wrap.querySelector('.nt-chip[data-c="'+saved+'"]'))||wrap.querySelector('.nt-chip[data-c="you"]')||wrap.querySelector('.nt-chip[data-c="all"]');
+    // HiNoida is property-first: every visit opens on the Property tab (placed
+    // right after All); the reader can still switch to any other topic.
+    var prop=[].slice.call(wrap.querySelectorAll('.nt-chip')).filter(function(c){ return /^property\b/i.test(nameOf(c.dataset.c)); })[0];
+    if(prop){ var allc=wrap.querySelector('.nt-chip[data-c="all"]'); wrap.insertBefore(prop, allc.nextSibling); }
+    var start=prop||wrap.querySelector('.nt-chip[data-c="all"]');
     select(start,false);
   })();
   </script>
 </section>
+<?php /* "Top news" column: off (pass showTop to turn it back on) */ if (! empty($showTop)): ?>
+  <?php $_top = array_slice(array_values(array_filter($_allNews, static fn ($p) => ! in_array($p, $latest, true))), 0, 6) ?: array_slice($_allNews, 0, 6); ?>
+  <aside class="nt-top" aria-label="Top news in Noida">
+    <h3 class="nt-top-h">Top news in Noida</h3>
+    <ol>
+      <?php foreach ($_top as $_n => $p): $_c = $ids($p); $_tg = $catName[$_c[0] ?? 0] ?? ''; $_a = $ago($p['added_date'] ?? ''); ?>
+        <li><a href="<?= hi_news_url($p) ?>">
+          <span class="nt-top-n"><?= $_n + 1 ?></span>
+          <span class="nt-top-b"><b><?= esc($dec($p['title'])) ?></b>
+            <small><?= esc(implode(' · ', array_filter([$_a, $mins($p) . ' min read']))) ?></small></span>
+        </a></li>
+      <?php endforeach; ?>
+    </ol>
+    <a class="nt-top-all" href="<?= base_url('news') ?>">All Noida news <i class="fa-solid fa-arrow-right"></i></a>
+  </aside>
+</div>
+<?php endif; ?>

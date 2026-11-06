@@ -11,6 +11,50 @@
   'slides' => $_slides,
 ], ['saveData' => false]) ?>
 
+<?php
+  /* Someone opening a sector usually wants a home there first, so the
+     homes come before the shops. */
+  helper('property');
+  $_aid = (int) $area['id'];
+  $_gr  = hi_price_guide('rent', 'home', $_aid, $area['name']);
+  $_gs  = hi_price_guide('sale', 'home', $_aid, $area['name']);
+?>
+<section class="sec area-homes"><div class="wrap">
+  <div class="sec-head mt-head" style="text-align:left;display:flex;align-items:flex-end;justify-content:space-between;gap:14px">
+    <h2>Homes &amp; property in <?= esc($area['name']) ?></h2>
+    <?php if (! empty($propRows)): ?><a class="mt-all" href="<?= base_url('property') ?>?locality=<?= $_aid ?>">See all <i class="fa-solid fa-arrow-right"></i></a><?php endif; ?>
+  </div>
+  <?php if ($_gr || $_gs): ?>
+    <div class="ah-prices">
+      <?php if ($_gr): ?><span><i class="fa-solid fa-key"></i> Avg rent in <?= esc($_gr['where']) ?> <b>₹<?= esc(hi_inr($_gr['avg'])) ?>/month</b></span><?php endif; ?>
+      <?php if ($_gs): ?><span><i class="fa-solid fa-house"></i> Avg price in <?= esc($_gs['where']) ?> <b>₹<?= esc(hi_inr($_gs['avg'])) ?></b></span><?php endif; ?>
+    </div>
+  <?php endif; ?>
+  <?php
+    /* never a half-empty row: top up with the newest homes elsewhere in Noida
+       (each card names its own sector, so nothing is passed off as local) */
+    $_nearby = 0;
+    if (! empty($propRows) && count($propRows) % 4 !== 0) {
+        $_need = 4 - count($propRows) % 4;
+        $_db = \Config\Database::connect();
+        $_ids = array_map(static fn ($r) => (int) $r['id'], $propRows);
+        $_more = $_db->table('listing li')->select('li.*, l.name AS locality_name')
+            ->join('locality l', 'l.id = li.locality_id', 'left')
+            ->join('listing_property lp', 'lp.listing_id = li.id')
+            ->where('li.status', 'active')->whereNotIn('li.id', $_ids)
+            ->orderBy('li.is_featured', 'DESC')->orderBy('li.id', 'DESC')->limit($_need)->get()->getResultArray();
+        $_nearby = count($_more);
+        $propRows = array_merge($propRows, $_more);
+    }
+  ?>
+  <?php if ($_nearby): ?><p class="area-nearby-note">Also showing <?= $_nearby ?> new home<?= $_nearby === 1 ? '' : 's' ?> from nearby sectors.</p><?php endif; ?>
+  <?php if (! empty($propRows)): ?>
+    <div class="lgrid mscroll"><?php foreach ($propRows as $l): ?><?= view('frontend/_propertycard', ['l' => $l]) ?><?php endforeach; ?></div>
+  <?php else: ?>
+    <?= view('frontend/_alertbox', ['alert' => ['area' => $area['name'], 'title' => 'No homes listed in ' . $area['name'] . ' yet — get told when one is']], ['saveData' => false]) ?>
+  <?php endif; ?>
+</div></section>
+
 <section class="sec"><div class="wrap">
   <div class="sec-head" style="text-align:left">
     <h2>Businesses in <?= esc($area['name']) ?>

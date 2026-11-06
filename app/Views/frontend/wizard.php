@@ -38,7 +38,7 @@ $btn = 'width:100%;margin-top:18px;background:var(--blue);color:#fff;border:0;bo
 ?>
 <section style="background:linear-gradient(120deg,#0a2a6b,#123a8f);color:#fff;padding:40px 20px"><div class="wrap"><h1 style="color:#fff;margin:0"><?= $step === 'done' ? 'You&rsquo;re all set!' : 'List your business' ?></h1></div></section>
 <section class="sec"><div class="wrap" style="max-width:720px">
-  <ol style="display:flex;list-style:none;padding:0;margin:0 0 24px;justify-content:space-between">
+  <ol class="wz-steps" style="display:flex;list-style:none;padding:0;margin:0 0 24px;justify-content:space-between;gap:4px;overflow-x:auto;scrollbar-width:none">
     <?php foreach ($steps as $i => $s): ?>
       <li style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">
         <span style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;<?= $i < $idx ? 'background:#1741a6;color:#fff' : ($i === $idx ? 'border:2px solid #1741a6;color:#1741a6;background:#fff' : 'border:2px solid #e3e9f2;color:#9aa6b6;background:#fff') ?>"><?= $i < $idx ? '&#10003;' : $i + 1 ?></span>

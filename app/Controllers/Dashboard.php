@@ -502,7 +502,7 @@ class Dashboard extends BaseController
         $new = (string) $req->getPost('password');
         if ($new !== '') {
             $cur = (string) $req->getPost('current_password');
-            if (sha1($cur) !== ($me['password'] ?? '')) {
+            if (! hi_pass_check((string) $cur, (string) ($me['password'] ?? ''))) {
                 session()->setFlashdata('err', 'Your current password is incorrect — password not changed.');
                 return redirect()->to('/dashboard/profile');
             }
@@ -514,7 +514,7 @@ class Dashboard extends BaseController
                 session()->setFlashdata('err', 'The two new passwords do not match.');
                 return redirect()->to('/dashboard/profile');
             }
-            $upd['password'] = sha1($new);
+            $upd['password'] = hi_pass_hash((string) $new);
         }
 
         // user.updated_date is bigint(20) in production — a datetime string

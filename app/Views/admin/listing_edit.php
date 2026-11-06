@@ -245,6 +245,7 @@ h2.sect{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#1741
         <?php foreach(['active'=>'Active','pending'=>'Pending','rejected'=>'Rejected'] as $k=>$v): ?><option value="<?= $k ?>" <?= $g('status','active')===$k?'selected':'' ?>><?= $v ?></option><?php endforeach; ?>
       </select></div>
       <div><label>Featured</label><div class="chk"><label><input type="checkbox" name="is_featured" value="1" <?= $g('is_featured')?'checked':'' ?>> Show as Featured</label></div></div>
+      <div><label>Verified</label><div class="chk"><label><input type="checkbox" name="is_verified" value="1" <?= $g('is_verified')?'checked':'' ?>> Checked by HiNoida (shows a Verified badge)</label></div></div>
     </div>
     <button class="btn"><i class="fa-solid fa-floppy-disk"></i> <?= $row?'Save changes':'Create listing' ?></button>
     <?php if($row): ?><a href="<?= hi_listing_url($row) ?>" target="_blank" style="margin-left:12px;color:#1741a6;font-weight:600;text-decoration:none">View live <i class="fa-solid fa-arrow-up-right-from-square"></i></a><?php endif; ?>

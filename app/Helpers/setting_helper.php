@@ -72,3 +72,31 @@ function hi_current_path(): string
 
     return $path;
 }
+
+if (! function_exists('hi_pass_hash')) {
+    /** Hash a password for storage (bcrypt/argon via PHP). */
+    function hi_pass_hash(string $plain): string
+    {
+        return password_hash($plain, PASSWORD_DEFAULT);
+    }
+}
+if (! function_exists('hi_pass_check')) {
+    /**
+     * Check a password against what is stored. Old accounts still hold an
+     * unsalted SHA-1; those keep working, and $upgrade comes back true so the
+     * caller can store a modern hash on the spot.
+     */
+    function hi_pass_check(string $plain, string $stored, ?bool &$upgrade = null): bool
+    {
+        $upgrade = false;
+        if ($stored === '') { return false; }
+        if (preg_match('/^[0-9a-f]{40}$/i', $stored)) {
+            $ok = hash_equals(strtolower($stored), sha1($plain));
+            $upgrade = $ok;
+            return $ok;
+        }
+        $ok = password_verify($plain, $stored);
+        if ($ok && password_needs_rehash($stored, PASSWORD_DEFAULT)) { $upgrade = true; }
+        return $ok;
+    }
+}

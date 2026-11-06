@@ -35,7 +35,11 @@ class Auth extends BaseController
         $db=\Config\Database::connect();
         $email=strtolower(trim((string)$this->request->getPost('email')));
         $pass=trim((string)$this->request->getPost('password'));
-        $u=$db->table('user')->where('email',$email)->where('password',sha1($pass))->get()->getRowArray();
+        helper('setting');
+        $u=$db->table('user')->where('email',$email)->get()->getRowArray();
+        $up=false;
+        if($u && !hi_pass_check($pass,(string)($u['password']??''),$up)){ $u=null; }
+        if($u && $up){ $db->table('user')->where('id',(int)$u['id'])->update(['password'=>hi_pass_hash($pass)]); }   // old SHA-1 → modern hash
         if(!$u){ session()->setFlashdata('err','Invalid email or password.'); return redirect()->to('/login'); }
         session()->set(['uid'=>(int)$u['id'],'uname'=>$u['name'],'uemail'=>$u['email']??'','role'=>(int)($u['role_id']??3)]);
         // Email must be verified. New signups verify via OTP before the account exists, so this
@@ -65,7 +69,7 @@ class Auth extends BaseController
         $otp=(string)random_int(100000,999999);
         session()->set('signup',[
             'name'=>$name,'email'=>$email,'phone'=>trim((string)$this->request->getPost('phone')),
-            'pass'=>sha1($pass),'biz'=>$biz,'redirect'=>$this->safeRedirect(),
+            'pass'=>hi_pass_hash($pass),'biz'=>$biz,'redirect'=>$this->safeRedirect(),
             'otp'=>$otp,'exp'=>time()+7200,'tries'=>0,'sent_at'=>time(),
         ]);
         if(!$this->sendOtp($email,$name,$otp)){
@@ -391,7 +395,7 @@ class Auth extends BaseController
         }
 
         $db->table('user')->where('id', (int) $u['id'])->update([
-            'password'          => sha1($pass),
+            'password'          => hi_pass_hash($pass),
             'verification_code' => '',
             'is_verified'       => 1,      // proving inbox access also verifies the address
             'updated_date'      => time(),   // bigint(20) column in production

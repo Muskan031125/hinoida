@@ -109,6 +109,23 @@
     <?php endforeach; endif; ?>
 
   <?php elseif ($sec === 'saved'): ?>
+    <?php $_ss = hi_saved_searches((int) session()->get('uid')); ?>
+    <h2 style="margin:0 0 12px">Saved searches</h2>
+    <?php if (! $_ss): ?>
+      <div class="ds-empty" style="margin-bottom:28px"><b>No saved searches</b>Search for homes, pick your filters, then tap “Save this search” to come back to it in one click.
+        <br><a class="ds-btn" href="<?= base_url('property') ?>"><i class="fa-solid fa-magnifying-glass"></i> Search homes</a></div>
+    <?php else: ?>
+      <table class="ds-table" style="margin-bottom:28px">
+        <tr><th>Search</th><th>Saved on</th><th></th></tr>
+        <?php foreach ($_ss as $_s): ?>
+          <tr><td><a href="<?= base_url(ltrim((string) $_s['url'], '/')) ?>"><b><?= esc($_s['label']) ?></b></a></td>
+            <td><?= esc(date('j M Y', strtotime((string) $_s['created_at']))) ?></td>
+            <td style="text-align:right;white-space:nowrap"><a class="ds-btn ghost" href="<?= base_url(ltrim((string) $_s['url'], '/')) ?>">Open</a>
+              <form method="post" action="<?= base_url('search/delete/' . (int) $_s['id']) ?>" style="display:inline"><button class="ds-btn ghost" type="submit" title="Remove"><i class="fa-solid fa-xmark"></i></button></form></td></tr>
+        <?php endforeach; ?>
+      </table>
+    <?php endif; ?>
+    <h2 style="margin:0 0 12px">Saved places</h2>
     <?php if (! $saved): ?><div class="acc-empty"><i class="fa-solid fa-heart"></i><p><?= esc(hi_c('account.p_no_saved_places_yet_tap_the_heart_on_any_lis', 'No saved places yet. Tap the heart on any listing to save it here.')) ?></p></div>
     <?php else: ?><div class="lgrid">
       <?php foreach ($saved as $l): ?><a class="lcard" href="<?= hi_listing_url($l) ?>"><span class="ph"><img src="<?= esc(hi_cover($l)) ?>" alt="<?= esc($l['name']) ?>"></span><span class="bd"><b><?= esc($l['name']) ?></b><span class="loc"><i class="fa-solid fa-location-dot"></i> <?= esc($l['locality_name']?:'Noida') ?>, Noida</span></span></a><?php endforeach; ?>

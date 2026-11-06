@@ -2,6 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<style>
+/* property cards: For rent / For sale tag and the price line (see _propertycard.php) */
+.lcard .pc-deal{align-self:flex-start;display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  border-radius:6px;padding:3px 8px;color:#16794a;background:#e7f6ee}
+.lcard .pc-deal.is-rent{color:#b25d00;background:#fff3e2}
+.lcard .pc-deal.is-pg{color:#1741a6;background:#eaf1fd}
+.lcard .pc-line{display:block;font-size:13px;color:#5f6878;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcard .pc-line b{display:inline!important;color:#14213d;font-size:15px;font-weight:800;margin:0!important}
+</style>
+<script>
+/* Broken photos: many listing photos are served from the live media server and
+   some of those files are gone. Any image that fails is replaced by a tile drawn
+   here, in the browser: the place's initials on a blue gradient. Nothing extra
+   is sent with the page; the tile is only made when a photo actually fails. */
+(function(){
+  function tile(name){
+    var w=(name||'').replace(/[^A-Za-z0-9 ]/g,' ').split(/\s+/).filter(function(x){return x&&!/^(the|a|an|of|and|new)$/i.test(x);});
+    var ini=((w[0]||'')[0]||'H')+((w[1]||'')[0]||''), h=0;
+    for(var i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+    var hue=205+h%30, a='hsl('+hue+',62%,30%)', b='hsl('+(hue+12)+',58%,48%)';
+    return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="50" r="150" fill="#fff" opacity=".08"/><text x="200" y="150" dy=".35em" text-anchor="middle" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="96" font-weight="800" fill="#fff" fill-opacity=".9">'+ini.toUpperCase()+'</text></svg>');
+  }
+  function fix(img){ if(img.dataset.fbDone) return; img.dataset.fbDone='1'; img.src=tile(img.getAttribute('alt')||''); }
+  window.addEventListener('error',function(e){ var t=e.target; if(t && t.tagName==='IMG') fix(t); },true);
+  document.addEventListener('DOMContentLoaded',function(){
+    [].forEach.call(document.images,function(i){ if(i.complete && i.naturalWidth===0 && i.getAttribute('src')) fix(i); }); });
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php
   $mTitle = $title ?? hi_c('brand_name') . ' — ' . hi_c('brand_tagline');
@@ -10,6 +38,7 @@
   require_once APPPATH . 'Views/frontend/_posthelp.php';
   $_dec   = static fn ($t) => html_entity_decode(html_entity_decode((string) $t, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
   $mTitle = hi_repair_text($_dec($mTitle));
+  $mTitle = preg_replace('/^Sample\s*·\s*/u', '', $mTitle);
   $mDesc  = hi_repair_text($_dec($mDesc));
   $mCanon = $canonical ?? base_url(hi_current_path());
   $mImg   = $ogImage ?? base_url('assets/img/og-default.jpg');
@@ -42,7 +71,7 @@
 <meta name="twitter:description" content="<?= esc($mDesc) ?>">
 <meta name="twitter:image" content="<?= esc($mImg) ?>">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="<?= base_url('assets/css/theme.css') ?>?v=90">
 <?php
@@ -51,7 +80,7 @@
   $_isHome = hi_current_path() === '';
 ?>
 <link rel="stylesheet" href="<?= base_url('assets/css/contrast.css') ?>?v=19">
-<link rel="stylesheet" href="<?= base_url('assets/css/site.css') ?>?v=76">
+<link rel="stylesheet" href="<?= base_url('assets/css/site.css') ?>?v=129">
 <?= $this->renderSection('head') ?>
 <?php if (! empty($jsonld)) { foreach ((array) $jsonld as $schema) { ?>
 <script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
@@ -75,11 +104,12 @@ if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createEl
 s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
 <?php endif; ?>
+<link rel="stylesheet" href="<?= base_url('assets/css/ds.css') ?>?v=18">
 </head>
 <body<?= $_isHome ? ' class="is-home"' : '' ?>>
 
 <header class="hdr hdr-live">
-  <div class="topstrip">Noida's Favourite Online Platform</div>
+  <div class="topstrip">Noida's home for renting, buying &amp; living</div>
   <div class="wrap hdr-in">
     <a class="logo" href="<?= base_url('/') ?>"><?php if ($mLogo !== ''): ?><img src="<?= esc($mLogo, 'attr') ?>" alt="<?= esc(hi_c('brand_name'), 'attr') ?>"><?php else: ?><b><?= esc(hi_c('brand_mark_1')) ?></b> <?= esc(hi_c('brand_mark_2')) ?><?php endif; ?></a>
     <?php
@@ -95,13 +125,80 @@ fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
       <i class="fa-solid fa-bars"></i>
     </button>
     <nav class="nav" id="mainNav">
-      <?php /* same menu as the live hinoida.com */ ?>
-      <a href="<?= base_url('listings') ?>"<?= $_here(['listings', 'search', 'general', 'restaurant']) ?>>Listings</a>
-      <a href="<?= hi_page('categories') ?>"<?= $_here(['category', 'c', 'g', 'categories']) ?>>Category</a>
-      <a href="<?= hi_page('news') ?>"<?= $_here(['news', 'blog']) ?>>News</a>
-      <a href="<?= hi_page('events') ?>"<?= $_here(['event', 'events']) ?>>Event</a>
-      <a href="<?= hi_page('offers') ?>"<?= $_here(['offer', 'offers']) ?>>Offer</a>
-      <a href="<?= hi_page('contact') ?>"<?= $_here(['contact']) ?>>Contact</a>
+      <?php
+        /* Property-first menu: what people come for, then the local guide.
+           News, events, offers and contact sit under "More". */
+        $_for  = (string) (service('request')->getGet('for') ?? service('request')->getGet('deal') ?? '');
+        $_path = hi_current_path();
+        $_on   = static fn (bool $c): string => $c ? ' class="on"' : '';
+        $_isProp = $_seg === 'property';
+        $_isPg   = str_contains($_path, 'pg-hostel');
+      ?>
+      <a href="<?= base_url('property') ?>?for=sale"<?= $_on($_isProp && $_for === 'sale') ?>>Buy</a>
+      <a href="<?= base_url('property') ?>?for=rent"<?= $_on($_isProp && $_for === 'rent') ?>>Rent</a>
+      <a href="<?= hi_category_url('pg-hostel-accommodations') ?>"<?= $_on($_isPg || ($_isProp && $_for === 'pg')) ?>>PG / Co-living</a>
+      <?php
+        /* the busiest local categories for the "Local places" menu — counted once an hour */
+        $_navCats = [];
+        try {
+            $_nc = \Config\Services::cache();
+            $_navCats = $_nc->get('nav_cats_v1');
+            if (! is_array($_navCats)) {
+                $_all = (new \App\Models\CategoryModel())->topLevel(300);
+                $_all = array_values(array_filter($_all, static fn ($c) => (int) $c['listing_count'] > 0 && stripos((string) $c['name'], 'propert') !== 0));
+                usort($_all, static fn ($a, $b) => (int) $b['listing_count'] <=> (int) $a['listing_count']);
+                $_navCats = array_map(static fn ($c) => ['name' => html_entity_decode((string) $c['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'slug' => (string) $c['slug'], 'n' => (int) $c['listing_count']], array_slice($_all, 0, 8));
+                $_nc->save('nav_cats_v1', $_navCats, 3600);
+            }
+        } catch (\Throwable $e) { $_navCats = []; }
+        $_navIc = static function (string $n): string {
+            if (function_exists('hi_cat_icon')) { return hi_cat_icon($n); }
+            foreach (['food' => 'utensils', 'restaur' => 'utensils', 'hospital' => 'hospital', 'health' => 'heart-pulse', 'school' => 'school', 'educat' => 'graduation-cap',
+                      'shop' => 'bag-shopping', 'beauty' => 'spa', 'salon' => 'spa', 'hotel' => 'hotel', 'auto' => 'car', 'fitness' => 'dumbbell', 'gym' => 'dumbbell'] as $k => $v) {
+                if (stripos($n, $k) !== false) { return $v; }
+            }
+            return 'store';
+        };
+        $_isCom   = $_isProp && $_for === 'commercial' || preg_match('~(coworking-spaces|commercial-properties|property-dealers)~', $_path);
+        $_isLocal = ! $_isPg && ! $_isCom && in_array($_seg, ['listings', 'search', 'general', 'restaurant', 'category', 'c', 'g', 'categories'], true);
+      ?>
+      <div class="nav-more nav-dd">
+        <a class="nav-more-btn" href="<?= base_url('property') ?>?for=commercial" aria-haspopup="true"<?= $_isCom ? ' data-on="1"' : '' ?>>Commercial <i class="fa-solid fa-chevron-down"></i></a>
+        <div class="nav-more-pan nav-dd-pan" role="menu">
+          <span class="nav-dd-h">Spaces for work</span>
+          <a href="<?= hi_category_url('coworking-spaces') ?>" role="menuitem"><i class="fa-solid fa-laptop"></i> Coworking spaces</a>
+          <a href="<?= hi_category_url('commercial-properties') ?>" role="menuitem"><i class="fa-solid fa-building"></i> Commercial properties</a>
+          <a href="<?= base_url('property') ?>?for=commercial&amp;kind=office" role="menuitem"><i class="fa-solid fa-briefcase"></i> Office space</a>
+          <a href="<?= base_url('property') ?>?for=commercial&amp;kind=shop" role="menuitem"><i class="fa-solid fa-store"></i> Shops &amp; showrooms</a>
+          <a href="<?= base_url('property') ?>?for=commercial&amp;kind=warehouse" role="menuitem"><i class="fa-solid fa-warehouse"></i> Warehouses</a>
+          <span class="nav-dd-h">Get help</span>
+          <a href="<?= hi_category_url('property-dealers') ?>" role="menuitem"><i class="fa-solid fa-handshake"></i> Property dealers</a>
+          <a class="nav-dd-all" href="<?= base_url('property') ?>?for=commercial" role="menuitem">See all commercial <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="nav-more nav-dd">
+        <a class="nav-more-btn" href="<?= base_url('listings') ?>" aria-haspopup="true"<?= $_isLocal ? ' data-on="1"' : '' ?>>Local places <i class="fa-solid fa-chevron-down"></i></a>
+        <div class="nav-more-pan nav-dd-pan nav-dd-2" role="menu">
+          <span class="nav-dd-h">Popular in Noida</span>
+          <?php foreach ($_navCats as $_c): ?>
+            <a href="<?= hi_category_url(esc($_c['slug'], 'url')) ?>" role="menuitem"><i class="fa-solid fa-<?= esc($_navIc($_c['name'])) ?>"></i> <span><?= esc($_c['name']) ?></span><small><?= number_format($_c['n']) ?></small></a>
+          <?php endforeach; ?>
+          <a class="nav-dd-all" href="<?= hi_page('categories') ?>" role="menuitem">See all categories <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="nav-more" id="navMore">
+        <button type="button" class="nav-more-btn" aria-expanded="false" aria-haspopup="true"<?= in_array($_seg, ['news', 'blog', 'event', 'events', 'offer', 'offers', 'contact', 'city', 'areas'], true) ? ' data-on="1"' : '' ?>>More <i class="fa-solid fa-chevron-down"></i></button>
+        <div class="nav-more-pan" role="menu">
+          <a href="<?= hi_page('categories') ?>" role="menuitem"><i class="fa-solid fa-layer-group"></i> All categories</a>
+          <a href="<?= base_url('city') ?>" role="menuitem"><i class="fa-solid fa-map-location-dot"></i> Areas &amp; sectors</a>
+          <a href="<?= hi_page('news') ?>" role="menuitem"><i class="fa-solid fa-newspaper"></i> News</a>
+          <a href="<?= hi_page('events') ?>" role="menuitem"><i class="fa-solid fa-champagne-glasses"></i> Events</a>
+          <a href="<?= hi_page('offers') ?>" role="menuitem"><i class="fa-solid fa-tags"></i> Offers</a>
+          <a href="<?= hi_page('contact') ?>" role="menuitem"><i class="fa-solid fa-headset"></i> Contact</a>
+        </div>
+      </div>
+      <?php /* every property portal keeps this one button in the top bar */ ?>
+      <a class="btn nav-post" href="<?= base_url('list') ?>"><i class="fa-solid fa-house-circle-check"></i> Post property <span>FREE</span></a>
       <?php if (session()->get('uid')): ?>
         <?php if ((int) session()->get('role') === 1): ?><a href="<?= base_url('admin') ?>"><?= esc(hi_t('admin')) ?></a><?php endif; ?>
         <div class="profmenu" id="profMenu">
@@ -133,6 +230,16 @@ fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
         <a class="btn nav-login" href="<?= hi_page('login') ?>">Login/Signup</a>
       <?php endif; ?>
     </nav>
+    <?php /* shortlist, always in the top bar (like the big property sites) */ ?>
+    <div class="hdr-sl" id="hdrSl">
+      <button type="button" class="hdr-sl-btn" id="hdrSlBtn" aria-label="Your shortlist" aria-expanded="false" aria-controls="hdrSlPan">
+        <i class="fa-regular fa-heart"></i><em id="hdrSlN" hidden>0</em><span class="hdr-sl-t">Shortlist</span>
+      </button>
+      <div class="hdr-sl-pan" id="hdrSlPan" hidden>
+        <div class="hdr-sl-h"><b>Your shortlist</b><a href="<?= base_url('/') ?>#hiMine">See all</a></div>
+        <div class="hdr-sl-list" id="hdrSlList"></div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -267,28 +374,12 @@ fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
     else if(wa){ e.preventDefault(); e.stopPropagation(); var n=wa.dataset.wa; window.open('https://wa.me/'+(n.length===10?'91'+n:n),'_blank'); }
   });
 })();
-// inject a Save heart on every listing card cover
-(function(){
-  // property cards carry the heart too — a flat is exactly the kind of thing
-  // people come back to
-  document.querySelectorAll('a.lcard').forEach(function(card){
-    // a listing URL ends in its id: /restaurant/burger-king/28
-    var m=(card.getAttribute('href')||'').match(/\/(\d+)(?:$|[?#])/); if(!m) return;
-    if(card.querySelector('.cardheart')) return;
-    var ph=card.querySelector('.ph')||card; ph.style.position='relative';
-    var h=document.createElement('span'); h.className='cardheart'; h.title='Save';
-    h.innerHTML='<i class="fa-regular fa-heart"></i>';
-    h.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();window.location.href='<?= base_url('l/') ?>'+m[1]+'/save';});
-    ph.appendChild(h);
-  });
-})();
+// (the old heart on every card is gone: only homes and property places can be shortlisted — see _card / _propertycard)
 </script>
 
 <?php /* phrase links the original carries site-wide */ ?>
-<?= view('frontend/_popularsearch') ?>
 
 <?php /* every page, as the original has it in footer.php */ ?>
-<?= view('frontend/_instagram') ?>
 
 <footer class="ftr">
   <?php
@@ -321,6 +412,14 @@ fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
     </div>
 
     <div class="ftr-cols">
+      <div><b>Property in Noida</b>
+        <a href="<?= base_url('property') ?>?for=rent">Flats for rent in Noida</a>
+        <a href="<?= base_url('property') ?>?for=sale">Flats for sale in Noida</a>
+        <a href="<?= hi_category_url('pg-hostel-accommodations') ?>">PG &amp; hostels in Noida</a>
+        <a href="<?= base_url('property') ?>?for=commercial">Offices &amp; shops</a>
+        <a href="<?= base_url('property') ?>?for=plots">Plots &amp; land</a>
+        <a href="<?= base_url('list') ?>">Post your property free</a>
+      </div>
       <div><b><?= esc(hi_c('footer_col1')) ?></b>
         <a href="<?= base_url('/') ?>"><?= esc(hi_c('flink_categories')) ?></a>
         <a href="<?= base_url('property') ?>"><?= esc(hi_c('flink_property')) ?></a>
@@ -401,7 +500,7 @@ document.querySelectorAll('.ftr-cols>div:not(.ftr-contact)>b').forEach(function(
     var sels=[].slice.call(form.querySelectorAll('select'));
     var box=el('div','filterbar sx-filters');
     if(sels.length){ var first=sels[0]; first.parentNode.insertBefore(box,first); }
-    sels.forEach(function(s){ var m=L[s.name]||['sliders',s.name]; var f=el('div','sx-f','<span class="sx-l"><i class="fa-solid fa-'+m[0]+'"></i> '+m[1]+'</span>'); f.appendChild(s); box.appendChild(f); });
+    sels.forEach(function(s){ var m=L[s.name]||['sliders',s.name]; if(s.dataset.sxl) m=[m[0],s.dataset.sxl]; var f=el('div','sx-f','<span class="sx-l"><i class="fa-solid fa-'+m[0]+'"></i> '+m[1]+'</span>'); f.appendChild(s); box.appendChild(f); });
     form.classList.remove('filterbar');
     form.querySelectorAll('.pfilter').forEach(function(p){ if(!p.querySelector('select')) p.remove(); });
     var chk=form.querySelector('input[type=checkbox][name=open]'), lab=chk&&chk.closest('label');
@@ -523,6 +622,7 @@ document.querySelectorAll('.ftr-cols>div:not(.ftr-contact)>b').forEach(function(
       imp.querySelectorAll('script').forEach(function(old){ var n=document.createElement('script'); if(old.src) n.src=old.src; else n.textContent=old.textContent; old.replaceWith(n); });
       if(window.hiSxInit) window.hiSxInit(imp);
       if(window.hiDdInit) window.hiDdInit(imp);
+      if(window.hiSaveMark) window.hiSaveMark(imp);
       bind(imp);
       document.title=d.title;
       if(push) history.pushState({sx:1},'',u.href);
@@ -609,5 +709,126 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){n.classList
 <script src="<?= base_url('assets/js/phone.js') ?>?v=1" defer></script>
 <?php $_body = hi_setting('seo_body_code'); if ($_body !== '') { echo $_body; } ?>
 <?= view('frontend/_sitechrome') ?>
+<script>
+/* the "More" menu: opens on click (and on hover on laptops), closes on outside click / Esc */
+(function(){
+  var all=document.querySelectorAll('.nav-more'); if(!all.length) return;
+  all.forEach(function(m){
+    var b=m.querySelector('.nav-more-btn'); if(!b) return;
+    function set(o){ all.forEach(function(x){ if(x!==m) x.classList.remove('open'); }); m.classList.toggle('open',o); b.setAttribute('aria-expanded',o?'true':'false'); }
+    /* "More" is only a button; Commercial / Local places are links — a tap opens the menu first on touch screens, a second tap follows the link */
+    b.addEventListener('click',function(e){
+      if(b.tagName==='A'){ if(!matchMedia('(hover: none)').matches||m.classList.contains('open')) return; e.preventDefault(); }
+      e.stopPropagation(); set(!m.classList.contains('open'));
+    });
+    document.addEventListener('click',function(e){ if(!m.contains(e.target)) set(false); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') set(false); });
+  });
+})();
+</script>
+<script>
+/* Shortlist (heart) and Recently viewed — kept in this visitor's own browser,
+   and, for someone signed in, saved to their account too so it follows them
+   to any phone or laptop. Storage can be blocked (private mode), so every
+   read and write is guarded. */
+(function(){
+  var UID=<?= (int) session()->get('uid') ?>, BASE=<?= json_encode(base_url('/')) ?>, OWN='hi_saved_owner';
+  function post(path,data){ try{ return fetch(BASE.replace(/\/$/,'')+'/'+path,{method:'POST',credentials:'same-origin',
+      headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify(data)}).then(function(r){ return r.json(); }); }catch(e){ return Promise.reject(e); } }
+  function owner(){ try{ return localStorage.getItem(OWN)||''; }catch(e){ return ''; } }
+  function setOwner(v){ try{ v?localStorage.setItem(OWN,v):localStorage.removeItem(OWN); }catch(e){} }
+  function get(k){ try{ var v=JSON.parse(localStorage.getItem(k)||'[]'); return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+  function put(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  function item(el){ try{ return JSON.parse(el.getAttribute('data-save')||'{}'); }catch(e){ return {}; } }
+  function has(id){ return get('hi_saved').some(function(x){ return +x.id===+id; }); }
+  function mark(root){ (root||document).querySelectorAll('.hi-save').forEach(function(b){ var on=has(item(b).id); b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false'); b.title=on?'Saved':'Save'; }); }
+  function toast(t){ var d=document.getElementById('hiToast'); if(!d){ d=document.createElement('div'); d.id='hiToast'; d.className='hi-toast'; document.body.appendChild(d); }
+    d.textContent=t; d.classList.add('on'); clearTimeout(d._t); d._t=setTimeout(function(){ d.classList.remove('on'); },1800); }
+  function toggle(b){ var it=item(b); if(!it.id) return; var list=get('hi_saved'), on=has(it.id);
+    list=list.filter(function(x){ return +x.id!==+it.id; }); if(!on){ list.unshift(it); list=list.slice(0,30); }
+    put('hi_saved',list); if(UID){ post('shortlist/set',{id:+it.id,on:!on}).catch(function(){}); } mark(document); b.classList.add('pop'); setTimeout(function(){ b.classList.remove('pop'); },400);
+    toast(on?'Removed from your shortlist':'Saved to your shortlist'); document.dispatchEvent(new CustomEvent('hi:mine')); }
+  document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.hi-save'); if(!b) return; e.preventDefault(); e.stopPropagation(); toggle(b); },true);
+  document.addEventListener('keydown',function(e){ var b=e.target.closest&&e.target.closest('.hi-save'); if(b&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); e.stopPropagation(); toggle(b); } },true);
+  window.hiSaveMark=mark; window.hiMine={get:get,put:put};
+  /* signed in: a list left by someone else on this browser is dropped, then
+     this browser's saves are merged into the account and the account list
+     comes back. Signed out after using an account: the browser copy is
+     cleared (it is safe in the account) so the next person can't see it. */
+  if(UID){
+    if(owner() && owner()!==String(UID)) put('hi_saved',[]);
+    post('shortlist/sync',{ids:get('hi_saved').map(function(x){ return +x.id; })}).then(function(d){
+      if(d&&d.ok&&Array.isArray(d.items)){ put('hi_saved',d.items); setOwner(String(UID)); mark(document); document.dispatchEvent(new CustomEvent('hi:mine')); }
+    }).catch(function(){});
+  } else if(owner()){ put('hi_saved',[]); setOwner(''); }
+  mark(document);
+})();
+</script>
+<script>
+/* the heart in the top bar: count + a small list of saved homes */
+(function(){
+  var wrap=document.getElementById('hdrSl'); if(!wrap) return;
+  var btn=document.getElementById('hdrSlBtn'), pan=document.getElementById('hdrSlPan'), list=document.getElementById('hdrSlList'), n=document.getElementById('hdrSlN');
+  function get(){ try{ var v=JSON.parse(localStorage.getItem('hi_saved')||'[]'); return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+  function esc(t){ var a=document.createElement('textarea'); a.innerHTML=t==null?'':String(t); var d=document.createElement('div'); d.textContent=a.value; return d.innerHTML; }
+  function safe(u){ u=String(u||''); return /^(https?:)?\/\//i.test(u)||u.charAt(0)==='/'?u:''; }
+  function draw(){
+    var l=get(); n.textContent=l.length; n.hidden=!l.length; btn.classList.toggle('on',l.length>0);
+    btn.querySelector('i').className=(l.length?'fa-solid':'fa-regular')+' fa-heart';
+    list.innerHTML=l.length? l.slice(0,6).map(function(x){ var img=safe(x.i||x.img);
+      return '<a class="hdr-sl-it" href="'+esc(safe(x.u||x.url)||'#')+'"><span class="hdr-sl-ph"'+(img?' style="background-image:url(\''+esc(img).replace(/'/g,'%27')+'\')"':'')+'></span>'
+        +'<span class="hdr-sl-bd"><b>'+esc(x.n||x.name)+'</b><small>'+esc(x.s||x.loc||'Noida')+'</small></span>'
+        +'<span class="hdr-sl-x" role="button" tabindex="0" data-id="'+(+x.id||0)+'" title="Remove"><i class="fa-solid fa-xmark"></i></span></a>'; }).join('')
+      : '<p class="hdr-sl-empty"><i class="fa-regular fa-heart"></i> Tap the heart on any home to save it here.</p>';
+  }
+  function open(o){ pan.hidden=!o; btn.setAttribute('aria-expanded',o?'true':'false'); }
+  btn.addEventListener('click',function(e){ e.stopPropagation(); open(pan.hidden); });
+  document.addEventListener('click',function(e){ if(!wrap.contains(e.target)) open(false); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') open(false); });
+  list.addEventListener('click',function(e){ var x=e.target.closest('.hdr-sl-x'); if(!x) return; e.preventDefault(); e.stopPropagation();
+    var id=+x.dataset.id; try{ localStorage.setItem('hi_saved',JSON.stringify(get().filter(function(i){ return +i.id!==id; }))); }catch(err){}
+    var uid=<?= (int) session()->get('uid') ?>; if(uid){ try{ fetch(<?= json_encode(rtrim(base_url('/'), '/') . '/shortlist/set') ?>,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify({id:id,on:false})}); }catch(err){} }
+    draw(); if(window.hiSaveMark) window.hiSaveMark(document); document.dispatchEvent(new CustomEvent('hi:mine')); });
+  document.addEventListener('hi:mine',draw); window.addEventListener('storage',draw);
+  draw();
+})();
+</script>
+<script>
+/* A row with fewer than 4 cards gets an action card in the gap:
+   "See all …" (where that section has a see-all link), and on property rows
+   with only 1–2 cards also "Post your property FREE". */
+(function(){
+  var POST=<?= json_encode(base_url('list')) ?>, here=location.pathname+location.search;
+  function linkFor(g){
+    var a=null, sec=g.closest('section')||document;
+    var mt=g.closest('.mt-panel'); if(mt) a=mt.querySelector('.mt-all');
+    if(!a && g.dataset.pt){ var p=sec.querySelector('.ptmore[data-pt="'+g.dataset.pt+'"] a'); if(p) a=p; }
+    if(!a && g.dataset.sub){ var q=(g.closest('.np-wrap')||sec).querySelector('.np-more[data-sub="'+g.dataset.sub+'"] a'); if(q) a=q; }
+    if(!a && !g.dataset.pt && !g.dataset.sub) a=sec.querySelector('.mt-all,.seeall,.secmore a');
+    if(!a) return null;
+    var href=a.getAttribute('href')||''; try{ var u=new URL(href,location.href); if(u.pathname+u.search===here) return null; }catch(e){}
+    return {href:href, text:(a.textContent||'').replace(/\s+/g,' ').replace(/[→›»]/g,'').trim()};
+  }
+  function card(cls,href,icon,title,sub,go){
+    var a=document.createElement('a'); a.className='lcard rich act-card '+cls; a.href=href;
+    a.innerHTML='<span class="lc-ic" aria-hidden="true"><i class="fa-solid fa-'+icon+'"></i></span><div class="bd"><h3></h3><span class="lc-cat"></span><span class="lc-explore"></span></div>';
+    a.querySelector('h3').textContent=title; a.querySelector('.lc-cat').textContent=sub;
+    a.querySelector('.lc-explore').innerHTML=go+' <i class="fa-solid fa-arrow-right"></i>'; return a;
+  }
+  /* "See all" / "Post property" filler boxes are switched off: rows show real listings only */
+  document.querySelectorAll('.lgrid.hi-fill:not(.aslist)').forEach(function(g){
+    if(g.classList.contains('loc-tiles')) return;
+    var max=document.body.classList.contains('is-home')?(innerWidth>=1500?6:(innerWidth>=1100?5:4)):4;
+    var kids=[].filter.call(g.children,function(c){ return c.classList&&c.classList.contains('lcard'); });
+    var n=kids.filter(function(c){ return !c.classList.contains('act-card'); }).length, slots=kids.length;
+    if(!n || slots>=max) return;
+    var prop=!!g.querySelector('.pcard,.hi-save'), l=linkFor(g);
+    if(l && !g.querySelector('.act-all')){ g.appendChild(card('act-all',l.href,'arrow-right',l.text||'See all','More listings, filters and prices','View all')); slots++; }
+    if(prop && slots<max && !g.querySelector('.act-post') && (n<=max-2 || !l)){ g.appendChild(card('act-post',POST,'house-circle-check','Own a property here?','List it FREE in about 5 minutes','Post property')); slots++; }
+    /* still short of a full row: one more same-size box, never a stretched one */
+    if(prop && slots<max && document.body.classList.contains('is-home')){ g.appendChild(card('act-area','<?= base_url('city') ?>','map-location-dot','Browse by sector','Homes, prices and places in each sector','Explore sectors')); slots++; }
+  });
+})();
+</script>
 </body>
 </html>

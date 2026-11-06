@@ -443,7 +443,7 @@ function hi_media(?string $file, string $kind = 'listing'): string
     // rewrite's own uploader writes
     $path = str_contains($file, '/') ? $file : ($dirs[$kind] ?? $dirs['listing']) . $file;
 
-    $base = rtrim((string) hi_setting('media_base'), '/');
+    $base = rtrim((string) (hi_setting('media_base') ?: getenv('MEDIA_BASE')), '/');
 
     return $base !== '' ? $base . '/' . ltrim($path, '/') : base_url($path);
 }

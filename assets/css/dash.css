@@ -255,3 +255,26 @@ tr:hover td{background:#fbfaf8}
 .lrow{border-bottom:1px solid #f3f0ea;padding:18px 20px}
 .empty{color:#9aa6bd;padding:44px 20px;text-align:center}
 .banner{border-radius:2px}
+
+/* ===== Design system pass (same look as the public site) ===== */
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;background:#f4f1ec;color:#2b3547}
+.top h1{font-weight:700!important;font-size:24px!important;color:#0f1a2e!important;letter-spacing:-.01em}
+.btn,.cta,.top .cta{border-radius:10px!important;text-transform:none!important;letter-spacing:0!important;font-size:14px!important;font-weight:600!important;padding:10px 16px!important;background:#014dda!important;box-shadow:none!important}
+.btn:hover,.cta:hover{background:#0b3aa6!important;transform:none!important}
+/* KPIs: one strip with thin dividers instead of six boxes */
+.stats{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))!important;gap:0!important;background:#fff;border:1px solid #e3e7ee;border-radius:14px;overflow:hidden}
+.stat{border:0!important;border-left:1px solid #e3e7ee!important;border-radius:0!important;background:transparent!important;padding:18px 20px!important;box-shadow:none!important;text-decoration:none}
+.stat:first-child{border-left:0!important}
+.stat:hover{background:#f7f8fb!important}
+.stat i{display:none}
+.stat b{font-size:28px!important;font-weight:700!important;color:#0f1a2e!important}
+.stat span{font-size:13px!important;font-weight:500!important;letter-spacing:0!important;text-transform:none!important;color:#5b6679!important}
+.card{border-radius:14px!important;box-shadow:none!important;border:1px solid #e3e7ee!important;background:#fff!important}
+/* quality score */
+.qs{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.qs.hi{background:#e8f7ef;color:#0f8a55}.qs.mid{background:#fff4e0;color:#b86e00}.qs.lo{background:#fdeeee;color:#c62d3b}
+.qs-tips{margin:6px 0 0;padding:0;list-style:none;font-size:12.5px;color:#5b6679;display:flex;flex-wrap:wrap;gap:4px 14px}
+.qs-tips li::before{content:"+ ";color:#014dda;font-weight:700}
+/* centre the working area on wide screens: same 1320px column as the public site */
+.content{max-width:1320px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.top{padding-left:max(34px,calc((100% - 1320px) / 2 + 34px))!important;padding-right:max(34px,calc((100% - 1320px) / 2 + 34px))!important}

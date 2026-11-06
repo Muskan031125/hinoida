@@ -1,0 +1,16 @@
+.git
+*.sql
+_old_sql/
+*.zip
+*.pdf
+*.bat
+*.log
+git-*.txt
+uploads/
+vendor/
+writable/cache/*
+writable/logs/*
+writable/session/*
+writable/debugbar/*
+.env
+add-*.php

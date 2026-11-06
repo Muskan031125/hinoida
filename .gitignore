@@ -37,3 +37,10 @@ git-setup-log.txt
 git-files.txt
 git-push.bat
 git-push-log.txt
+
+# personal files that are kept in this folder but are not part of the site
+*.pdf
+
+# local test-data scripts
+add-*.php
+hinoida-railway.sql

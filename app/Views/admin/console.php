@@ -42,7 +42,8 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
 .eyebrow{margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#9aa6bd}
 .h{margin:0;font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:32px;color:#0f1c33}
 .who{display:flex;align-items:center;gap:11px}.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1741a6,#3b82f6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
-.content{padding:34px 40px}
+.content{padding:34px 40px;max-width:1320px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.top{padding-left:max(40px,calc((100% - 1320px) / 2 + 40px))!important;padding-right:max(40px,calc((100% - 1320px) / 2 + 40px))!important}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px;margin-bottom:30px}
 .stat{background:rgba(255,255,255,.66);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.6);border-radius:16px;padding:24px;position:relative;overflow:hidden}
 .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#1741a6,#3b82f6)}
@@ -78,24 +79,37 @@ tr:hover td{background:#f8faff}
 .adminp:focus{outline:0;border-color:#1741a6;box-shadow:0 0 0 3px rgba(23,65,166,.09)}
 textarea.adminp{resize:vertical;min-height:70px}
 @media(max-width:900px){.admgrid{grid-template-columns:1fr !important}}
+/* phones and small tablets: menu on top, page full width, wide tables scroll inside themselves */
+@media(max-width:820px){
+  .shell{flex-direction:column}
+  .side{width:auto!important;flex:none!important;height:auto!important;position:relative!important;max-height:none}
+  .side .navgrp-b{padding-left:0}
+  .main{width:100%;min-width:0}
+  .main>*{max-width:100%;box-sizing:border-box}
+  .admgrid>*{min-width:0}
+  .main [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  .main table{display:block;overflow-x:auto;white-space:nowrap}
+  .main img,.main iframe{max-width:100%}
+  .top{flex-wrap:wrap;gap:8px;padding:14px 16px!important}
+}
 /* ===== POLISH LAYER — same editorial calm as the rest of the site ===== */
 :root{--line:#e8e4dd;--paper:#fbfaf8;--blue:#1741a6}
 body{background:#fbfaf8}
 body::before{display:none}
 .main{background:#fbfaf8}
 .top{background:#fbfaf8;border-bottom:1px solid #e8e4dd;backdrop-filter:none;-webkit-backdrop-filter:none}
-.h{font-weight:400;letter-spacing:-.015em;font-size:29px}
+.h{font-weight:700;letter-spacing:-.01em;font-size:24px}
 .eyebrow{letter-spacing:.2em}
 .panel{background:#fff;border:1px solid #e8e4dd;border-radius:4px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .stat{background:#fff;border:1px solid #e8e4dd;border-radius:4px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:26px}
 .stat::before{display:none}
-.stat b{font-weight:400;font-size:36px;letter-spacing:-.02em}
+.stat b{font-weight:700;font-size:30px;letter-spacing:-.02em}
 .stat span{font-size:10.5px;letter-spacing:.16em}
 .stat:hover{transform:none;box-shadow:0 10px 28px rgba(26,31,43,.07)}
 th{background:transparent;border-bottom:1px solid #e8e4dd;font-size:10.5px;letter-spacing:.14em;padding:14px 20px}
 td{border-bottom:1px solid #f3f0ea;padding:16px 20px}
 tr:hover td{background:#fbfaf8}
-.sec-title{font-weight:400;font-size:27px;letter-spacing:-.015em}
+.sec-title{font-weight:700;font-size:20px;letter-spacing:-.015em}
 .chip{border-radius:2px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
 .abtn{border-radius:2px;font-weight:500;letter-spacing:.04em}
 .btn{border-radius:2px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-size:12px;padding:13px 24px}
@@ -253,7 +267,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
             <?php if(!$rows): ?><tr><td colspan="4" style="text-align:center;color:#9aa6bd;padding:40px">Nothing pending 🎉</td></tr><?php endif; ?>
             <?php helper('property'); ?>
             <?php foreach($rows as $r): ?><tr>
-              <td><b><?= esc($r['name']) ?></b>
+              <td><b><?= esc(html_entity_decode((string) ($r['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b>
                 <a href="<?= $b ?>admin/listing/<?= (int)$r['id'] ?>" style="display:block;font-size:11.5px;color:#7c8aa3;text-decoration:none">Open &rsaquo;</a></td>
               <?php /* Approving blind is the wrong ask: a property is judged on its
                        price, size and RERA number, none of which a name and a phone
@@ -280,7 +294,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
           <div class="split">
             <div class="panel" style="flex:1;overflow:hidden"><table>
               <tr><th>Name</th><th style="text-align:right"></th></tr>
-              <?php foreach($rows as $r): ?><tr><td><b><?= esc($r['name']) ?></b></td>
+              <?php foreach($rows as $r): ?><tr><td><b><?= esc(html_entity_decode((string) ($r['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b></td>
                 <td><div class="acts">
                   <a class="abtn gh" href="<?= $b ?>admin/<?= $sec ?>?edit=<?= (int)$r['id'] ?>"><i class="fa-solid fa-pen"></i></a>
                   <form method="post" action="<?= $b ?>admin/crud/<?= $sec ?>" onsubmit="return confirm('Delete?')" style="display:inline"><input type="hidden" name="act" value="delete"><input type="hidden" name="id" value="<?= (int)$r['id'] ?>"><button class="abtn no"><i class="fa-solid fa-trash"></i></button></form>
@@ -289,7 +303,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
             <form class="form" method="post" action="<?= $b ?>admin/crud/<?= $sec ?>">
               <h3><?= $e?'Edit':'Add' ?> <?= rtrim($sec,'s') ?></h3>
               <input type="hidden" name="act" value="save"><input type="hidden" name="id" value="<?= $e?(int)$e['id']:0 ?>">
-              <label>Name</label><input name="name" required value="<?= $e?esc($e['name']):'' ?>">
+              <label>Name</label><input name="name" required value="<?= $e?esc(html_entity_decode((string) ($e['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')):'' ?>">
               <?php if($sec!=='amenities'): ?><label>Slug (blank = auto)</label><input name="slug" value="<?= $e?$fld($e,'slug'):'' ?>"><?php endif; ?>
               <?php if($sec==='amenities'): ?><label>Icon (e.g. wifi)</label><input name="icon" value="<?= $e?$fld($e,'icon'):'' ?>"><?php endif; ?>
               <button class="abtn ok" type="submit" style="width:100%;justify-content:center;padding:12px;margin-top:16px"><i class="fa-solid fa-check"></i> <?= $e?'Save':'Add' ?></button>
@@ -325,7 +339,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
           <div class="panel"><table><tr><th>Name</th><th>Email</th><th>Role</th><th>Verified</th><th>Status</th><th></th></tr>
             <?php foreach($rows as $r): $role=(int)($r['role_id']??3); $rl=$role===1?'Admin':($role===2?'Business':'Member'); $ver=(int)($r['is_verified']??1)===1; $app=(int)($r['approved']??1)===1; ?>
             <tr>
-              <td><b><a href="<?= $b ?>admin/user/<?= (int)$r['id'] ?>" style="color:#0f1c33"><?= esc($r['name']) ?></a></b></td>
+              <td><b><a href="<?= $b ?>admin/user/<?= (int)$r['id'] ?>" style="color:#0f1c33"><?= esc(html_entity_decode((string) ($r['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></a></b></td>
               <td style="color:#94a1b8"><?= esc($r['email']) ?></td>
               <td><span class="chip <?= $role===1?'chip-live':'' ?>"><?= $rl ?></span></td>
               <td><?= $ver?'<span class="chip chip-live"><i class="fa-solid fa-check"></i></span>':'<span class="chip chip-pending">No</span>' ?></td>
@@ -351,7 +365,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
           <div class="panel"><table><tr><th>Business</th><th>Email</th><th>Phone</th><th style="text-align:right">Action</th></tr>
             <?php if(!$rows): ?><tr><td colspan="4" style="text-align:center;color:#9aa6bd;padding:40px">No businesses awaiting approval. 🎉</td></tr><?php endif; ?>
             <?php foreach($rows as $r): ?><tr>
-              <td><b><?= esc($r['name']) ?></b> <span class="chip chip-pending">email <?= (int)($r['is_verified']??0)===1?'confirmed':'unconfirmed' ?></span></td>
+              <td><b><?= esc(html_entity_decode((string) ($r['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b> <span class="chip chip-pending">email <?= (int)($r['is_verified']??0)===1?'confirmed':'unconfirmed' ?></span></td>
               <td style="color:#94a1b8"><?= esc($r['email']) ?></td>
               <td style="color:#94a1b8"><?= esc($r['phone']??'') ?></td>
               <td style="text-align:right"><a class="abtn" style="background:#0b8a3d;color:#fff" href="<?= $b ?>admin/approve-user/<?= (int)$r['id'] ?>" onclick="return confirm('Approve this business?')"><i class="fa-solid fa-check"></i> Approve</a></td>
@@ -400,7 +414,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
             <div class="panel"><table><tr><th>Package</th><th>Price</th><th>Listings</th><th>Validity</th><th style="text-align:right">Action</th></tr>
               <?php if(!$rows): ?><tr><td colspan="5" style="text-align:center;color:#9aa6bd;padding:40px">No packages yet — add one on the right.</td></tr><?php endif; ?>
               <?php foreach($rows as $r): ?><tr>
-                <td><b><?= esc($r['name']) ?></b>
+                <td><b><?= esc(html_entity_decode((string) ($r['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b>
                   <?php if(!empty($r['is_recommended'])): ?><span class="chip chip-live">Recommended</span><?php endif; ?>
                   <?php if(!empty($r['featured'])): ?><span class="chip chip-adm">Featured</span><?php endif; ?>
                   <?php if(!empty($r['description'])): ?><div style="color:#94a1b8;font-size:12.5px;margin-top:3px"><?= esc($r['description']) ?></div><?php endif; ?></td>
@@ -458,7 +472,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
               </select></div>
               <div><label class="admlbl">Package</label><select class="adminp" name="package_id" required>
                 <option value="">Choose…</option>
-                <?php foreach($opts['packages'] as $p): ?><option value="<?= (int)$p['id'] ?>"><?= esc($p['name']) ?> — ₹<?= number_format((int)$p['price']) ?></option><?php endforeach; ?>
+                <?php foreach($opts['packages'] as $p): ?><option value="<?= (int)$p['id'] ?>"><?= esc(html_entity_decode((string) ($p['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?> — ₹<?= number_format((int)$p['price']) ?></option><?php endforeach; ?>
               </select></div>
               <div><label class="admlbl">Amount (blank = list price)</label><input class="adminp" type="number" min="0" name="amount_paid"></div>
               <div><label class="admlbl">Method</label><select class="adminp" name="payment_method">
@@ -627,7 +641,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
               <div class="panel" style="margin-bottom:16px"><table><tr><th>State</th><th style="text-align:right">Cities</th><th style="text-align:right">Action</th></tr>
                 <?php if(!$P['states']): ?><tr><td colspan="3" style="text-align:center;color:#9aa6bd;padding:30px">No states yet.</td></tr><?php endif; ?>
                 <?php foreach($P['states'] as $st): $nc=count(array_filter($P['cities'], static fn($c)=>(int)$c['state_id']===(int)$st['id'])); ?><tr>
-                  <td><b><?= esc($st['name']) ?></b></td>
+                  <td><b><?= esc(html_entity_decode((string) ($st['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b></td>
                   <td style="text-align:right"><?= $nc ?></td>
                   <td style="text-align:right;white-space:nowrap">
                     <a class="abtn gh" href="<?= $b ?>admin/places?t=state&edit=<?= (int)$st['id'] ?>"><i class="fa-solid fa-pen"></i></a>
@@ -641,7 +655,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
               <div class="panel"><table><tr><th>City</th><th>State</th><th style="text-align:right">Areas</th><th style="text-align:right">Action</th></tr>
                 <?php if(!$P['cities']): ?><tr><td colspan="4" style="text-align:center;color:#9aa6bd;padding:30px">No cities yet.</td></tr><?php endif; ?>
                 <?php foreach($P['cities'] as $ct): ?><tr>
-                  <td><b><?= esc($ct['name']) ?></b></td>
+                  <td><b><?= esc(html_entity_decode((string) ($ct['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b></td>
                   <td style="color:#94a1b8"><?= esc($ct['state_name'] ?: '—') ?></td>
                   <td style="text-align:right"><?= (int)$ct['areas'] ?></td>
                   <td style="text-align:right;white-space:nowrap">
@@ -669,7 +683,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
                   <select class="adminp" name="state_id">
                     <option value="">Select…</option>
                     <?php foreach($P['states'] as $st): ?>
-                      <option value="<?= (int)$st['id'] ?>" <?= (int)($er['state_id']??0)===(int)$st['id']?'selected':'' ?>><?= esc($st['name']) ?></option>
+                      <option value="<?= (int)$st['id'] ?>" <?= (int)($er['state_id']??0)===(int)$st['id']?'selected':'' ?>><?= esc(html_entity_decode((string) ($st['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></option>
                     <?php endforeach; ?>
                   </select>
                 <?php endif; ?>
@@ -853,7 +867,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
             <div>
               <h2 class="sec-title">Top categories</h2>
               <div class="panel"><table><tr><th>Category</th><th style="text-align:right">Listings</th></tr>
-                <?php foreach($rows['top'] as $t): ?><tr><td><b><?= esc($t['name']) ?></b></td><td style="text-align:right"><?= number_format($t['cnt']) ?></td></tr><?php endforeach; ?>
+                <?php foreach($rows['top'] as $t): ?><tr><td><b><?= esc(html_entity_decode((string) ($t['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b></td><td style="text-align:right"><?= number_format($t['cnt']) ?></td></tr><?php endforeach; ?>
               </table></div>
             </div>
           </div>
@@ -1145,9 +1159,9 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
             </div>
             <div class="panel"><table><tr><th>Category</th><th style="text-align:right">Listings</th></tr>
               <?php foreach($R['cats'] as $c): ?>
-                <tr><td><b><?= esc($c['name']) ?></b></td><td style="text-align:right"><b><?= number_format((int)$c['n']) ?></b></td></tr>
+                <tr><td><b><?= esc(html_entity_decode((string) ($c['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b></td><td style="text-align:right"><b><?= number_format((int)$c['n']) ?></b></td></tr>
                 <?php foreach($c['kids'] as $k): ?>
-                  <tr><td style="padding-left:38px;color:#5b6a86"><i class="fa-solid fa-turn-up fa-rotate-90" style="color:#c7d2e4;font-size:11px"></i> <?= esc($k['name']) ?></td>
+                  <tr><td style="padding-left:38px;color:#5b6a86"><i class="fa-solid fa-turn-up fa-rotate-90" style="color:#c7d2e4;font-size:11px"></i> <?= esc(html_entity_decode((string) ($k['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></td>
                       <td style="text-align:right;color:#5b6a86"><?= number_format((int)$k['n']) ?></td></tr>
                 <?php endforeach; ?>
               <?php endforeach; ?>
@@ -1519,7 +1533,7 @@ $fld=static function($r,$k){return isset($r[$k])?esc($r[$k]):'';}; ?>
             <span style="display:flex;gap:8px"><a class="abtn gh" href="<?= $b ?>admin/listing/new" style="font-size:12.5px;background:#0b8a3d;color:#fff"><i class="fa-solid fa-plus"></i> Add listing</a><a class="abtn gh" href="<?= $b ?>admin/export/listings" style="font-size:12.5px"><i class="fa-solid fa-download"></i> Export CSV</a></span></h2>
           <div class="panel"><table><tr><th>Name</th><th>Status</th><th style="text-align:right">Actions</th></tr>
             <?php foreach($rows as $r): ?><tr>
-              <td><b><?= esc($r['name']) ?></b></td>
+              <td><b><?= esc(html_entity_decode((string) ($r['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8')) ?></b></td>
               <td><span class="chip <?= ($r['status']??'')==='active'?'chip-live':'chip-pending' ?>"><?= esc(ucfirst($r['status']??'pending')) ?></span></td>
               <td style="text-align:right;white-space:nowrap">
                 <a class="abtn gh" href="<?= $b ?>admin/listing/<?= (int)$r['id'] ?>"><i class="fa-solid fa-pen"></i> Edit</a>

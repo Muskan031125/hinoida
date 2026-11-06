@@ -541,6 +541,84 @@ class Listing extends BaseController
         return $this->response->setJSON(['ok' => true, 'status' => $status]);
     }
 
+    /* ---------------------------------------------------------------------
+     * Shortlist that follows a signed-in person across devices.
+     * The browser keeps its own copy (so it works for guests too); when
+     * someone is signed in, these two calls keep that copy and their
+     * account (user.wishlists — the same list the account page shows) in step.
+     * ------------------------------------------------------------------- */
+
+    /** POST shortlist/set  {id, on}  — add or remove one listing. */
+    public function shortlistSet()
+    {
+        $uid = (int) session()->get('uid');
+        if (! $uid) { return $this->response->setJSON(['ok' => false, 'auth' => false]); }
+        $in  = $this->request->getJSON(true) ?: $this->request->getPost();
+        $lid = (int) ($in['id'] ?? 0);
+        $on  = ! empty($in['on']);
+        if ($lid <= 0) { return $this->response->setJSON(['ok' => false]); }
+        helper('property');
+        $row = \Config\Database::connect()->table('listing')->where('id', $lid)->get()->getRowArray();
+        if ($on && (! $row || ! hi_is_property_family($row))) { return $this->response->setJSON(['ok' => false, 'reason' => 'only property can be shortlisted']); }
+        $ids = $this->wishIds($uid);
+        $ids = array_values(array_diff($ids, [$lid]));
+        if ($on) { array_unshift($ids, $lid); }
+        $this->saveWish($uid, $ids);
+
+        return $this->response->setJSON(['ok' => true, 'count' => count($ids)]);
+    }
+
+    /** POST shortlist/sync  {ids:[...]}  — merge this browser's list into the account, return the account list. */
+    public function shortlistSync()
+    {
+        $uid = (int) session()->get('uid');
+        if (! $uid) { return $this->response->setJSON(['ok' => false, 'auth' => false]); }
+        $in    = $this->request->getJSON(true) ?: [];
+        $local = array_values(array_filter(array_map('intval', (array) ($in['ids'] ?? [])), static fn ($v) => $v > 0));
+        $ids   = $this->wishIds($uid);
+        foreach (array_reverse($local) as $lid) { if (! in_array($lid, $ids, true)) { array_unshift($ids, $lid); } }
+        $ids = array_slice($ids, 0, 60);
+        $this->saveWish($uid, $ids);
+
+        return $this->response->setJSON(['ok' => true, 'uid' => $uid, 'items' => $this->wishItems($ids)]);
+    }
+
+    private function wishIds(int $uid): array
+    {
+        $u   = \Config\Database::connect()->table('user')->select('wishlists')->where('id', $uid)->get()->getRowArray();
+        $ids = json_decode((string) ($u['wishlists'] ?? '[]'), true);
+
+        return is_array($ids) ? array_values(array_unique(array_filter(array_map('intval', $ids)))) : [];
+    }
+
+    private function saveWish(int $uid, array $ids): void
+    {
+        \Config\Database::connect()->table('user')->where('id', $uid)->update(['wishlists' => json_encode(array_values(array_unique($ids)))]);
+    }
+
+    /** The small card data the browser keeps: id, name, link, photo, one line. */
+    private function wishItems(array $ids): array
+    {
+        if (! $ids) { return []; }
+        helper(['image', 'property']);
+        $rows = \Config\Database::connect()->table('listing li')->select('li.*, l.name AS locality_name')
+            ->join('locality l', 'l.id = li.locality_id', 'left')
+            ->whereIn('li.id', $ids)->where('li.status', 'active')->get()->getResultArray();
+        $byId = [];
+        foreach ($rows as $r) { $byId[(int) $r['id']] = $r; }
+        $out = [];
+        foreach ($ids as $id) {
+            if (empty($byId[$id]) || ! hi_is_property_family($byId[$id])) { continue; }
+            $r   = $byId[$id];
+            $img = hi_cover($r);
+            $sub = (string) ($r['locality_name'] ?? 'Noida');
+            if (hi_is_property($r)) { $pr = hi_property_price(hi_property_of($id)); if ($pr !== '') { $sub = $pr . ' · ' . $sub; } }
+            $out[] = ['id' => $id, 'n' => (string) $r['name'], 'u' => hi_listing_url($r), 'i' => str_starts_with($img, 'data:') ? '' : $img, 's' => $sub];
+        }
+
+        return $out;
+    }
+
     /**
      * Record an interaction (phone / whatsapp / directions / website).
      * Matches what the original site tracked, so business Insights can show
