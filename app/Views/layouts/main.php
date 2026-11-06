@@ -104,7 +104,7 @@ if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createEl
 s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init',<?= json_encode($_px) ?>);fbq('track','PageView');</script>
 <?php endif; ?>
-<link rel="stylesheet" href="<?= base_url('assets/css/ds.css') ?>?v=29">
+<link rel="stylesheet" href="<?= base_url('assets/css/ds.css') ?>?v=39">
 </head>
 <body<?= $_isHome ? ' class="is-home"' : '' ?>>
 
@@ -830,5 +830,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){n.classList
   });
 })();
 </script>
+<script>/* articles: turn line breaks into real paragraphs so text reads in clear blocks */
+(function(){document.querySelectorAll('.bl-prose p').forEach(function(p){if(!p.querySelector('br'))return;var parts=p.innerHTML.split(/<br\s*\/?>/i).map(function(x){return x.trim();}).filter(function(x){return x.replace(/&nbsp;|\s/g,'')!=='';});if(parts.length<2)return;var f=document.createDocumentFragment();parts.forEach(function(h){var n=document.createElement('p');n.innerHTML=h;f.appendChild(n);});p.replaceWith(f);});
+/* very long plain paragraphs: break into blocks of ~2-3 sentences */
+document.querySelectorAll('.bl-prose p').forEach(function(p){var t=p.textContent;if(t.length<450||p.children.length)return;var ss=t.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g);if(!ss||ss.length<3)return;var out=[],cur='';ss.forEach(function(x){if((cur+x).length>320&&cur){out.push(cur.trim());cur='';}cur+=x;});if(cur.trim())out.push(cur.trim());if(out.length<2)return;var f=document.createDocumentFragment();out.forEach(function(h){var n=document.createElement('p');n.textContent=h;f.appendChild(n);});p.replaceWith(f);});
+})();</script>
 </body>
 </html>

@@ -304,4 +304,54 @@
   });
 })();
 </script>
+<style>
+/* simple filters: Rent/Buy + BHK chips, then a short row of plain dropdowns */
+#pForm .sx-quick{align-items:center}
+#pForm .sx-quick .sx-more{display:none!important}
+#pForm .pf-bhk{display:inline-flex;gap:6px;margin-left:6px;padding-left:12px;border-left:1px solid #e6e2da}
+#pForm .pf-bhk button{height:36px;padding:0 14px;border-radius:999px;border:1px solid #dfe4ec;background:#fff;font:600 13.5px/1 inherit;color:#1f2a3d;cursor:pointer}
+#pForm .pf-bhk button.on{background:#0f1a2e;border-color:#0f1a2e;color:#fff}
+#pForm .sx-filters{display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important;margin-top:12px!important;padding-top:12px!important;border-top:1px dashed #e6e2da!important}
+#pForm .sx-filters .sx-f{flex:0 0 auto!important;min-width:0!important;margin:0!important}
+#pForm .sx-filters .sx-f>.sx-l{display:none!important}
+#pForm .sx-filters.is-shut{display:flex!important}
+#pForm .pf-bhk button{white-space:nowrap}
+#pForm .sx-filters .sx-f[data-n="deal"],#pForm .sx-filters .sx-f[data-n="bhk"]{display:none!important}
+#pForm .sx-filters .sx-f[data-n="sort"]{margin-left:auto!important}
+#pForm .sx-filters select{height:38px!important;padding:0 34px 0 14px!important;border-radius:999px!important;font-size:13.5px!important;min-width:0!important;width:auto!important}
+#pForm .sx-filters .sx-f.is-set select{border-color:#1741a6!important;color:#1741a6!important;background-color:#eef3ff!important;font-weight:600}
+@media(max-width:700px){
+  #pForm .pf-bhk{margin:8px 0 0;padding:0;border:0;width:100%;display:grid;grid-template-columns:repeat(4,1fr)}
+  #pForm .pf-bhk button{padding:0 6px}
+  #pForm .sx-filters{display:grid!important;grid-template-columns:1fr 1fr!important}
+  #pForm .sx-filters .sx-f[data-n="sort"]{margin-left:0!important}
+  #pForm .sx-filters select{width:100%!important}
+}
+</style>
+<script>
+(function(){
+  function run(){
+    var f=document.getElementById('pForm'); if(!f||f.dataset.simple) return; f.dataset.simple='1';
+    var fb=f.querySelector('.sx-filters'); if(fb) fb.classList.remove('is-shut');
+    var names={kind:'Home type',budget:'Budget',furnishing:'Furnishing',locality:'Locality'};
+    f.querySelectorAll('.sx-filters .sx-f').forEach(function(w){
+      var s=w.querySelector('select'); if(!s) return; w.dataset.n=s.name;
+      if(names[s.name]&&s.options[0]&&s.options[0].value==='') s.options[0].text=names[s.name];
+      if(s.name!=='sort'&&s.value!=='') w.classList.add('is-set');
+    });
+    var srt=f.querySelector('select[name=sort]'); if(srt){ [].forEach.call(srt.options,function(o){ if(o.text.indexOf('Sort')!==0) o.text='Sort: '+o.text; }); }
+    var bhk=f.querySelector('select[name=bhk]'), q=f.querySelector('.sx-quick');
+    if(bhk&&q){
+      var box=document.createElement('div'); box.className='pf-bhk'; box.setAttribute('aria-label','Bedrooms');
+      [['1','1 BHK'],['2','2 BHK'],['3','3 BHK'],['4','4+ BHK']].forEach(function(b){
+        var x=document.createElement('button'); x.type='button'; x.textContent=b[1]; if(bhk.value===b[0]) x.className='on';
+        x.addEventListener('click',function(){ bhk.value = bhk.value===b[0] ? '' : b[0]; var go=f.querySelector('.sx-go'); if(go) go.click(); else HTMLFormElement.prototype.submit.call(f); });
+        box.appendChild(x);
+      });
+      var more=q.querySelector('.sx-more'); q.insertBefore(box, more||null);
+    }
+  }
+  if(document.readyState==='complete') setTimeout(run,0); else window.addEventListener('load',function(){ setTimeout(run,0); });
+})();
+</script>
 <?= $this->endSection() ?>

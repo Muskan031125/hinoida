@@ -467,3 +467,94 @@ html body .nt .nt-item.is-lead{margin-bottom:12px!important}
   html body .mine-card .mine-x{position:absolute!important;top:12px!important;right:12px!important;background:rgba(255,255,255,.92)!important;border-radius:50%!important}
   html body .mine-empty{flex:1 1 100%}
 }
+
+/* phones: "Find your space" and "Moving in? Get help" become swipe rows (shorter page) */
+@media(max-width:700px){
+  html body .st-cards,html body .mv-row{display:flex!important;gap:10px!important;overflow-x:auto!important;scroll-snap-type:x mandatory;margin:0 -16px!important;padding:2px 16px 10px!important;scrollbar-width:none}
+  html body .st-cards::-webkit-scrollbar,html body .mv-row::-webkit-scrollbar{display:none}
+  html body .st-cards>.st-card{flex:0 0 62%!important;min-height:0!important;aspect-ratio:4/3.4;scroll-snap-align:start}
+  html body .mv-row{display:grid!important;grid-auto-flow:column!important;grid-template-rows:repeat(2,auto)!important;grid-template-columns:none!important;grid-auto-columns:44%!important}
+  html body .mv-row>.mv-tile{scroll-snap-align:start;min-width:0!important}
+}
+
+/* phones: hero options all visible (no sideways scrolling) */
+@media(max-width:700px){
+  html body .hero .hp-tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;overflow:visible!important;padding:0 0 10px!important;border-bottom:0!important}
+  html body .hero .hp-tabs .hp-ink{display:none!important}
+  html body .hero .hp-tab{justify-content:center!important;padding:8px 4px!important;border-radius:10px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.14)!important;font-size:12.5px!important;white-space:nowrap!important;min-width:0!important;margin:0!important}
+  html body .hero .hp-tab.on{background:#fff!important;color:#0f1a2e!important;border-color:#fff!important}
+  html body .hero .hp-tab.on i{color:#1741a6!important}
+  html body .hero .hp-locs{flex-wrap:wrap!important;overflow:visible!important;gap:6px!important;row-gap:6px!important}
+  html body .hero .hp-locs>*{flex:0 0 auto!important}
+  html body .hero .hp-locs .hero-pop-l{flex-basis:100%!important;margin-bottom:2px!important}
+  html body .hero .hp-locs>a:nth-of-type(n+4){display:none!important}
+}
+
+/* phones: "Moving in? Get help" = compact 3-across icon grid, everything visible, no sideways scroll */
+@media(max-width:700px){
+  html body .mv-row{display:grid!important;grid-auto-flow:row!important;grid-template-rows:none!important;grid-auto-columns:auto!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important;margin:0!important;padding:0!important}
+  html body .mv-row>.mv-tile{flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important;gap:6px!important;padding:12px 6px!important;min-height:0!important}
+  html body .mv-row>.mv-tile>span{align-items:center!important;text-align:center!important}
+  html body .mv-row>.mv-tile b{font-size:12.5px!important;line-height:1.25!important}
+  html body .mv-row>.mv-tile small{font-size:11px!important}
+  html body .mv-row>.mv-tile>i,html body .mv-row>.mv-tile .mv-ic{margin:0!important}
+}
+@media(max-width:700px){
+  html body .mv-row>.mv-tile{padding:10px 4px!important;gap:5px!important}
+  html body .mv-row>.mv-tile small{display:none!important}
+  html body .mv-row>.mv-tile>:first-child:not(span){width:34px!important;height:34px!important;min-width:0!important;font-size:15px!important;border-radius:10px!important}
+  html body .mv-row>.mv-tile b{font-size:12px!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+}
+
+/* phones: hero options in ONE line (icon over a short label), localities in one line */
+@media(max-width:700px){
+  html body .hero .hp-tabs{display:flex!important;grid-template-columns:none!important;gap:2px!important;padding:0 0 8px!important;border-bottom:1px solid rgba(255,255,255,.14)!important;margin-bottom:10px!important}
+  html body .hero .hp-tab{flex:1 1 0!important;flex-direction:column!important;align-items:center!important;gap:4px!important;padding:6px 1px!important;background:transparent!important;border:0!important;border-radius:8px!important;font-size:10.5px!important;line-height:1.15!important;white-space:normal!important;text-align:center!important;color:rgba(255,255,255,.75)!important}
+  html body .hero .hp-tab i{font-size:15px!important;margin:0!important}
+  html body .hero .hp-tab.on{background:rgba(255,255,255,.14)!important;color:#fff!important;box-shadow:inset 0 -2px 0 #fff!important}
+  html body .hero .hp-tab.on i{color:#fff!important}
+  html body .hero .hp-locs{flex-wrap:nowrap!important;overflow:hidden!important}
+  html body .hero .hp-locs .hero-pop-l{display:none!important}
+  html body .hero .hp-locs>a{flex:1 1 0!important;justify-content:center!important;text-align:center!important;min-width:0!important;white-space:nowrap!important;font-size:12px!important;padding:6px 4px!important}
+  html body .hero .hp-locs>a:nth-of-type(n+4){display:none!important}
+}
+
+/* phones: swipe rows run edge-to-edge (no empty strip on the sides while swiping) */
+@media(max-width:700px){
+  html body :is(.lgrid.mscroll,.st-cards,.mine-row:not([hidden]),.np-subs){margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;width:100vw!important;max-width:100vw!important;padding-left:18px!important;padding-right:18px!important;scroll-padding-left:18px;box-sizing:border-box!important}
+}
+
+/* phones: EMI calculator fits on one screen */
+@media(max-width:700px){
+  html body .emi-sec .emi-in{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:10px!important}
+  html body .emi-sec .emi-f{padding:10px!important;gap:6px!important;border-radius:12px!important}
+  html body .emi-sec .emi-f label{flex-direction:column!important;align-items:flex-start!important;gap:2px!important;margin:0!important}
+  html body .emi-sec .emi-f label span{font-size:11.5px!important;gap:5px!important}
+  html body .emi-sec .emi-f label span i{width:20px!important;height:20px!important;font-size:10px!important}
+  html body .emi-sec .emi-f label b{font-size:14px!important;line-height:1.2!important}
+  html body .emi-sec .emi-ends{display:none!important}
+  html body .emi-sec .emi-f input[type=range]{margin:4px 0 0!important}
+  html body .emi-sec .emi-out{padding:14px!important;gap:8px!important}
+  html body .emi-sec .emi-out [data-o=emi]{font-size:28px!important;line-height:1.1!important}
+  html body .emi-sec .emi-legend{display:none!important}
+  html body .emi-sec .emi-out dl,html body .emi-sec .emi-out .emi-sum{gap:6px!important;margin:0!important}
+  html body .emi-sec .emi-go{padding:9px 14px!important;font-size:13px!important}
+}
+
+/* breadcrumbs: no long page title at the end (the big heading below already says it) */
+html body .det-crumb{font-size:0!important}
+html body .det-crumb>a{font-size:12.5px!important}
+html body .det-crumb>a+a::before{content:"›";margin:0 6px;color:rgba(255,255,255,.55)}
+html body .det-crumb>span{display:none!important}
+
+/* news/blog article: narrower reading column, smaller text, clear paragraphs */
+@media(min-width:900px){
+  html body .ev-grid:has(.bl-art){grid-template-columns:minmax(0,760px) 320px!important;justify-content:center!important;gap:28px!important}
+}
+html body .bl-prose{font-size:15.5px!important;line-height:1.75!important;color:#2b3445!important}
+html body .bl-prose p{margin:0 0 16px!important}
+html body .bl-prose p:first-of-type{font-size:17px!important;font-weight:500;color:#111a2c!important;line-height:1.65!important}
+
+html body .bl-prose :is(h2,h3){font-size:19px!important;margin:24px 0 10px!important}
+html body .bl-art{padding:26px 30px!important}
+@media(max-width:700px){html body .bl-art{padding:18px 16px!important}html body .bl-prose{font-size:15px!important}html body .bl-prose p:first-of-type{font-size:16px!important}}
