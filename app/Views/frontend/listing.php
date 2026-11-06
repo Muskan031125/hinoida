@@ -1109,11 +1109,7 @@ $loginTo = static function (string $label, string $anchor): string {
     var body=document.createElement('div'); body.className='lp-body';
     while(h.nextSibling){ body.appendChild(h.nextSibling); }
     c.appendChild(body);
-    var chev=document.createElement('i'); chev.className='fa-solid fa-chevron-down lp-chev'; h.appendChild(chev);
-    h.classList.add('lp-tog'); h.setAttribute('role','button'); h.tabIndex=0; h.setAttribute('aria-expanded','true');
-    function toggle(){ var closed=c.classList.toggle('lp-closed'); h.setAttribute('aria-expanded',closed?'false':'true'); }
-    h.addEventListener('click',function(e){ if(e.target.closest('a,button')) return; toggle(); });
-    h.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+    /* sections always stay open — no fold/close button on the heading */
     if(/review|qa|question|location|nearby|emi|alert/.test(c.id)) return;
     var lim = ci===0 ? 190 : 300;
     if(body.scrollHeight > lim+60){

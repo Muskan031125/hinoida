@@ -384,3 +384,18 @@ html body .ss-bar+.maptoggle+*{clear:both}
   html body .det-hero.ph-hero .lp-hero-main>:last-child{width:100%!important}
 }
 @media(min-width:1600px){html body .det-hero.ph-hero .lp-hero-grid #lpSlider{height:210px!important}}
+
+/* very small phones (320px and below): nothing may poke out sideways */
+html body{max-width:100%;overflow-x:clip}
+@media(max-width:340px){
+  html body .ps-it{min-width:0!important;width:100%!important;flex-wrap:wrap!important}
+  html body .ps-it>*{min-width:0!important}
+  html body .tabbar-m{max-width:100vw!important}
+  html body .tabbar-m a{min-width:0!important;flex:1 1 0!important;font-size:10px!important;padding-left:2px!important;padding-right:2px!important}
+  html body .hp-trust,html body .hero .pills{flex-wrap:wrap!important}
+  html body .det-stickybar{left:0!important;right:0!important;width:auto!important}
+}
+
+/* listing sections never fold */
+html body .lp-chev{display:none!important}
+html body .lp-card.lp-closed .lp-body{display:block!important}
