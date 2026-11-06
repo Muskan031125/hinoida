@@ -433,3 +433,37 @@ html body .nt .nt-item:not(.is-lead){margin-bottom:10px!important}
 html body .nt .nt-item:not(.is-lead):last-child{margin-bottom:0!important}
 html body .nt .nt-item.is-lead{margin-bottom:12px!important}
 @media(min-width:900px){html body .nt .nt-item.is-lead{margin-bottom:0!important}html body .nt .nt-grid{column-gap:16px!important}}
+
+/* phones: short footer — only the key links, tighter spacing */
+@media(max-width:700px){
+  html body footer.ftr .ftr-top{padding-top:18px!important;padding-bottom:6px!important;gap:12px!important}
+  html body footer.ftr .ftr-brand{margin-bottom:4px!important;padding-bottom:12px!important}
+  html body footer.ftr .ftr-social a{width:32px!important;height:32px!important;min-height:0!important}
+  html body footer.ftr .ftr-cols{display:grid!important;grid-template-columns:1fr 1fr!important;gap:2px 14px!important;padding:6px 0 10px!important}
+  html body footer.ftr .ftr-cols>div:nth-child(1) a:nth-of-type(n+4):not(:last-of-type),
+  html body footer.ftr .ftr-cols>div:nth-child(2) a:nth-of-type(n+2),
+  html body footer.ftr .ftr-cols>div:nth-child(3) a:nth-of-type(n+5),html body footer.ftr .ftr-cols>div:nth-child(3) a:nth-of-type(3),
+  html body footer.ftr .ftr-cols>div:nth-child(5),
+  html body footer.ftr .ftr-contact{display:none!important}
+  html body footer.ftr .ftr-cols a{font-size:13px!important;padding:6px 0!important;min-height:0!important;line-height:1.3!important}
+  html body footer.ftr .ftr-bottom{padding:10px 0!important}
+  html body footer.ftr .ftr-bottom .wrap{gap:4px!important;font-size:12px!important}
+}
+@media(max-width:700px){
+  html body footer.ftr .ftr-top{display:block!important}
+  html body footer.ftr .ftr-brand{padding-bottom:12px!important;margin:0!important;min-height:0!important;align-items:center!important}
+  html body footer.ftr .ftr-brand>*{margin:0!important}
+  html body footer.ftr .ftr-cols{margin-top:0!important}
+}
+
+/* phones: "Pick up where you left off" = one swipeable row of small photo cards (not a long list) */
+@media(max-width:700px){
+  html body .mine-row:not([hidden]){display:flex!important;gap:10px!important;overflow-x:auto!important;scroll-snap-type:x mandatory;padding:2px 2px 10px!important;margin:0 -16px!important;padding-left:16px!important;padding-right:16px!important;scrollbar-width:none}
+  html body .mine-row::-webkit-scrollbar{display:none}
+  html body .mine-card{flex:0 0 138px!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;padding:8px!important;scroll-snap-align:start;position:relative}
+  html body .mine-ph{width:100%!important;height:auto!important;aspect-ratio:4/3;border-radius:9px!important}
+  html body .mine-bd b{white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:13px!important;line-height:1.3!important}
+  html body .mine-bd small{font-size:11.5px!important}
+  html body .mine-card .mine-x{position:absolute!important;top:12px!important;right:12px!important;background:rgba(255,255,255,.92)!important;border-radius:50%!important}
+  html body .mine-empty{flex:1 1 100%}
+}
