@@ -17,6 +17,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
  && mkdir -p writable/cache writable/logs writable/session writable/uploads writable/debugbar uploads \
  && chown -R www-data:www-data writable uploads
 
+RUN printf "upload_max_filesize=100M\npost_max_size=100M\nmemory_limit=512M\nmax_execution_time=900\n" > /usr/local/etc/php/conf.d/uploads.ini
+
 ENV CI_ENVIRONMENT=production
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
